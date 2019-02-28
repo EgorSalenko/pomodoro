@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.di
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -9,15 +10,18 @@ import androidx.fragment.app.FragmentManager
 import dagger.android.AndroidInjection
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
+import io.esalenko.pomadoro.LocalApplication
 
 
 object AppInjector {
 
-    fun init(application: Application) {
+    fun init(application: LocalApplication) {
 
-//        DaggerAppComponent
-//            .builder()
-//            .application(application)
+        DaggerAppComponent
+            .builder()
+            .application(application)
+            .build()
+            .inject(application)
 
         application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityPaused(activity: Activity?) {
@@ -62,7 +66,7 @@ object AppInjector {
                 .registerFragmentLifecycleCallbacks(object :
                     FragmentManager.FragmentLifecycleCallbacks() {
 
-                    override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
+                    override fun onFragmentAttached(fm: FragmentManager, f: Fragment, context: Context) {
                         if (f is Injectable) {
                             AndroidSupportInjection.inject(f)
                         }

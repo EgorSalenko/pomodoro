@@ -8,16 +8,15 @@ import javax.inject.Provider
 
 @Suppress("UNCHECKED_CAST")
 class DaggerViewModelFactory @Inject constructor(private val viewModelsMap: Map<Class<out ViewModel>,
-        @JvmSuppressWildcards Provider<ViewModel>>) :
-        ViewModelProvider.Factory {
+        @JvmSuppressWildcards Provider<ViewModel>>) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         val creator =
                 viewModelsMap[modelClass]
                         ?: viewModelsMap
                                 .asIterable()
-                                .firstOrNull {
-                                    modelClass.isAssignableFrom(it.key)
+                                .firstOrNull { entry: Map.Entry<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>> ->
+                                    modelClass.isAssignableFrom(entry.key)
                                 }
                                 ?.value
                         ?: throw IllegalArgumentException("unknown model class $modelClass")

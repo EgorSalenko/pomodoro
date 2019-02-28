@@ -10,5 +10,4 @@ abstract class ActivityBuilderModule {
     @ContributesAndroidInjector(modules = [FragmentBuilderModule::class])
     abstract fun contributesSplashActivity(): MainActivity
 
-
 }

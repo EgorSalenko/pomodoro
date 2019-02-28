@@ -6,12 +6,18 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 import io.esalenko.pomadoro.vm.CountdownViewModel
+import io.esalenko.pomadoro.vm.SharedViewModel
 
 @Module
 abstract class ViewModelFactoryModule {
 
     @Binds
     abstract fun bindViewModelFactory(viewModelFactory: DaggerViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SharedViewModel::class)
+    abstract fun bindSharedViewModel(viewModel: SharedViewModel): ViewModel
 
     @Binds
     @IntoMap

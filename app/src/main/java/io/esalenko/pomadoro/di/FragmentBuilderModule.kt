@@ -2,13 +2,13 @@ package io.esalenko.pomadoro.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import io.esalenko.pomadoro.ui.CountdownFragment
+import io.esalenko.pomadoro.ui.TimerFragment
 
 
 @Module
 abstract class FragmentBuilderModule {
 
     @ContributesAndroidInjector
-    abstract fun contributesCountdownFragment(): CountdownFragment
+    abstract fun contributesTimerFragment(): TimerFragment
 
 }

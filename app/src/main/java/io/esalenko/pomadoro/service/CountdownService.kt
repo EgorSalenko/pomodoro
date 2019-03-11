@@ -100,6 +100,7 @@ class CountdownService : Service() {
                     sharedPreferenceManager.sessionCounter
                 )
 
+                stopForeground(true)
                 stopSelf()
             }
             .switchMap {

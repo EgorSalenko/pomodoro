@@ -14,6 +14,7 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
         const val LONG_COOLDOWN_SESSION = 4
 
         const val KEY_TIMER_DURATION = "key_timer_duration"
+        const val KEY_IS_PAUSE = "key_is_pause"
         const val KEY_TIMER_TIMESTAMP = "key_timer_timestamp"
         const val KEY_SHORT_COOLDOWN_TIMESTAMP = "key_short_cooldown_timestamp"
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
@@ -25,6 +26,15 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
         var DEFAULT_SHORT_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(5)
         var DEFAULT_LONG_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(15)
     }
+
+    var isPause: Boolean
+        get() = sharedPreferences.getBoolean(
+            KEY_IS_PAUSE,
+            false
+        )
+        set(value) = sharedPreferences.edit {
+            putBoolean(KEY_IS_PAUSE, value)
+        }
 
     var timerTimestamp: Long
         get() = sharedPreferences.getLong(
@@ -65,11 +75,14 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
             putLong(KEY_LONG_COOLDOWN_TIMESTAMP, value)
         }
 
-    var sessionsCounter: Int
+    private var _sessionsCounter: Int
         get() = sharedPreferences.getInt(KEY_SESSIONS_COUNTER, 0)
         set(value) = sharedPreferences.edit {
             putInt(KEY_SESSIONS_COUNTER, value)
         }
+
+    val sessionCounter: Int
+        get() = _sessionsCounter
 
     var cachedTaskDescription: String
         get() =
@@ -80,8 +93,12 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
             putString(KEY_CACHED_TASK_DESCRIPTION, value)
         }
 
-    private val isLongCooldownSession: Boolean
-        get() = sessionsCounter == LONG_COOLDOWN_SESSION
+    fun incrementSessionCounter() {
+        _sessionsCounter++
+    }
+
+    val isLongCooldownSession: Boolean
+        get() = _sessionsCounter == LONG_COOLDOWN_SESSION
 
 
 }

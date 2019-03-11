@@ -29,14 +29,23 @@
                 tools:text="30:00"/>
 
         <TextView
+                android:id="@+id/tv_main_activity_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@id/tv_main_activity_timer"
+                app:layout_constraintEnd_toEndOf="@id/tv_main_activity_timer"
+                app:layout_constraintTop_toBottomOf="@id/tv_main_activity_timer"
+                tools:text="Work session in progress"/>
+
+        <TextView
                 android:id="@+id/tv_main_activity_task"
+                android:visibility="gone"
+                tools:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible"
-                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/tv_main_activity_timer"
                 tools:text="My new task which im working on right now"/>
 
@@ -58,6 +67,16 @@
                     android:hint="Task description"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+                android:id="@+id/tv_main_activity_sessions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Session : 3"
+        />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

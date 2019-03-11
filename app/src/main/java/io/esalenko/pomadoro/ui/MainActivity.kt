@@ -1,6 +1,5 @@
 package io.esalenko.pomadoro.ui
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
@@ -9,23 +8,22 @@ import android.os.IBinder
 import android.view.MenuItem
 import android.view.View
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.SettingsActivity.Companion.createSettingsActivityIntent
 import io.esalenko.pomadoro.vm.CountdownViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-
-    @Inject
-    lateinit var sharedPreferenceManager: SharedPreferenceManager
+    override fun isOnPause(isPause: Boolean) {
+        this.isPause = isPause
+    }
 
     private var isBound: Boolean = false
-
     private var isRunning: Boolean = false
+
+    private var isPause: Boolean = false
 
     private var countdownService: CountdownService? = null
     private lateinit var viewModel: CountdownViewModel
@@ -35,9 +33,9 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
             countdownService = countdownBinder.countdownService
-            isBound = true
             countdownService?.setCountdownCommunicationCallback(this@MainActivity)
             updateView(isRunning)
+            isBound = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -85,15 +83,28 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     private fun startCountdown() {
         viewModel.setTaskDescription(et_main_activity.text.toString())
-        countdownService?.startTimer(sharedPreferenceManager.timerDuration)
+        countdownService?.startTimer()
     }
 
     private fun stopCountdown() {
         countdownService?.stopTimer()
     }
 
-    private fun updateView(isRunning: Boolean = false) {
-        fab_activity_main.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
+    private fun updateView(isRunning : Boolean) {
+
+        if (isPause) {
+            fab_activity_main.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
+            tv_main_activity_status.text = "Take some rest"
+        } else {
+            fab_activity_main.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
+            tv_main_activity_status.text = "You must concentrate on your work now"
+        }
+
+        tv_main_activity_status.visibility = if (isRunning) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
 
         tv_main_activity_timer.visibility = if (isRunning) {
             View.VISIBLE
@@ -115,7 +126,12 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     override fun onTimerStatusChanged(isTimerProcessing: Boolean) {
         isRunning = isTimerProcessing
-        updateView(isTimerProcessing)
+        updateView(isRunning)
+    }
+
+    override fun onSessionCounterUpdate(sessions: Int) {
+        tv_main_activity_sessions.text = String.format("Session : %s", sessions)
+        updateView(isRunning)
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {

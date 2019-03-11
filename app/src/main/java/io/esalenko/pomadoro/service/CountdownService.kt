@@ -8,7 +8,9 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import dagger.android.AndroidInjection
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.ui.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,17 +18,19 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class CountdownService : Service() {
 
-    private val binder = CountdownBinder()
-
-    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-
-    private lateinit var callback: CountdownCommunicationCallback
+    @Inject
+    lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     private var timerResult: Long = 0
 
+    private val binder = CountdownBinder()
+    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    private lateinit var callback: CountdownCommunicationCallback
     private lateinit var notificationBuilder: NotificationCompat.Builder
 
     inner class CountdownBinder : Binder() {
@@ -48,13 +52,19 @@ class CountdownService : Service() {
         }
     }
 
+    override fun onCreate() {
+        AndroidInjection.inject(this)
+        super.onCreate()
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return binder
     }
 
     @SuppressLint("CheckResult")
-    fun startTimer(timerDuration: Long) {
+    fun startTimer() {
 
+        val isPause = sharedPreferenceManager.isPause
         val notification: Notification? = setupForegroundNotification()
         val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)
 
@@ -65,14 +75,31 @@ class CountdownService : Service() {
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { timer: Long ->
-                timerResult = timerDuration - (timer * 1000)
+                timerResult = if (isPause) {
+                    sharedPreferenceManager.cooldownDuration - (timer * 1000)
+                } else {
+                    sharedPreferenceManager.timerDuration - (timer * 1000)
+                }
+                callback.isOnPause(isPause)
                 callback.onTimerStatusChanged(true)
             }
             .takeUntil { timer: Long ->
-                timer * 1000 == timerDuration
+                timer * 1000 == if (isPause) {
+                    sharedPreferenceManager.cooldownDuration
+                } else {
+                    sharedPreferenceManager.timerDuration
+                }
             }
             .doOnComplete {
+                callback.isOnPause(isPause)
                 callback.onTimerStatusChanged(false)
+                if (!isPause) {
+                    sharedPreferenceManager.incrementSessionCounter()
+                }
+                callback.onSessionCounterUpdate(
+                    sharedPreferenceManager.sessionCounter
+                )
+
                 stopSelf()
             }
             .switchMap {
@@ -115,6 +142,7 @@ class CountdownService : Service() {
             NotificationCompat.Builder(applicationContext)
         }
 
+        // TODO :: Extract strings into resources
         return notificationBuilder
             .setAutoCancel(false)
             .setChannelId(CHANNEL_ID)
@@ -135,6 +163,9 @@ class CountdownService : Service() {
     }
 
     fun stopTimer() {
+        val isPause = sharedPreferenceManager.isPause
+        sharedPreferenceManager.isPause = !isPause
+        callback.isOnPause(sharedPreferenceManager.isPause)
         callback.onTimerStatusChanged(false)
         compositeDisposable.clear()
         stopSelf()
@@ -147,6 +178,10 @@ class CountdownService : Service() {
     interface CountdownCommunicationCallback {
         fun provideTimer(timer: String)
 
+        fun isOnPause(isPause: Boolean)
+
         fun onTimerStatusChanged(isTimerProcessing: Boolean)
+
+        fun onSessionCounterUpdate(sessions: Int)
     }
 }

@@ -108,7 +108,7 @@ class CountdownService : Service() {
                     emitter.onNext(timerResult)
                 }
             }
-            .subscribe({ tick ->
+            .subscribe({ tick: Long ->
 
                 val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(tick)
                 val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(tick) % 60
@@ -121,8 +121,8 @@ class CountdownService : Service() {
 
                 notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
-            }, {
-                it.printStackTrace()
+            }, { throwable: Throwable ->
+                throwable.printStackTrace()
             })
         )
 
@@ -164,7 +164,7 @@ class CountdownService : Service() {
     }
 
     fun stopTimer() {
-        val isPause = sharedPreferenceManager.isPause
+        val isPause: Boolean = sharedPreferenceManager.isPause
         sharedPreferenceManager.isPause = !isPause
         callback.isOnPause(sharedPreferenceManager.isPause)
         callback.onTimerStatusChanged(false)

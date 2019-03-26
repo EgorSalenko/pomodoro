@@ -1,17 +1,18 @@
 package io.esalenko.pomadoro.service
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import dagger.android.AndroidInjection
-import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.manager.LocalAlarmManager
+import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
-import io.esalenko.pomadoro.ui.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -24,6 +25,9 @@ class CountdownService : Service() {
 
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
+
+    @Inject
+    lateinit var localNotificationManager: LocalNotificationManager
 
     private var timerResult: Long = 0
 
@@ -40,11 +44,8 @@ class CountdownService : Service() {
 
     companion object {
 
-        private const val CHANNEL_ID = "countdown_service_notification_channel_id"
-        private const val CHANNEL_NAME = "countdown_service_notification_channel_name"
         private const val NOTIFICATION_ID = 5002
-
-        private const val REQUEST_CODE = 0
+        private const val REQUEST_CODE = 8002
 
         @JvmStatic
         fun Context.createCountdownServiceIntent(): Intent {
@@ -55,6 +56,7 @@ class CountdownService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
+        this.notificationBuilder = localNotificationManager.notificationBuilder
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -65,7 +67,10 @@ class CountdownService : Service() {
     fun startTimer() {
 
         val isPause = sharedPreferenceManager.isPause
-        val notification: Notification? = setupForegroundNotification()
+        // TODO :: Extract strings into resources
+        val notification: Notification? =
+            localNotificationManager.createNotification(this, "Session in progress", "Working session", REQUEST_CODE)
+
         val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)
 
         startForeground(NOTIFICATION_ID, notification)
@@ -99,7 +104,7 @@ class CountdownService : Service() {
                 callback.onSessionCounterUpdate(
                     sharedPreferenceManager.sessionCounter
                 )
-
+                LocalAlarmManager.startAlarm(this)
                 stopForeground(true)
                 stopSelf()
             }
@@ -117,7 +122,9 @@ class CountdownService : Service() {
 
                 callback.provideTimer(time)
 
-                notificationBuilder.setContentText("Timer remaining : $time")
+                notificationBuilder
+                    .setSound(null)
+                    .setContentText("Timer remaining : $time")
 
                 notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
@@ -126,37 +133,6 @@ class CountdownService : Service() {
             })
         )
 
-    }
-
-    private fun setupForegroundNotification(): Notification? {
-
-        notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = CHANNEL_NAME
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
-
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
-
-            NotificationCompat.Builder(applicationContext, mChannel.id)
-        } else {
-            NotificationCompat.Builder(applicationContext)
-        }
-
-        // TODO :: Extract strings into resources
-        return notificationBuilder
-            .setAutoCancel(false)
-            .setChannelId(CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setContentText("")
-            .setContentTitle("Session in progress")
-            .setContentIntent(PendingIntent.getActivity(
-                applicationContext,
-                REQUEST_CODE,
-                Intent(this, MainActivity::class.java),
-                0
-            ))
-            .build()
     }
 
     private fun addDisposable(disposable: Disposable?) {

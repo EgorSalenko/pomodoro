@@ -3,15 +3,13 @@ package io.esalenko.pomadoro
 import android.app.Activity
 import android.app.Application
 import android.app.Service
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
-import dagger.android.HasServiceInjector
+import android.content.BroadcastReceiver
+import dagger.android.*
 import io.esalenko.pomadoro.di.AppInjector
 import javax.inject.Inject
 
 
-class LocalApplication : Application(), HasActivityInjector, HasServiceInjector {
+class LocalApplication : Application(), HasActivityInjector, HasServiceInjector, HasBroadcastReceiverInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
@@ -19,10 +17,15 @@ class LocalApplication : Application(), HasActivityInjector, HasServiceInjector 
     @Inject
     lateinit var dispatchingAndroidServiceInjector: DispatchingAndroidInjector<Service>
 
+    @Inject
+    lateinit var dispatchingAndroidBroadcastReceiverInjector: DispatchingAndroidInjector<BroadcastReceiver>
+
     override fun serviceInjector(): AndroidInjector<Service> = dispatchingAndroidServiceInjector
 
     override fun activityInjector(): AndroidInjector<Activity> = dispatchingAndroidInjector
 
+    override fun broadcastReceiverInjector(): AndroidInjector<BroadcastReceiver> =
+        dispatchingAndroidBroadcastReceiverInjector
 
     override fun onCreate() {
         super.onCreate()

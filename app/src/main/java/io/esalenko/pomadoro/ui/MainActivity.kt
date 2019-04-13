@@ -71,6 +71,11 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
                 startCountdown()
             }
         }
+        initRecyclerViewTimerValues()
+    }
+
+    private fun initRecyclerViewTimerValues() {
+
     }
 
     private fun openProfile() {

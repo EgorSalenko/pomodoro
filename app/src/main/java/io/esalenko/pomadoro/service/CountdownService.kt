@@ -142,12 +142,12 @@ class CountdownService : Service() {
     }
 
     fun stopTimer() {
+        notificationManager.cancel(NOTIFICATION_ID)
         val isPause: Boolean = sharedPreferenceManager.isPause
         sharedPreferenceManager.isPause = !isPause
         callback.isOnPause(sharedPreferenceManager.isPause)
         callback.onTimerStatusChanged(false)
         compositeDisposable.clear()
-        notificationManager.cancel(NOTIFICATION_ID)
         stopSelf()
     }
 

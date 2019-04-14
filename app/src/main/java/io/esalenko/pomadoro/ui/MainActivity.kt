@@ -6,12 +6,13 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
-import android.view.View
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.SettingsActivity.Companion.createSettingsActivityIntent
-import io.esalenko.pomadoro.vm.CountdownViewModel
+import io.esalenko.pomadoro.ui.fragment.TaskFragment
+import io.esalenko.pomadoro.ui.fragment.WorkTimerFragment
+import io.esalenko.pomadoro.vm.SharedCountdownViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
@@ -26,7 +27,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private var isPause: Boolean = false
 
     private var countdownService: CountdownService? = null
-    private lateinit var viewModel: CountdownViewModel
+    private lateinit var viewModel: SharedCountdownViewModel
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
 
@@ -56,26 +57,32 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = getViewModel(CountdownViewModel::class)
+        viewModel = getSharedViewModel(SharedCountdownViewModel::class)
 
-        bab_activity_main.replaceMenu(R.menu.bottom_app_bar_menu)
-
-        bab_activity_main.setOnMenuItemClickListener { item ->
-            onMenuItemClicked(item)
-        }
-
-        fab_activity_main.setOnClickListener {
+        if (savedInstanceState == null) {
             if (isRunning) {
-                stopCountdown()
+                showWorkTimerFragment()
             } else {
-                startCountdown()
+                showTaskFragment()
             }
         }
-        initRecyclerViewTimerValues()
-    }
 
-    private fun initRecyclerViewTimerValues() {
+        bottomAppBar.apply {
+            replaceMenu(R.menu.bottom_app_bar_menu)
+            setOnMenuItemClickListener { item ->
+                onMenuItemClicked(item)
+            }
+        }
 
+        timerButton.setOnClickListener {
+            if (isRunning) {
+                stopCountdown()
+                showTaskFragment()
+            } else {
+                startCountdown()
+                showWorkTimerFragment()
+            }
+        }
     }
 
     private fun openProfile() {
@@ -87,7 +94,8 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     private fun startCountdown() {
-        viewModel.setTaskDescription(et_main_activity.text.toString())
+        // TODO :: Invoke Task View Model and persist task description into DB
+//        viewModel.setTaskDescription(et_main_activity.text.toString())
         countdownService?.startTimer()
     }
 
@@ -98,35 +106,33 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private fun updateView(isRunning : Boolean) {
 
         if (isPause) {
-            fab_activity_main.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
-            tv_main_activity_status.text = "Take some rest"
+            timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
+            viewModel.updateStatus("Take some rest")
         } else {
-            fab_activity_main.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
-            tv_main_activity_status.text = "You must concentrate on your work now"
+            timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
+            viewModel.updateStatus("You must concentrate on your work now")
         }
+/*
 
-        tv_main_activity_status.visibility = if (isRunning) {
-            View.VISIBLE
+        if (isRunning) {
+            showWorkTimerFragment()
         } else {
-            View.GONE
+            showTaskFragment()
         }
-
-        tv_main_activity_timer.visibility = if (isRunning) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-
-        et_main_activity.visibility = if (isRunning) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+*/
 
     }
 
+    private fun showWorkTimerFragment() {
+        WorkTimerFragment().replace(R.id.fragmentContainer, WorkTimerFragment.TAG)
+    }
+
+    private fun showTaskFragment() {
+        TaskFragment().replace(R.id.fragmentContainer, TaskFragment.TAG)
+    }
+
     override fun provideTimer(timer: String) {
-        tv_main_activity_timer.text = timer
+        viewModel.updateTimer(timer)
     }
 
     override fun onTimerStatusChanged(isTimerProcessing: Boolean) {
@@ -135,7 +141,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     override fun onSessionCounterUpdate(sessions: Int) {
-        tv_main_activity_sessions.text = String.format("Session : %s", sessions)
+        viewModel.updateSessions(sessions)
         updateView(isRunning)
     }
 

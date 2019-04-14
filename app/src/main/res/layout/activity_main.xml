@@ -6,88 +6,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.TimerFragment">
-
-        <TextView
-                android:id="@+id/tv_main_activity_timer"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="35sp"
-                tools:text="30:00"/>
-
-        <TextView
-                android:id="@+id/tv_main_activity_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/tv_main_activity_timer"
-                app:layout_constraintEnd_toEndOf="@id/tv_main_activity_timer"
-                app:layout_constraintTop_toBottomOf="@id/tv_main_activity_timer"
-                tools:text="Work session in progress"/>
-
-        <TextView
-                android:id="@+id/tv_main_activity_task"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_main_activity_timer"
-                tools:text="My new task which im working on right now"/>
-
-        <!--TODO::Replace with CardView-->
-        <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_main_activity_task_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_main_activity_timer">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_main_activity"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="Task description"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-                android:id="@+id/tv_main_activity_sessions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Session : 3"
-        />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <FrameLayout
-            android:id="@+id/fl_activity_main_fragment_container"
+            android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     
     <com.google.android.material.bottomappbar.BottomAppBar
             style="@style/BottomAppBar"
-            android:id="@+id/bab_activity_main"
+            android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -97,12 +23,12 @@
             app:hideOnScroll="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_activity_main"
+            android:id="@+id/timerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:backgroundTint="@color/colorPrimaryDark"
             app:fabSize="normal"
-            app:layout_anchor="@id/bab_activity_main"
+            app:layout_anchor="@id/bottomAppBar"
             tools:src="@drawable/ic_round_timer_24px"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

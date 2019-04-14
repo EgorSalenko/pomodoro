@@ -29,6 +29,8 @@ class CountdownService : Service() {
     @Inject
     lateinit var localNotificationManager: LocalNotificationManager
 
+    private lateinit var notificationManager: NotificationManager
+
     private var timerResult: Long = 0
 
     private val binder = CountdownBinder()
@@ -56,6 +58,7 @@ class CountdownService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
+        notificationManager = getSystemService(NotificationManager::class.java)
         this.notificationBuilder = localNotificationManager.notificationBuilder
     }
 
@@ -71,7 +74,6 @@ class CountdownService : Service() {
         val notification: Notification? =
             localNotificationManager.createNotification(this, "Session in progress", "Working session", REQUEST_CODE)
 
-        val notificationManager: NotificationManager = getSystemService(NotificationManager::class.java)
 
         startForeground(NOTIFICATION_ID, notification)
 
@@ -145,6 +147,7 @@ class CountdownService : Service() {
         callback.isOnPause(sharedPreferenceManager.isPause)
         callback.onTimerStatusChanged(false)
         compositeDisposable.clear()
+        notificationManager.cancel(NOTIFICATION_ID)
         stopSelf()
     }
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import io.esalenko.pomadoro.vm.CountdownViewModel
+import io.esalenko.pomadoro.vm.SharedCountdownViewModel
 
 @Module
 abstract class ViewModelFactoryModule {
@@ -15,6 +15,6 @@ abstract class ViewModelFactoryModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(CountdownViewModel::class)
-    abstract fun bindCountdownModel(viewModel : CountdownViewModel) : ViewModel
+    @ViewModelKey(SharedCountdownViewModel::class)
+    abstract fun bindCountdownModel(viewModelShared: SharedCountdownViewModel): ViewModel
 }

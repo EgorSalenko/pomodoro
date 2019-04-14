@@ -9,7 +9,7 @@ import io.esalenko.pomadoro.ui.SettingsActivity
 abstract class ActivityBuilderModule {
 
     @ContributesAndroidInjector
-    abstract fun contributesSplashActivity(): MainActivity
+    abstract fun contributesMainActivity(): MainActivity
 
     @ContributesAndroidInjector
     abstract fun contributesSettingsFragment() : SettingsActivity

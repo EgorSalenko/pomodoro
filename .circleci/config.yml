@@ -30,7 +30,7 @@ jobs:
         paths:
         - src/
     - store_artifacts:
-        path: ~/src/go/build/outputs/apk/debug/
+        path: ~/src/build/outputs/apk/debug/
         destination: apk
 
   deploy:
@@ -58,8 +58,8 @@ jobs:
         name: Test with Firebase Test Lab
         command: >
           sudo gcloud firebase test android run
-            --app apk/app-debug.apk
-            --test apk/app-debug.apk
+            --app ~/src/build/outputs/apk/debug/app-debug.apk
+            --test ~/src/build/outputs/apk/debug/app-debug.apk
             --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
     - run:
         name: Install gsutil dependency and copy test results data

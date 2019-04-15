@@ -97,8 +97,8 @@ jobs:
         command: |
           pwd |
           ls -l |
-          cd app |
-          ls -l
+          chmod 755 app |
+          ls app
 
 
 workflows:

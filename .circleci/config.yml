@@ -98,7 +98,9 @@ jobs:
           pwd |
           ls -l |
           chmod 755 app |
-          ls app/src
+          ls -l app/src/androidTest |
+          ls -l app/src/androidTest |
+          ls -l app/src/test |
 
 
 workflows:

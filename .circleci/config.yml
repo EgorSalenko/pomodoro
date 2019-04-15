@@ -16,10 +16,7 @@ jobs:
     - attach_workspace:
         at: /home/circleci/
     - restore_cache:
-        key: v1-cache-{{ checksum "build.gradle" }}-{{ checksum  "go/build.gradle" }}-{{ checksum  "versions.gradle" }}
-    - run:
-        name: Copy Required Gradle Properties
-        command: source setupGradleProperties.sh && copyEnvVarsToGradleProperties
+        key: v1-cache-{{ checksum "build.gradle" }}
     - run:
         name: Clean Project
         command: ./gradlew clean

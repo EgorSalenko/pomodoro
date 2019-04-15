@@ -30,7 +30,7 @@ jobs:
         paths:
         - src/
     - store_artifacts:
-        path: ~/src/build/outputs/apk/debug/
+        path: ~/src/build/outputs/androidTest/apk/debug/
         destination: apk
 
   deploy:

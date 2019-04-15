@@ -98,7 +98,7 @@ jobs:
           pwd |
           ls -l |
           chmod 755 app |
-          ls app
+          ls app/src
 
 
 workflows:
@@ -111,9 +111,9 @@ workflows:
         requires:
         - build
         - buildInstrumentation
-    - deploy:
-        requires:
-        - bash
-    - test:
-        requires:
-        - deploy
+#    - deploy:
+#        requires:
+#        - bash
+#    - test:
+#        requires:
+#        - deploy

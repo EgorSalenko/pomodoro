@@ -100,7 +100,7 @@ jobs:
           chmod 755 app |
           ls -l app/src/androidTest |
           ls -l app/src/androidTest |
-          ls -l app/src/test |
+          ls -l app/src/test
 
 
 workflows:

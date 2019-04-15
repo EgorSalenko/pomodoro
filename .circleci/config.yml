@@ -96,6 +96,7 @@ workflows:
     - deploy:
         requires:
           - build
+          - buildInstrumentation
     - test:
         requires:
           - deploy

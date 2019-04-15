@@ -98,7 +98,7 @@ jobs:
           pwd |
           ls -l |
           cd app |
-          ls -l
+          ls -l |
 
 
 workflows:
@@ -116,4 +116,4 @@ workflows:
           - deploy
     - test:
         requires:
-          - deploy
+          - bash

@@ -56,7 +56,7 @@ jobs:
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
     - run:
         name: Test with Firebase Test Lab
-        command: sudo gcloud firebase test android run --app /src/app/build/outputs/apk/debug/app-debug.apk --test /src/app/build/outputs/apk/debug/app-debug.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
+        command: sudo gcloud firebase test android run --app app-debug.apk --test app-debug.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
     - run:
         name: Install gsutil dependency and copy test results data
         command: |

@@ -1,40 +1,53 @@
 version: 2
+defaults: &defaults
+  working_directory: ~/src
+  docker:
+  - image: circleci/android:api-28
+  environment:
+    JVM_OPTS: -Xmx3200m
+    TERM: dumb
+
 jobs:
-  deploy:
-    docker:
-    - image: google/cloud-sdk
-    steps:
-    - run: |
-        echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-        gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-        gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
   build:
-    docker:
-    - image: circleci/android:api-28
-
-    working_directory: ~/repo
-
-    environment:
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
+    <<: *defaults
 
     steps:
-    - checkout
+    - attach_workspace:
+        at: /home/circleci/
     - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.gradle" }}
-    - run: ./gradlew dependencies
-
-    - save_cache:
-        paths:
-        - ~/.gradle
-        key: v1-dependencies-{{ checksum "build.gradle" }}
+        key: v1-cache-{{ checksum "build.gradle" }}-{{ checksum  "go/build.gradle" }}-{{ checksum  "versions.gradle" }}
+    - run:
+        name: Copy Required Gradle Properties
+        command: source setupGradleProperties.sh && copyEnvVarsToGradleProperties
     - run:
         name: Clean Project
         command: ./gradlew clean
     - run:
-        name: Build Debug APK
+        name: Build Dev Debug APK
         command: ./gradlew assembleDebug
+    - persist_to_workspace:
+        root: /home/circleci/
+        paths:
+        - src/
+    - store_artifacts:
+        path: ~/src/go/build/outputs/apk/debug/
+        destination: apk
+
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+     - run: |
+        echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+        gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+        gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+  test:
+    <<: *defaults
+
+    steps:
+    - checkout
     - run:
          name: Store Google Service Account
          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
@@ -47,11 +60,18 @@ jobs:
         name: Test with Firebase Test Lab
         command: >
           sudo gcloud firebase test android run
-            --robo ./build/outputs/apk/debug/app-debug.apk
-            --test ./build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            --app apk/app-debug.apk
+            --test apk/app-debug.apk
             --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
     - run:
         name: Install gsutil dependency and copy test results data
         command: |
           sudo pip install -U crcmod
           sudo gsutil -m cp -r -U `sudo gsutil ls gs://[staging.pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+
+workflows:
+  build_and_test:
+    jobs:
+    - build
+    - deploy
+    - test

@@ -88,6 +88,8 @@ jobs:
           sudo gsutil -m cp -r -U `sudo gsutil ls gs://[pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
   bash:
+    <<: *defaults
+
     steps:
       - run:
           name: Current Dir

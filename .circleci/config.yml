@@ -97,7 +97,7 @@ jobs:
         command: |
           pwd |
           ls -l |
-          cd app/build/outputs/apk/debug |
+          cd app |
           ls -l
 
 

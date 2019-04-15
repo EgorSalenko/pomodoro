@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "204404975588",
+    "firebase_url": "https://pomodoro-f4d90.firebaseio.com",
+    "project_id": "pomodoro-f4d90",
+    "storage_bucket": "pomodoro-f4d90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204404975588:android:1bb638eeb2d75884",
+        "android_client_info": {
+          "package_name": "io.esalenko.pomadoro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204404975588-l800tgoiobue5h7grmn7crobgbglvr4s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.esalenko.pomadoro",
+            "certificate_hash": "35aca8055dbedda91e731fa8b286571f14fc5d6a"
+          }
+        },
+        {
+          "client_id": "204404975588-hunri00u35846pmg05akl01arc2as68s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmZpuKVYpa01lhLBUi6WtmkcoN_8T_r2c"
+        },
+        {
+          "current_key": "AIzaSyC_MUfv10DXkLJJiN-6lIffmKy3v067EV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204404975588-hunri00u35846pmg05akl01arc2as68s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

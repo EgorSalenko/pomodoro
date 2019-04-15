@@ -105,13 +105,13 @@ workflows:
   version: 2
   build_and_test:
     jobs:
+    - build
+    - buildInstrumentation
     - bash
-#    - build
-#    - buildInstrumentation
-#    - deploy:
-#        requires:
-#          - build
-#          - buildInstrumentation
-#    - test:
-#        requires:
-#          - deploy
+    - deploy:
+        requires:
+          - build
+          - buildInstrumentation
+    - test:
+        requires:
+          - deploy

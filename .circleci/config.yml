@@ -88,14 +88,15 @@ jobs:
           sudo gsutil -m cp -r -U `sudo gsutil ls gs://[pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
   bash:
-    <<: *defaults
-
-    steps:
-      - run:
+    shellcheck:
+      docker:
+        - image: koalaman/shellcheck-alpine:stable
+      steps:
+        - run:
           name: Current Dir
           command: |
-                      pwd |
-                      ls -l
+            pwd |
+            ls -l
 
 
 workflows:
@@ -103,12 +104,12 @@ workflows:
   build_and_test:
     jobs:
     - bash
-    - build
-    - buildInstrumentation
-    - deploy:
-        requires:
-          - build
-          - buildInstrumentation
-    - test:
-        requires:
-          - deploy
+#    - build
+#    - buildInstrumentation
+#    - deploy:
+#        requires:
+#          - build
+#          - buildInstrumentation
+#    - test:
+#        requires:
+#          - deploy

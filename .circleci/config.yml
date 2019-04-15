@@ -43,9 +43,9 @@ jobs:
     - restore_cache:
         keys:
         - v1-dependencies-{{ checksum "build.gradle" }}
-    - run:
-        name: Clean Project
-        command: ./gradlew clean
+    #    - run:
+    #        name: Clean Project
+    #        command: ./gradlew clean
     - run:
         name: Build Instrumentation Debug APK
         command: ./gradlew assembleDebugAndroidTest
@@ -107,13 +107,13 @@ workflows:
     jobs:
     - build
     - buildInstrumentation
-    - deploy:
-        requires:
-          - build
-          - buildInstrumentation
     - bash:
         requires:
-          - deploy
+        - build
+        - buildInstrumentation
+    - deploy:
+        requires:
+        - bash
     - test:
         requires:
-          - bash
+        - deploy

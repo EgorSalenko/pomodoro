@@ -107,7 +107,10 @@ workflows:
     jobs:
     - build
     - buildInstrumentation
-    - bash
+    - bash:
+      requires:
+        - build
+        - buildInstrumentation
     - deploy:
         requires:
           - build

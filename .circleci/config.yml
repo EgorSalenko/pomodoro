@@ -31,7 +31,7 @@ jobs:
         - src/
     - store_artifacts:
         path: ~/src/app/build/outputs/apk/debug/
-        destination: apk
+        destination: ./
 
   deploy:
     docker:

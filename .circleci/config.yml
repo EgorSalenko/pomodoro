@@ -80,24 +80,18 @@ jobs:
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
     - run:
         name: Test with Firebase Test Lab
-        command: sudo gcloud firebase test android run --app ~/src/app/build/outputs/apk/debug/app-debug.apk --test ~/src/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
+        command: sudo gcloud firebase test android run --app src/app/build/outputs/apk/debug/app-debug.apk --test src/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
     - run:
         name: Install gsutil dependency and copy test results data
         command: |
           sudo pip install -U crcmod
           sudo gsutil -m cp -r -U `sudo gsutil ls gs://[pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
-  teCmd:
-    steps:
-      - run:
-          name: Test
-          command: pwd | ls
-
 workflows:
   version: 2
   build_and_test:
     jobs:
-    -teCmd
+    - teCmd
     - build
     - buildInstrumentation
     - deploy:

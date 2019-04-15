@@ -47,11 +47,11 @@ jobs:
         name: Test with Firebase Test Lab
         command: >
           sudo gcloud firebase test android run
-            --app <local_server_path>/<app_apk>.apk
-            --test <local_server_path>/<app_test_apk>.apk
+            --app ./build/outputs/apk/debug/app-debug.apk
+            --test ./build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
             --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
     - run:
         name: Install gsutil dependency and copy test results data
         command: |
           sudo pip install -U crcmod
-          sudo gsutil -m cp -r -U `sudo gsutil ls gs://[BUCKET_NAME]/[OBJECT_NAME] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+          sudo gsutil -m cp -r -U `sudo gsutil ls gs://[staging.pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true

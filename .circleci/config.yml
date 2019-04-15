@@ -93,10 +93,9 @@ jobs:
     steps:
       - run:
           name: Current Dir
-          commande: pwd
-      - run:
-          name: Folders
-          command: ls -l
+          command: |
+                      pwd |
+                      ls -l
 
 
 workflows:

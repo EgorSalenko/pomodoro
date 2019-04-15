@@ -13,8 +13,6 @@ jobs:
     <<: *defaults
 
     steps:
-    - attach_workspace:
-        at: /home/circleci/
     - checkout
     - restore_cache:
         keys:
@@ -26,7 +24,6 @@ jobs:
         name: Build Dev Debug APK
         command: ./gradlew assembleDebug
     - persist_to_workspace:
-        root: /home/circleci/
         paths:
         - src/
     - store_artifacts:
@@ -37,8 +34,6 @@ jobs:
     <<: *defaults
 
     steps:
-    - attach_workspace:
-        at: /home/circleci/
     - checkout
     - restore_cache:
         keys:
@@ -50,7 +45,6 @@ jobs:
         name: Build Instrumentation Debug APK
         command: ./gradlew assembleDebugAndroidTest
     - persist_to_workspace:
-        root: /home/circleci/
         paths:
         - src/
     - store_artifacts:
@@ -80,7 +74,7 @@ jobs:
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
     - run:
         name: Test with Firebase Test Lab
-        command: sudo gcloud firebase test android run --app src/app/build/outputs/apk/debug/app-debug.apk --test src/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
+        command: sudo gcloud firebase test android run --app app/build/outputs/apk/debug/app-debug.apk --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
     - run:
         name: Install gsutil dependency and copy test results data
         command: |

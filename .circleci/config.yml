@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - attach_workspace:
-        at: ./
+        at: /home/circleci/
     - checkout
     - restore_cache:
         keys:
@@ -26,7 +26,7 @@ jobs:
         name: Build Dev Debug APK
         command: ./gradlew assembleDebug
     - persist_to_workspace:
-        root: ./
+        root: /home/circleci/
         paths:
         - src/
     - store_artifacts:
@@ -38,7 +38,7 @@ jobs:
 
     steps:
     - attach_workspace:
-        at: ./
+        at: /home/circleci/
     - checkout
     - restore_cache:
         keys:
@@ -50,7 +50,7 @@ jobs:
         name: Build Instrumentation Debug APK
         command: ./gradlew assembleDebugAndroidTest
     - persist_to_workspace:
-        root: ./
+        root: /home/circleci/
         paths:
         - src/
     - store_artifacts:

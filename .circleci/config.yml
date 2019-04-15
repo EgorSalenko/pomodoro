@@ -13,6 +13,8 @@ jobs:
     <<: *defaults
 
     steps:
+    - attach_workspace:
+        at: ./
     - checkout
     - restore_cache:
         keys:
@@ -24,6 +26,7 @@ jobs:
         name: Build Dev Debug APK
         command: ./gradlew assembleDebug
     - persist_to_workspace:
+        root: ./
         paths:
         - src/
     - store_artifacts:
@@ -34,6 +37,8 @@ jobs:
     <<: *defaults
 
     steps:
+    - attach_workspace:
+        at: ./
     - checkout
     - restore_cache:
         keys:
@@ -45,6 +50,7 @@ jobs:
         name: Build Instrumentation Debug APK
         command: ./gradlew assembleDebugAndroidTest
     - persist_to_workspace:
+        root: ./
         paths:
         - src/
     - store_artifacts:

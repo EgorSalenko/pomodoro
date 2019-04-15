@@ -31,7 +31,31 @@ jobs:
         - src/
     - store_artifacts:
         path: ~/src/app/build/outputs/apk/debug/
-        destination: ./
+        destination: apk
+
+  buildInstrumentation:
+    <<: *defaults
+
+    steps:
+    - attach_workspace:
+        at: /home/circleci/
+    - checkout
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "build.gradle" }}
+    - run:
+        name: Clean Project
+        command: ./gradlew clean
+    - run:
+        name: Build Instrumentation Debug APK
+        command: ./gradlew assembleDebug
+    - persist_to_workspace:
+        root: /home/circleci/
+        paths:
+        - src/
+    - store_artifacts:
+        path: ~/src/app/build/outputs/apk/androidTest/debug/
+        destination: apk/test
 
   deploy:
     docker:
@@ -56,7 +80,7 @@ jobs:
             sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
     - run:
         name: Test with Firebase Test Lab
-        command: sudo gcloud firebase test android run --app home/circleci/src/app/build/outputs/apk/debug/app-debug.apk --test home/circleci/src/app/build/outputs/apk/debug/app-debug.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
+        command: sudo gcloud firebase test android run --app apk/app-debug.apk --test apk/test/app-debug.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID} --type instrumentation
     - run:
         name: Install gsutil dependency and copy test results data
         command: |
@@ -68,6 +92,7 @@ workflows:
   build_and_test:
     jobs:
     - build
+    - buildInstrumentation
     - deploy:
         requires:
           - build

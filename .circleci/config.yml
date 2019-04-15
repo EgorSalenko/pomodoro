@@ -15,8 +15,10 @@ jobs:
     steps:
     - attach_workspace:
         at: /home/circleci/
+    - checkout
     - restore_cache:
-        key: v1-cache-{{ checksum "build.gradle" }}
+        keys:
+        - v1-dependencies-{{ checksum "build.gradle" }}
     - run:
         name: Clean Project
         command: ./gradlew clean
@@ -44,7 +46,6 @@ jobs:
     <<: *defaults
 
     steps:
-    - checkout
     - run:
          name: Store Google Service Account
          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json

@@ -96,6 +96,8 @@ jobs:
         name: Current Dir
         command: |
           pwd |
+          ls -l |
+          cd app/build/outputs/apk/debug |
           ls -l
 
 

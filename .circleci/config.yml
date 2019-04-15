@@ -61,6 +61,7 @@ jobs:
             --app /home/circleci/src/app/build/outputs/apk/debug/app-debug.apk
             --test /home/circleci/src/app/build/outputs/apk/debug/app-debug.apk
             --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
+            --type robo
     - run:
         name: Install gsutil dependency and copy test results data
         command: |

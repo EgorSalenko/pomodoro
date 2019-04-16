@@ -98,7 +98,7 @@ jobs:
         name: Current Dir
         command: |
           pwd |
-          ls -l ../..
+          ls -l ../home
 
 
 workflows:

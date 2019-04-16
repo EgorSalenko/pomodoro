@@ -99,7 +99,7 @@ jobs:
         name: Install gsutil dependency and copy test results data
         command: |
           sudo pip install -U crcmod
-          sudo gsutil -m cp -r -U `sudo gsutil ls gs://[pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+          sudo gsutil -m cp -r -U `sudo gsutil ls gs://pomodoro-f4d90.appspot.com/test-result-data | tail -1` ${CIRCLE_ARTIFACTS}/ | true
 
   bash:
     docker:

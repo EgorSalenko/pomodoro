@@ -29,6 +29,7 @@ jobs:
         root: /home/circleci/
         paths:
         - src/
+        destination: app/build/outputs/apk/debug/
     - store_artifacts:
         path: ~/src/app/build/outputs/apk/debug/
         destination: apk
@@ -53,6 +54,7 @@ jobs:
         root: /home/circleci/
         paths:
         - src/
+        destination: app/build/outputs/apk/androidTest/debug/
     - store_artifacts:
         path: ~/src/app/build/outputs/apk/androidTest/debug/
         destination: apk/test

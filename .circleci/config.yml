@@ -25,3 +25,8 @@ jobs:
         command: |
           sudo pip install -U crcmod
           sudo gsutil -m cp -r -U `sudo gsutil ls gs://[pomodoro-f4d90.appspot.com]/[test-result-data] | tail -1` ${CIRCLE_ARTIFACTS}/ | true
+
+workflows:
+  build_and_test:
+    jobs:
+    - test

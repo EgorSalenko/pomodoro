@@ -96,11 +96,7 @@ jobs:
         name: Current Dir
         command: |
           pwd |
-          ls -l |
-          chmod 755 app |
-          ls -l app/src/androidTest |
-          ls -l app/src/androidTest |
-          ls -l app/src/test
+          ls -l
 
 
 workflows:

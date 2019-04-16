@@ -95,8 +95,7 @@ jobs:
     - run:
         name: Current Dir
         command: |
-          pwd |
-          ls -l
+          ls -l app
 
 
 workflows:

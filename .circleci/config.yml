@@ -24,7 +24,7 @@ jobs:
         command: ./gradlew clean
     - run:
         name: Build Dev Debug APK
-        command: ./gradlew build
+        command: ./gradlew assambleDebug
     - persist_to_workspace:
         root: /home/circleci/
         paths:
@@ -72,11 +72,17 @@ jobs:
     docker:
     - image: circleci/android:api-28-alpha  # gcloud is baked into this image
     steps:
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "build.gradle" }}
+    - run:
+        name: Clean Project
+        command: ./gradlew clean
     - run:
         name: Build debug APK and release APK
         command: |
-          ./gradlew :app:assembleDebug
-          ./gradlew :app:assembleDebugAndroidTest
+          ./gradlew assembleDebug
+          ./gradlew assembleDebugAndroidTest
     - run:
         name: Store Google Service Account
         command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json

@@ -24,7 +24,7 @@ jobs:
         command: ./gradlew clean
     - run:
         name: Build Dev Debug APK
-        command: ./gradlew assembleDebug
+        command: ./gradlew build
     - persist_to_workspace:
         root: /home/circleci/
         paths:
@@ -44,9 +44,9 @@ jobs:
     - restore_cache:
         keys:
         - v1-dependencies-{{ checksum "build.gradle" }}
-    #    - run:
-    #        name: Clean Project
-    #        command: ./gradlew clean
+        - run:
+            name: Clean Project
+            command: ./gradlew clean
     - run:
         name: Build Instrumentation Debug APK
         command: ./gradlew assembleDebugAndroidTest
@@ -98,7 +98,7 @@ jobs:
         name: Current Dir
         command: |
           pwd |
-          ls -l ..
+          ls -l app
 
 
 workflows:

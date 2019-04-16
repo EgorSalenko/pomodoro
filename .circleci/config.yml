@@ -34,31 +34,6 @@ jobs:
         path: ~/src/app/build/outputs/apk/debug/
         destination: apk
 
-  buildInstrumentation:
-    <<: *defaults
-
-    steps:
-    - attach_workspace:
-        at: /home/circleci/
-    - checkout
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.gradle" }}
-    - run:
-        name: Clean Project
-        command: ./gradlew clean
-    - run:
-        name: Build Instrumentation Debug APK
-        command: ./gradlew assembleDebugAndroidTest
-    - persist_to_workspace:
-        root: /home/circleci/
-        paths:
-        - src/
-        destination: app/build/outputs/apk/androidTest/debug/
-    - store_artifacts:
-        path: ~/src/app/build/outputs/apk/androidTest/debug/
-        destination: apk/test
-
   deploy:
     docker:
     - image: google/cloud-sdk
@@ -117,11 +92,9 @@ workflows:
   build_and_test:
     jobs:
     - build
-    - buildInstrumentation
 #    - deploy:
 #        requires:
 #        - build
-#        - buildInstrumentation
 #    - test:
 #        requires:
 #        - deploy

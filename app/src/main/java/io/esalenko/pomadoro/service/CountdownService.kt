@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
@@ -69,7 +70,12 @@ class CountdownService : Service(), KoinComponent {
         val isPause = sharedPreferenceManager.isPause
         // TODO :: Extract strings into resources
         val notification: Notification? =
-            localNotificationManager.createNotification(this, "Session in progress", "Working session", REQUEST_CODE)
+            localNotificationManager.createNotification(
+                this,
+                getString(R.string.session_in_progress),
+                getString(R.string.working_session),
+                REQUEST_CODE
+            )
 
         startForeground(NOTIFICATION_ID, notification)
 
@@ -123,7 +129,7 @@ class CountdownService : Service(), KoinComponent {
 
                 notificationBuilder
                     .setSound(null)
-                    .setContentText("Timer remaining : $time")
+                    .setContentText(getString(R.string.timer_remaining, time))
 
                 notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 

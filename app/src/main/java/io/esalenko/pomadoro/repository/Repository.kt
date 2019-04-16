@@ -1,13 +1,15 @@
 package io.esalenko.pomadoro.repository
 
+import io.reactivex.Maybe
+
 
 interface Repository<Item> {
 
-    fun getAll() : List<Item>
+    fun getAll(): Maybe<List<Item>>
 
-    fun get(id : Long) : Item
+    fun get(id: Long): Maybe<Item>
 
-    fun get(item : Item) : Item
+    fun get(item: Item): Maybe<Item>
 
     fun add(item : Item)
 

@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">Pomadoro</string>
-    
+
+    <string name="task_duration">Duration : %d m</string>
+    <string name="task_date">Date : %s</string>
+    <string name="session_in_progress">Session in progress</string>
+    <string name="working_session">Working session</string>
+    <string name="timer_remaining">Timer remaining : %s</string>
+    <string name="session">Session : %d</string>
+
+
     <string-array name="work_timer_duration">
         <item>1</item>
         <item>5</item>

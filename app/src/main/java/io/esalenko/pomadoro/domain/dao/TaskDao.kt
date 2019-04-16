@@ -1,7 +1,11 @@
 package io.esalenko.pomadoro.domain.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import io.esalenko.pomadoro.domain.model.Task
+import io.reactivex.Maybe
 
 @Dao
 interface TaskDao {
@@ -10,10 +14,10 @@ interface TaskDao {
     fun insert(task: Task)
 
     @Query("select * from task_table")
-    fun getAll(): List<Task>
+    fun getAll(): Maybe<List<Task>>
 
     @Query("select * from task_table where id =:id")
-    fun get(id: Long): Task
+    fun get(id: Long): Maybe<Task>
 
     @Query("delete from task_table where id=:id")
     fun delete(id: Long)

@@ -24,7 +24,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private var isPause: Boolean = false
 
     private var countdownService: CountdownService? = null
-    lateinit var viewModel: SharedCountdownViewModel
+    private lateinit var viewModel: SharedCountdownViewModel
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
 

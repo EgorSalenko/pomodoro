@@ -6,7 +6,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 
-val persistencemodule = module {
+val persistenceModule = module {
     single { LocalRoomDatabase.getInstance(androidContext()) }
     single { SharedPreferenceManager(get()) }
 }

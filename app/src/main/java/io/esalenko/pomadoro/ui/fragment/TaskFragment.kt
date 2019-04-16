@@ -11,11 +11,11 @@ import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 
 class TaskFragment : BaseFragment() {
 
-    private lateinit var viewModel: SharedCountdownViewModel
-
     companion object {
         const val TAG = "TaskFragment"
     }
+
+    private lateinit var viewModel: SharedCountdownViewModel
 
     override val layoutRes: Int
         get() = R.layout.fragment_task

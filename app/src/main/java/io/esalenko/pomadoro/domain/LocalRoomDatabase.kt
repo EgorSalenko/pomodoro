@@ -12,7 +12,7 @@ abstract class LocalRoomDatabase : RoomDatabase() {
 
     companion object {
 
-        private val DB_NAME = "pomodoro_local_db"
+        private const val DB_NAME = "pomadoro_local_db"
 
         @Volatile
         @JvmStatic

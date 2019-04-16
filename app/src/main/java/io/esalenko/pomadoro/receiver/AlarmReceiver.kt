@@ -19,8 +19,8 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val localNotifcationManager: LocalNotificationManager = get()
-        val notification: Notification? = localNotifcationManager.createNotification(
+        val localNotificationManager: LocalNotificationManager = get()
+        val notification: Notification? = localNotificationManager.createNotification(
             context,
             "Session has been finished",
             "Your session has been finished",

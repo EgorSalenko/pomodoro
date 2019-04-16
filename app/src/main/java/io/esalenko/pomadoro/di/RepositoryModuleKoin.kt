@@ -4,6 +4,6 @@ import io.esalenko.pomadoro.repository.TaskRepository
 import org.koin.dsl.module
 
 
-val repositorymodule = module {
+val repositoryModule = module {
     single { TaskRepository(get()) }
 }

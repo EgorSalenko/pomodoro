@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 class SettingsActivity : BaseActivity() {
 
-    var sharedPreferenceManager: SharedPreferenceManager = get()
+    private var sharedPreferenceManager: SharedPreferenceManager = get()
 
     private lateinit var workTimerDuration: String
     private lateinit var shortPauseDuration: String
@@ -103,7 +103,7 @@ class SettingsActivity : BaseActivity() {
     }
 
     companion object {
-        val TAG = SettingsActivity.javaClass.simpleName
+        const val TAG = "SettingsActivity"
 
         @JvmStatic
         fun Context.createSettingsActivityIntent(): Intent {

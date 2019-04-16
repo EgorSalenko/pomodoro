@@ -10,14 +10,14 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
     companion object {
         const val SHARED_PREFERENCE_NAME = "local_shared_preference"
 
-        const val LONG_COOLDOWN_SESSION = 4
-
         const val KEY_TIMER_DURATION = "key_timer_duration"
         const val KEY_IS_PAUSE = "key_is_pause"
         const val KEY_SHORT_COOLDOWN_TIMESTAMP = "key_short_cooldown_timestamp"
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
         const val KEY_SESSIONS_COUNTER = "key_sessions_counter"
         const val KEY_CACHED_TASK_DESCRIPTION = "key_cached_task_description"
+
+        const val LONG_COOLDOWN_SESSION = 4
 
         var DEFAULT_TIMER_TIMESTAMP = TimeUnit.MINUTES.toMillis(25)
 
@@ -86,7 +86,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         _sessionsCounter++
     }
 
-    val isLongCooldownSession: Boolean
+    private val isLongCooldownSession: Boolean
         get() = _sessionsCounter == LONG_COOLDOWN_SESSION
 
 

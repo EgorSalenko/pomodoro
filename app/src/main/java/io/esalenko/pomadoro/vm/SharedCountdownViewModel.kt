@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import org.koin.core.KoinComponent
 
 
-class SharedCountdownViewModel() : ViewModel(), KoinComponent {
+class SharedCountdownViewModel : ViewModel(), KoinComponent {
 
     private val _timerLiveData = MutableLiveData<String>()
     val timerLiveData: LiveData<String>

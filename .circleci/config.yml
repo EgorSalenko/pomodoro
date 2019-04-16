@@ -24,7 +24,7 @@ jobs:
         command: ./gradlew clean
     - run:
         name: Build Dev Debug APK
-        command: ./gradlew assambleDebug
+        command: ./gradlew assembleDebug
     - persist_to_workspace:
         root: /home/circleci/
         paths:

@@ -97,7 +97,8 @@ jobs:
     - run:
         name: Current Dir
         command: |
-          pwd
+          pwd |
+          ls -l root/project
 
 
 workflows:

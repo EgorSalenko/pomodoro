@@ -2,9 +2,8 @@ package io.esalenko.pomadoro.repository
 
 import io.esalenko.pomadoro.domain.dao.TaskDao
 import io.esalenko.pomadoro.domain.model.Task
-import javax.inject.Inject
 
-class TaskRepository @Inject constructor(private val taskDao: TaskDao) : Repository<Task> {
+class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
 
     override fun getAll(): List<Task> {
         return taskDao.getAll()
@@ -19,19 +18,19 @@ class TaskRepository @Inject constructor(private val taskDao: TaskDao) : Reposit
     }
 
     override fun add(item: Task) {
-        return taskDao.insert(item)
+        taskDao.insert(item)
     }
 
     override fun delete(id: Long) {
-        return taskDao.delete(id)
+        taskDao.delete(id)
     }
 
     override fun delete(item: Task) {
-        return taskDao.delete(item.id)
+        taskDao.delete(item.id)
     }
 
     override fun deleteAll() {
-        return taskDao.deleteAll()
+        taskDao.deleteAll()
     }
 
 }

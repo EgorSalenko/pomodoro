@@ -3,10 +3,10 @@ package io.esalenko.pomadoro.vm
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import javax.inject.Inject
+import org.koin.core.KoinComponent
 
 
-class SharedCountdownViewModel @Inject constructor() : ViewModel() {
+class SharedCountdownViewModel() : ViewModel(), KoinComponent {
 
     private val _timerLiveData = MutableLiveData<String>()
     val timerLiveData: LiveData<String>

@@ -7,7 +7,7 @@ import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.ui.BaseFragment
 import io.esalenko.pomadoro.vm.SharedCountdownViewModel
 import kotlinx.android.synthetic.main.fragment_work_timer.*
-
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 
 class WorkTimerFragment : BaseFragment() {
 
@@ -22,11 +22,7 @@ class WorkTimerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = activity?.run {
-            this.getSharedViewModel(SharedCountdownViewModel::class)
-        } ?: throw NoSuchElementException("Activity for fragment ${WorkTimerFragment::class.simpleName} not found")
-
+        viewModel = getSharedViewModel()
         subscribeUi()
     }
 

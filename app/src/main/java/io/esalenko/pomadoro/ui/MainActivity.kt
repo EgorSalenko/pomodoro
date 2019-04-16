@@ -14,6 +14,7 @@ import io.esalenko.pomadoro.ui.fragment.TaskFragment
 import io.esalenko.pomadoro.ui.fragment.WorkTimerFragment
 import io.esalenko.pomadoro.vm.SharedCountdownViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
@@ -27,7 +28,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private var isPause: Boolean = false
 
     private var countdownService: CountdownService? = null
-    private lateinit var viewModel: SharedCountdownViewModel
+    lateinit var viewModel: SharedCountdownViewModel
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
 
@@ -57,7 +58,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = getSharedViewModel(SharedCountdownViewModel::class)
+        viewModel = getViewModel()
 
         if (savedInstanceState == null) {
             if (isRunning) {
@@ -112,15 +113,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
             viewModel.updateStatus("You must concentrate on your work now")
         }
-/*
-
-        if (isRunning) {
-            showWorkTimerFragment()
-        } else {
-            showTaskFragment()
-        }
-*/
-
     }
 
     private fun showWorkTimerFragment() {
@@ -158,7 +150,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     override fun onStop() {
         super.onStop()

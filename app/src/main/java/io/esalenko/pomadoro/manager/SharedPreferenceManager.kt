@@ -3,10 +3,9 @@ package io.esalenko.pomadoro.manager
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 
-class SharedPreferenceManager @Inject constructor(private val sharedPreferences: SharedPreferences) {
+class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) {
 
     companion object {
         const val SHARED_PREFERENCE_NAME = "local_shared_preference"
@@ -15,7 +14,6 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
 
         const val KEY_TIMER_DURATION = "key_timer_duration"
         const val KEY_IS_PAUSE = "key_is_pause"
-        const val KEY_TIMER_TIMESTAMP = "key_timer_timestamp"
         const val KEY_SHORT_COOLDOWN_TIMESTAMP = "key_short_cooldown_timestamp"
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
         const val KEY_SESSIONS_COUNTER = "key_sessions_counter"
@@ -34,15 +32,6 @@ class SharedPreferenceManager @Inject constructor(private val sharedPreferences:
         )
         set(value) = sharedPreferences.edit {
             putBoolean(KEY_IS_PAUSE, value)
-        }
-
-    var timerTimestamp: Long
-        get() = sharedPreferences.getLong(
-            KEY_TIMER_TIMESTAMP,
-            0L
-        )
-        set(value) = sharedPreferences.edit {
-            putLong(KEY_TIMER_TIMESTAMP, value)
         }
 
     var timerDuration: Long

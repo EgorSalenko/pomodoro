@@ -11,14 +11,13 @@ import androidx.annotation.ArrayRes
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import kotlinx.android.synthetic.main.activity_settings.*
+import org.koin.android.ext.android.get
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 
 class SettingsActivity : BaseActivity() {
 
-    @Inject
-    lateinit var sharedPreferenceManager: SharedPreferenceManager
+    var sharedPreferenceManager: SharedPreferenceManager = get()
 
     private lateinit var workTimerDuration: String
     private lateinit var shortPauseDuration: String

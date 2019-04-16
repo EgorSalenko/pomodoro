@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import dagger.android.AndroidInjection
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
@@ -18,16 +17,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.KoinComponent
+import org.koin.core.get
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class CountdownService : Service() {
+class CountdownService : Service(), KoinComponent {
 
-    @Inject
-    lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private var sharedPreferenceManager: SharedPreferenceManager = get()
 
-    @Inject
-    lateinit var localNotificationManager: LocalNotificationManager
+    private var localNotificationManager: LocalNotificationManager = get()
 
     private lateinit var notificationManager: NotificationManager
 
@@ -56,7 +54,6 @@ class CountdownService : Service() {
     }
 
     override fun onCreate() {
-        AndroidInjection.inject(this)
         super.onCreate()
         notificationManager = getSystemService(NotificationManager::class.java)
         this.notificationBuilder = localNotificationManager.notificationBuilder
@@ -73,7 +70,6 @@ class CountdownService : Service() {
         // TODO :: Extract strings into resources
         val notification: Notification? =
             localNotificationManager.createNotification(this, "Session in progress", "Working session", REQUEST_CODE)
-
 
         startForeground(NOTIFICATION_ID, notification)
 

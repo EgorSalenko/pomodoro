@@ -5,15 +5,14 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import dagger.android.AndroidInjection
 import io.esalenko.pomadoro.manager.LocalNotificationManager
-import javax.inject.Inject
+import org.koin.core.KoinComponent
+import org.koin.core.get
 
 
-class AlarmReceiver : BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject
-    lateinit var localNotifcationManager: LocalNotificationManager
+    private var localNotifcationManager: LocalNotificationManager = get()
 
     companion object {
         private const val REQUEST_CODE = 6003
@@ -21,7 +20,6 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        AndroidInjection.inject(this, context)
         val notification: Notification? = localNotifcationManager.createNotification(
             context,
             "Session has been finished",

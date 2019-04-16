@@ -12,7 +12,6 @@ import org.koin.core.get
 
 class AlarmReceiver : BroadcastReceiver(), KoinComponent {
 
-    private var localNotifcationManager: LocalNotificationManager = get()
 
     companion object {
         private const val REQUEST_CODE = 6003
@@ -20,6 +19,7 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        val localNotifcationManager: LocalNotificationManager = get()
         val notification: Notification? = localNotifcationManager.createNotification(
             context,
             "Session has been finished",

@@ -8,10 +8,9 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.ui.MainActivity
-import javax.inject.Inject
 
 
-class LocalNotificationManager @Inject constructor(ctx: Context) {
+class LocalNotificationManager(ctx: Context) {
 
     companion object {
         private const val CHANNEL_ID = "countdown_service_notification_channel_id"

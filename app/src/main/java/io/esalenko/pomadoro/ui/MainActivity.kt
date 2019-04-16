@@ -18,10 +18,6 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-    override fun isOnPause(isPause: Boolean) {
-        this.isPause = isPause
-    }
-
     private var isBound: Boolean = false
     private var isRunning: Boolean = false
 
@@ -135,6 +131,14 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onSessionCounterUpdate(sessions: Int) {
         viewModel.updateSessions(sessions)
         updateView(isRunning)
+    }
+
+    override fun countdownFinished() {
+        showTaskFragment()
+    }
+
+    override fun isOnPause(isPause: Boolean) {
+        this.isPause = isPause
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {

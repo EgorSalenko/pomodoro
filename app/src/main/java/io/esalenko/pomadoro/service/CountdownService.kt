@@ -102,6 +102,7 @@ class CountdownService : Service(), KoinComponent {
                 callback.onSessionCounterUpdate(
                     sharedPreferenceManager.sessionCounter
                 )
+                callback.countdownFinished()
                 LocalAlarmManager.startAlarm(this)
                 stopForeground(true)
                 stopSelf()
@@ -159,5 +160,7 @@ class CountdownService : Service(), KoinComponent {
         fun onTimerStatusChanged(isTimerProcessing: Boolean)
 
         fun onSessionCounterUpdate(sessions: Int)
+
+        fun countdownFinished()
     }
 }

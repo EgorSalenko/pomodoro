@@ -6,6 +6,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
+import com.afollestad.materialdialogs.MaterialDialog
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
@@ -13,6 +14,7 @@ import io.esalenko.pomadoro.ui.SettingsActivity.Companion.createSettingsActivity
 import io.esalenko.pomadoro.ui.fragment.TaskFragment
 import io.esalenko.pomadoro.ui.fragment.WorkTimerFragment
 import io.esalenko.pomadoro.vm.SharedCountdownViewModel
+import io.esalenko.pomadoro.vm.TaskViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -25,6 +27,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     private var countdownService: CountdownService? = null
     private lateinit var viewModel: SharedCountdownViewModel
+    private lateinit var taskViewModel: TaskViewModel
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
 
@@ -55,6 +58,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         super.onCreate(savedInstanceState)
 
         viewModel = getViewModel()
+        taskViewModel = getViewModel()
 
         if (savedInstanceState == null) {
             if (isRunning) {
@@ -73,11 +77,26 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
         timerButton.setOnClickListener {
             if (isRunning) {
-                stopCountdown()
-                showTaskFragment()
+                showTimerDialog()
             } else {
                 startCountdown()
                 showWorkTimerFragment()
+            }
+        }
+    }
+
+    private fun showTimerDialog() {
+        MaterialDialog(this).show {
+            title(R.string.dialog_title)
+            message(R.string.dialog_message)
+            negativeButton(android.R.string.no) { dialog ->
+                stopCountdown()
+                showTaskFragment()
+            }
+            positiveButton(android.R.string.yes) { dialog ->
+                stopCountdown()
+                showTaskFragment()
+                taskViewModel.saveTask()
             }
         }
     }

@@ -1,8 +1,11 @@
 package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.ui.BaseFragment
@@ -29,11 +32,14 @@ class TaskFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedCountdownViewModel = getSharedViewModel()
+
         taskViewModel = getViewModel()
 
         taskAdapter = TaskAdapter()
         tasksRecycler.adapter = taskAdapter
+        tasksRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         subscribeUi()
+        observeTaskEditText()
     }
 
     private fun subscribeUi() {
@@ -50,4 +56,20 @@ class TaskFragment : BaseFragment() {
         }
     }
 
+    private fun observeTaskEditText() {
+        inputTaskDescription.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(sequence: CharSequence?, start: Int, before: Int, count: Int) {
+                taskViewModel.cacheTask(sequence.toString())
+            }
+
+        })
+    }
 }

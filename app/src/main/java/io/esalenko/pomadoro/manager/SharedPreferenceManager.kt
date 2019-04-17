@@ -76,7 +76,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
     var cachedTaskDescription: String
         get() =
             sharedPreferences
-                .getString(KEY_SESSIONS_COUNTER, "Task Description is empty")
+                .getString(KEY_CACHED_TASK_DESCRIPTION, "Task Description is empty")
                 ?: "Task Description is empty"
         set(value) = sharedPreferences.edit {
             putString(KEY_CACHED_TASK_DESCRIPTION, value)

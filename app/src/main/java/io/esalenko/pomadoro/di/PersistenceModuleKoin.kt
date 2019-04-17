@@ -9,4 +9,5 @@ import org.koin.dsl.module
 val persistenceModule = module {
     single { LocalRoomDatabase.getInstance(androidContext()) }
     single { SharedPreferenceManager(get()) }
+    single { LocalRoomDatabase.getInstance(androidContext()).taskDao }
 }

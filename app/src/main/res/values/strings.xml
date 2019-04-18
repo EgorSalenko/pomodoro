@@ -9,7 +9,7 @@
     <string name="session">Session : %d</string>
     <string name="dialog_title">Timer session is finished</string>
     <string name="dialog_message">Your session in stopped! Are you want to finish current task?</string>
-    <string name="task_popup_tip">For highest productivity you must to specify your task</string>
+    <string name="task_popup_tip">For highest productivity you must to specify your task:</string>
 
     <string-array name="work_timer_duration">
         <item>1</item>

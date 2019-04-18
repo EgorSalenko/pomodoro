@@ -21,8 +21,8 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
     private var isBound: Boolean = false
-    private var isRunning: Boolean = false
 
+    private var isRunning: Boolean = false
     private var isPause: Boolean = false
 
     private var countdownService: CountdownService? = null
@@ -110,8 +110,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     private fun startCountdown() {
-        // TODO :: Invoke Task View Model and persist task description into DB
-//        viewModel.setTaskDescription(et_main_activity.text.toString())
         countdownService?.startTimer()
     }
 
@@ -120,7 +118,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     private fun updateView(isRunning : Boolean) {
-
         if (isPause) {
             timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
             viewModel.updateStatus("Take some rest")
@@ -154,6 +151,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     override fun countdownFinished() {
         showTaskFragment()
+        showTimerDialog()
     }
 
     override fun isOnPause(isPause: Boolean) {

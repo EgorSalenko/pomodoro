@@ -37,7 +37,7 @@ class TaskFragment : BaseFragment() {
 
         taskAdapter = TaskAdapter()
         tasksRecycler.adapter = taskAdapter
-        tasksRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        tasksRecycler.layoutManager = LinearLayoutManager(context)
         subscribeUi()
         observeTaskEditText()
     }

@@ -12,13 +12,13 @@
             android:layout_height="match_parent"/>
     
     <com.google.android.material.bottomappbar.BottomAppBar
-            style="@style/BottomAppBar"
             android:id="@+id/bottomAppBar"
+            android:elevation="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            app:popupTheme="@color/colorAccent"
+            app:popupTheme="@color/secondaryColor"
             app:fabAlignmentMode="center"
             app:hideOnScroll="true"/>
 
@@ -26,7 +26,7 @@
             android:id="@+id/timerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:backgroundTint="@color/colorPrimaryDark"
+            app:backgroundTint="@color/primaryDarkColor"
             app:fabSize="normal"
             app:layout_anchor="@id/bottomAppBar"
             tools:src="@drawable/ic_round_timer_24px"/>

@@ -25,7 +25,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_margin="5dp"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/primaryDarkColor"
                     tools:text="Duration : 25m"/>
 
             <TextView
@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/primaryDarkColor"
                     tools:text="Date : 01/01/01"/>
 
         </LinearLayout>
@@ -48,7 +48,7 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/primaryDarkColor"
                 tools:text="Task description"/>
 
     </LinearLayout>

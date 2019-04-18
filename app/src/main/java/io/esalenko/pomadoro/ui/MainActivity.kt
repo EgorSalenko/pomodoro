@@ -96,7 +96,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             positiveButton(android.R.string.yes) { dialog ->
                 stopCountdown()
                 showTaskFragment()
-                taskViewModel.saveTask()
             }
         }
     }

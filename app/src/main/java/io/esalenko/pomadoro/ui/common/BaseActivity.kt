@@ -1,13 +1,15 @@
-package io.esalenko.pomadoro.ui
+package io.esalenko.pomadoro.ui.common
 
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import org.jetbrains.anko.AnkoLogger
+import org.koin.core.KoinComponent
 
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

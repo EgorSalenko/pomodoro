@@ -7,7 +7,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.ui.MainActivity
+import io.esalenko.pomadoro.ui.activity.MainActivity
 
 
 class LocalNotificationManager(ctx: Context) {

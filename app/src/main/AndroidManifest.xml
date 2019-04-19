@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.MainActivity"
+        <activity android:name=".ui.activity.MainActivity"
                   android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.SettingsActivity"/>
+        <activity android:name=".ui.activity.TimerActivity"/>
 
         <service android:name=".service.CountdownService"
                  android:exported="false"/>

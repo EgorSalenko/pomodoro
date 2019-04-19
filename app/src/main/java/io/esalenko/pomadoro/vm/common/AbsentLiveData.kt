@@ -1,4 +1,4 @@
-package io.esalenko.pomadoro.vm
+package io.esalenko.pomadoro.vm.common
 
 import androidx.lifecycle.LiveData
 

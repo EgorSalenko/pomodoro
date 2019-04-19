@@ -12,7 +12,6 @@ import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.SettingsActivity.Companion.createSettingsActivityIntent
 import io.esalenko.pomadoro.ui.fragment.TaskFragment
-import io.esalenko.pomadoro.ui.fragment.WorkTimerFragment
 import io.esalenko.pomadoro.vm.SharedCountdownViewModel
 import io.esalenko.pomadoro.vm.TaskViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,17 +19,18 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-    private var isBound: Boolean = false
-
     private var isRunning: Boolean = false
     private var isPause: Boolean = false
+    private var isBound: Boolean = false
 
     private var countdownService: CountdownService? = null
-    private lateinit var viewModel: SharedCountdownViewModel
+    private lateinit var sharedCountdownViewModel: SharedCountdownViewModel
     private lateinit var taskViewModel: TaskViewModel
 
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+    override val layoutRes: Int
+        get() = R.layout.activity_main
 
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
             countdownService = countdownBinder.countdownService
@@ -42,11 +42,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         override fun onServiceDisconnected(name: ComponentName?) {
             isBound = false
         }
-
     }
-
-    override val layoutRes: Int
-        get() = R.layout.activity_main
 
     override fun onStart() {
         super.onStart()
@@ -57,15 +53,11 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = getViewModel()
+        sharedCountdownViewModel = getViewModel()
         taskViewModel = getViewModel()
 
         if (savedInstanceState == null) {
-            if (isRunning) {
-                showWorkTimerFragment()
-            } else {
-                showTaskFragment()
-            }
+            showTaskFragment()
         }
 
         bottomAppBar.apply {
@@ -75,13 +67,10 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             }
         }
 
-        timerButton.setOnClickListener {
-            if (isRunning) {
-                showTimerDialog()
-            } else {
-                startCountdown()
-                showWorkTimerFragment()
-            }
+        sharedCountdownViewModel.updateTimerStatus(isRunning)
+
+        addTaskButton.setOnClickListener {
+            sharedCountdownViewModel.showAddTaskFragment(!isRunning)
         }
     }
 
@@ -116,26 +105,23 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         countdownService?.stopTimer()
     }
 
-    private fun updateView(isRunning : Boolean) {
+    private fun updateView(isRunning: Boolean) {
         if (isPause) {
-            timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
-            viewModel.updateStatus("Take some rest")
+            addTaskButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_local_cafe_24px)
+            sharedCountdownViewModel.updateSessionMessage("Take some rest")
         } else {
-            timerButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
-            viewModel.updateStatus("You must concentrate on your work now")
+            addTaskButton.setImageResource(if (isRunning) R.drawable.ic_round_stop_24px else R.drawable.ic_round_timer_24px)
+            sharedCountdownViewModel.updateSessionMessage("You must concentrate on your work now")
         }
     }
 
-    private fun showWorkTimerFragment() {
-        WorkTimerFragment().replace(R.id.fragmentContainer, WorkTimerFragment.TAG)
-    }
 
     private fun showTaskFragment() {
         TaskFragment().replace(R.id.fragmentContainer, TaskFragment.TAG)
     }
 
     override fun provideTimer(timer: String) {
-        viewModel.updateTimer(timer)
+        sharedCountdownViewModel.updateTimer(timer)
     }
 
     override fun onTimerStatusChanged(isTimerProcessing: Boolean) {
@@ -144,7 +130,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     override fun onSessionCounterUpdate(sessions: Int) {
-        viewModel.updateSessions(sessions)
+//        sharedCountdownViewModel.updateSessions(sessions)
         updateView(isRunning)
     }
 

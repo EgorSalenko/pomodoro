@@ -8,31 +8,39 @@ import org.koin.core.KoinComponent
 
 class SharedCountdownViewModel : ViewModel(), KoinComponent {
 
+    companion object {
+        const val TAG = "SharedCountdownViewModel"
+    }
+
     private val _timerLiveData = MutableLiveData<String>()
     val timerLiveData: LiveData<String>
         get() = _timerLiveData
 
-    private val _statusLiveData = MutableLiveData<String>()
-    val statusLiveData: LiveData<String>
-        get() = _statusLiveData
+    private val _sessionMessageLiveData = MutableLiveData<String>()
+    val sessionMessageLiveData: LiveData<String>
+        get() = _sessionMessageLiveData
 
-    private val _sessionsLiveData = MutableLiveData<Int>()
-    val sessionsLiveData: LiveData<Int>
-        get() = _sessionsLiveData
+    private val _timerStatus = MutableLiveData<Boolean>()
+    val timerStatus: LiveData<Boolean>
+        get() = _timerStatus
 
-    companion object {
-        const val TAG = "SharedCountdownViewModel"
+    private val _newTaskLiveData = MutableLiveData<Boolean>()
+    val newTaskLiveData: LiveData<Boolean>
+        get() = _newTaskLiveData
+
+    fun updateTimerStatus(isRunning: Boolean) {
+        _timerStatus.value = isRunning
     }
 
     fun updateTimer(timer: String) {
         _timerLiveData.value = timer
     }
 
-    fun updateStatus(status: String) {
-        _statusLiveData.value = status
+    fun updateSessionMessage(status: String) {
+        _sessionMessageLiveData.value = status
     }
 
-    fun updateSessions(session: Int) {
-        _sessionsLiveData.value = session
+    fun showAddTaskFragment(isVisible: Boolean) {
+        _newTaskLiveData.value = isVisible
     }
 }

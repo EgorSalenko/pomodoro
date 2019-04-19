@@ -5,6 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
     <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize">
@@ -29,20 +30,20 @@
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    
+
     <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomAppBar"
-            android:elevation="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
+            android:elevation="5dp"
             app:popupTheme="@color/secondaryColor"
             app:fabAlignmentMode="center"
             app:hideOnScroll="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/timerButton"
+            android:id="@+id/addTaskButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:backgroundTint="@color/primaryDarkColor"

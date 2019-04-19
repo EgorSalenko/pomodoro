@@ -28,13 +28,11 @@ class WorkTimerFragment : BaseFragment() {
 
     private fun subscribeUi() {
         viewModel.apply {
-
             timerLiveData.observe(viewLifecycleOwner, Observer { time: String ->
                 countdownTimer.text = time
             })
-
-            statusLiveData.observe(viewLifecycleOwner, Observer { status: String ->
-                timerStatus.text = status
+            sessionMessageLiveData.observe(viewLifecycleOwner, Observer { status: String ->
+                sessionMessage.text = status
             })
         }
     }

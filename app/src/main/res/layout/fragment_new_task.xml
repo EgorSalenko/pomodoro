@@ -17,7 +17,7 @@
             android:id="@+id/inputNewTaskLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:layout_margin="@dimen/default_margin">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputNewTask"
@@ -37,14 +37,14 @@
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/default_margin"
             android:text="Task priority:"/>
 
     <RadioGroup
             android:id="@+id/radioGroupPriority"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:layout_margin="@dimen/default_margin">
 
         <RadioButton
                 android:id="@+id/radioBtnHigh"
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/default_margin"
             android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
@@ -78,7 +78,7 @@
                 android:id="@+id/btnCancelTask"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="@dimen/small_margin"
                 app:icon="@drawable/ic_round_clear_24px"
                 android:text="cancel"/>
 
@@ -87,7 +87,7 @@
                 android:id="@+id/btnSaveTask"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="@dimen/small_margin"
                 app:icon="@drawable/ic_round_save_24px"
                 android:text="SAVE"/>
 

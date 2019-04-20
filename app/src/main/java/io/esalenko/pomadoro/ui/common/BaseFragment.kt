@@ -91,8 +91,8 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
             .commitNowAllowingStateLoss()
     }
 
-    protected fun View.showSnackBar(msg: String) {
-        Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
+    protected fun showSnackBar(v: View, msg: String) {
+        Snackbar.make(v, msg, Snackbar.LENGTH_SHORT)
     }
 
 }

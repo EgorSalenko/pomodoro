@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
@@ -52,6 +53,7 @@ class ToDoListFragment : BaseFragment() {
                 val items = ArrayList<TaskItem>()
                 when (result.status) {
                     RxStatus.SUCCESS -> {
+                        loading.visibility = View.GONE
                         result
                             .data
                             ?.forEach { task: Task ->
@@ -67,10 +69,10 @@ class ToDoListFragment : BaseFragment() {
                         FastAdapterDiffUtil.set(itemAdapter, items)
                     }
                     RxStatus.ERROR -> {
-
+                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_SHORT)
                     }
                     RxStatus.LOADING -> {
-
+                        loading.visibility = View.VISIBLE
                     }
                 }
 

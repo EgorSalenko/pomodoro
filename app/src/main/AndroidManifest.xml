@@ -15,6 +15,7 @@
             android:theme="@style/AppTheme" tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <activity android:name=".ui.activity.MainActivity"
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,7 +24,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.TimerActivity"/>
+        <activity android:name=".ui.activity.TimerActivity"
+                  android:screenOrientation="portrait"/>
 
         <service android:name=".service.CountdownService"
                  android:exported="false"/>

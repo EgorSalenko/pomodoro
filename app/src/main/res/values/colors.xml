@@ -9,7 +9,7 @@
     <color name="primaryTextColor">#fafafa</color>
     <color name="secondaryTextColor">#fafafa</color>
 
-    <color name="priority_low">#64dd17</color>
-    <color name="priority_mid">#ffab00</color>
-    <color name="priority_high">#dd2c00</color>
+    <color name="priority_low">#94af76</color>
+    <color name="priority_mid">#cbc693</color>
+    <color name="priority_high">#ffccbc</color>
 </resources>

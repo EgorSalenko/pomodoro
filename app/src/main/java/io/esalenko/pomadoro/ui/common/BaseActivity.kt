@@ -16,7 +16,7 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
         setContentView(layoutRes)
     }
 
-    fun Fragment.replace(@IdRes containerId: Int, tag: String?) {
+    protected fun Fragment.replace(@IdRes containerId: Int, tag: String?) {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(
@@ -26,6 +26,32 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
                 android.R.animator.fade_out
             )
             .replace(containerId, this@replace, tag)
+            .commitNowAllowingStateLoss()
+    }
+
+    protected fun Fragment.add(@IdRes containerId: Int, tag: String?) {
+        supportFragmentManager
+            .beginTransaction()
+            .setCustomAnimations(
+                android.R.animator.fade_in,
+                android.R.animator.fade_out,
+                android.R.animator.fade_in,
+                android.R.animator.fade_out
+            )
+            .add(containerId, this@add, tag)
+            .commitNowAllowingStateLoss()
+    }
+
+    protected fun Fragment.remove() {
+        supportFragmentManager
+            .beginTransaction()
+            .setCustomAnimations(
+                android.R.animator.fade_in,
+                android.R.animator.fade_out,
+                android.R.animator.fade_in,
+                android.R.animator.fade_out
+            )
+            .remove(this@remove)
             .commitNowAllowingStateLoss()
     }
 

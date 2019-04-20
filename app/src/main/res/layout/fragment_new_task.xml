@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@android:color/background_light">
+
+    <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinnerTaskTypes"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_margin="8dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputNewTask"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:inputType="text|textMultiLine|textCapSentences"
+                android:imeOptions="actionNone"
+                android:maxLines="10"
+                android:lines="8"
+                android:minLines="6"
+                android:lineSpacingExtra="2dp"
+                android:scrollbars="vertical"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Task priority:"/>
+
+    <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+        <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="High"/>
+
+        <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mid"/>
+
+        <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Low"/>
+
+    </RadioGroup>
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btnCancelTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                app:icon="@drawable/ic_round_clear_24px"
+                android:text="cancel"/>
+
+        <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button"
+                android:id="@+id/btnSaveTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                app:icon="@drawable/ic_round_save_24px"
+                android:text="SAVE"/>
+
+    </LinearLayout>
+
+</LinearLayout>

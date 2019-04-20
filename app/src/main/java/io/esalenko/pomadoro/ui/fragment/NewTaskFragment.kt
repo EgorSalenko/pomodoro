@@ -2,11 +2,13 @@ package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.RadioGroup
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.domain.model.TaskCategory
 import io.esalenko.pomadoro.domain.model.TaskPriority
 import io.esalenko.pomadoro.domain.model.TaskPriority.*
-import io.esalenko.pomadoro.domain.model.TaskType
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.ToDoListVIewModel
@@ -15,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class NewTaskFragment : BaseFragment() {
+class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     companion object {
         const val TAG = "NewTaskFragment"
@@ -29,17 +31,29 @@ class NewTaskFragment : BaseFragment() {
 
     // Default to Low
     private var taskPriority: TaskPriority = LOW
+    private var taskCategory: TaskCategory = TaskCategory.NONE
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        retainInstance = true
+        spinnerTaskTypes.onItemSelectedListener = this
         radioBtnLow.isChecked = true
+
+        ArrayAdapter(
+            context!!,
+            android.R.layout.simple_spinner_item,
+            TaskCategory.values().filter {
+                it != TaskCategory.NONE
+            }
+        ).also { adapter: ArrayAdapter<TaskCategory> ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerTaskTypes.adapter = adapter
+        }
 
         btnCancelTask.setOnClickListener {
             sharedViewModel.openMainScreen()
         }
 
-        // TODO :: Add RadioGroup listener
         btnSaveTask.setOnClickListener {
             addTask()
         }
@@ -69,12 +83,18 @@ class NewTaskFragment : BaseFragment() {
         }
 
         toDoListVIewModel.addTask(
-            type = TaskType.WORK.type,
+            type = taskCategory.category,
             taskDescription = text,
             priority = taskPriority.ordinal
         )
         sharedViewModel.openMainScreen()
     }
 
+    override fun onNothingSelected(parent: AdapterView<*>?) {
 
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        taskCategory = parent?.getItemAtPosition(position) as TaskCategory
+    }
 }

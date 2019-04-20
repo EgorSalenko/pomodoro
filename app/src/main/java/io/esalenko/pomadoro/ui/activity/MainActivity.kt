@@ -21,11 +21,9 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (fragment == null) {
+        savedInstanceState.let {
             ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
         }
-
         bottomAppBar.apply {
             replaceMenu(R.menu.bottom_app_bar_menu)
             setOnMenuItemClickListener { item: MenuItem ->

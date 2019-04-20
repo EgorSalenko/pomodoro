@@ -35,6 +35,7 @@ dependencies {
     def room_version = "2.1.0-alpha06"
     def koin_version = '2.0.0-rc-2'
     def anko_version = "0.10.8"
+    def fast_adapter = "3.3.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -62,6 +63,11 @@ dependencies {
 
     implementation 'com.afollestad.material-dialogs:core:2.7.0'
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
+    implementation "com.mikepenz:fastadapter:$fast_adapter"
+    implementation "com.mikepenz:fastadapter-commons:$fast_adapter"
+    implementation "com.mikepenz:fastadapter-extensions-expandable:$fast_adapter"
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

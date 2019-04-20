@@ -18,18 +18,15 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
     val toDoListLiveData: LiveData<RxResult<List<Task>>>
         get() = _toDoListLiveData
 
-    init {
-        fetchToDoList()
-    }
-
-    private fun fetchToDoList() {
-        _toDoListLiveData.value = RxResult.loading(null)
+    fun fetchToDoList() {
+        _toDoListLiveData.postValue(RxResult.loading(null))
         taskRepository
             .getAll()
             .subscribe({ taskList: List<Task> ->
-                _toDoListLiveData.value = RxResult.success(taskList)
+                _toDoListLiveData.postValue(RxResult.success(taskList))
             }, {
-                _toDoListLiveData.value = RxResult.error("ToDo List::error occurred", null)
+                _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
+                error { it }
             })
             .addToCompositeDisposable()
     }

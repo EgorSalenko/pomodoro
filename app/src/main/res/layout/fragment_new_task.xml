@@ -2,6 +2,7 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/newTaskParentView"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@android:color/background_light">
@@ -13,6 +14,7 @@
             android:layout_margin="8dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputNewTaskLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp">
@@ -39,21 +41,25 @@
             android:text="Task priority:"/>
 
     <RadioGroup
+            android:id="@+id/radioGroupPriority"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp">
 
         <RadioButton
+                android:id="@+id/radioBtnHigh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="High"/>
 
         <RadioButton
+                android:id="@+id/radioBtnMid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Mid"/>
 
         <RadioButton
+                android:id="@+id/radioBtnLow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Low"/>

@@ -12,7 +12,6 @@ class SharedViewModel : BaseViewModel() {
     val mainScreenLiveData: LiveData<Event<String>>
         get() = _mainScreenLiveData
 
-    // TODO :: Migrate to single event
     fun openMainScreen() {
         _mainScreenLiveData.value = Event("Saved")
     }

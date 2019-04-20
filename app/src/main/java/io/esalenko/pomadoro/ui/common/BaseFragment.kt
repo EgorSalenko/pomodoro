@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import org.jetbrains.anko.AnkoLogger
 import org.koin.core.KoinComponent
 
@@ -88,6 +89,10 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
             )
             .hide(this@hide)
             .commitNowAllowingStateLoss()
+    }
+
+    protected fun View.showSnackBar(msg: String) {
+        Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
     }
 
 }

@@ -8,4 +8,8 @@
     <color name="secondaryDarkColor">#005b9f</color>
     <color name="primaryTextColor">#fafafa</color>
     <color name="secondaryTextColor">#fafafa</color>
+
+    <color name="priority_low">#64dd17</color>
+    <color name="priority_mid">#ffab00</color>
+    <color name="priority_high">#dd2c00</color>
 </resources>

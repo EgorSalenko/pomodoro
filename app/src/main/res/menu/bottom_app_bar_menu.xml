@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_settings"
-          android:title="Settings"
+    <item android:id="@+id/menu_filter"
+          android:title="Filter"
           app:showAsAction="ifRoom"
-          android:icon="@drawable/ic_round_settings_24px"/>
+          android:icon="@drawable/ic_round_filter_list_24px"/>
 
     <item android:id="@+id/menu_profile"
           android:title="Profile"

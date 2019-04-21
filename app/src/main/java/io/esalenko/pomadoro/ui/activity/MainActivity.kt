@@ -2,14 +2,17 @@ package io.esalenko.pomadoro.ui.activity
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.PopupMenu
 import androidx.lifecycle.Observer
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.fragment.NewTaskFragment
 import io.esalenko.pomadoro.ui.fragment.ToDoListFragment
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.common.Event
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.find
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity() {
@@ -19,22 +22,32 @@ class MainActivity : BaseActivity() {
 
     private val sharedViewModel: SharedViewModel by viewModel()
 
+    private lateinit var popupMenu: PopupMenu
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         savedInstanceState.let {
             ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
         }
+
         bottomAppBar.apply {
             replaceMenu(R.menu.bottom_app_bar_menu)
             setOnMenuItemClickListener { item: MenuItem ->
                 onMenuItemClicked(item)
             }
         }
-
         addTaskButton.setOnClickListener {
             NewTaskFragment().replace(R.id.overlayFragmentContainer, NewTaskFragment.TAG)
         }
+        setupPopUp()
         subscribeUi()
+    }
+
+    private fun setupPopUp() {
+        popupMenu = PopupMenu(this, bottomAppBar.find(R.id.menu_filter))
+        popupMenu.inflate(R.menu.filter_popup_menu)
+
     }
 
     private fun subscribeUi() {
@@ -50,7 +63,8 @@ class MainActivity : BaseActivity() {
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_settings -> {
+            R.id.menu_filter -> {
+                openFilterPopUp()
                 true
             }
             R.id.menu_profile -> {
@@ -58,5 +72,30 @@ class MainActivity : BaseActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun openFilterPopUp() {
+        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
+            when (menuItem.itemId) {
+                R.id.filter_by_priority -> {
+                    sharedViewModel.setFilter(FilterType.BY_PRIORITY)
+                    true
+                }
+                R.id.filter_by_category_h_l -> {
+                    sharedViewModel.setFilter(FilterType.BY_HIGH_TO_LOW)
+                    true
+                }
+                R.id.filter_by_category_l_h -> {
+                    sharedViewModel.setFilter(FilterType.BY_LOW_TO_HIGH)
+                    true
+                }
+                R.id.filter_by_archived -> {
+                    sharedViewModel.setFilter(FilterType.BY_ARCHIVED)
+                    true
+                }
+                else -> true
+            }
+        }
+        popupMenu.show()
     }
 }

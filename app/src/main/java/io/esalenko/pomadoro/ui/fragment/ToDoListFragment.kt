@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -17,14 +18,18 @@ import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeDragCallback
 import com.mikepenz.fastadapter_extensions.utilities.DragDropUtil
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
+import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.ToDoListVIewModel
+import io.esalenko.pomadoro.vm.common.Event
 import kotlinx.android.synthetic.main.fragment_to_do_list.*
 import org.jetbrains.anko.info
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -60,8 +65,8 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                 itemAdapter.remove(_position)
 
                 when (item.swipedDirection) {
-                    ItemTouchHelper.LEFT -> toDoListViewModel.remove(item.id)
-                    ItemTouchHelper.RIGHT -> toDoListViewModel.archive(item.id)
+                    ItemTouchHelper.LEFT -> viewModel.remove(item.id)
+                    ItemTouchHelper.RIGHT -> viewModel.archive(item.id)
                 }
             }
         }
@@ -87,7 +92,8 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     override val layoutRes: Int
         get() = R.layout.fragment_to_do_list
 
-    private val toDoListViewModel: ToDoListVIewModel by viewModel()
+    private val viewModel: ToDoListVIewModel by viewModel()
+    private val sharedViewModel: SharedViewModel by sharedViewModel()
 
     private lateinit var fastAdapter: FastAdapter<TaskItem>
     private lateinit var itemAdapter: ItemAdapter<TaskItem>
@@ -99,7 +105,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
-        toDoListViewModel.fetchToDoList()
+        viewModel.fetchToDoList()
         subscribeUi()
     }
 
@@ -130,7 +136,9 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     }
 
     private fun subscribeUi() {
-        toDoListViewModel.apply {
+
+        viewModel.apply {
+
             toDoListLiveData.observe(viewLifecycleOwner, Observer { result: RxResult<List<Task>> ->
                 val items = ArrayList<TaskItem>()
                 when (result.status) {
@@ -162,6 +170,22 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                     }
                 }
 
+            })
+
+        }
+
+        sharedViewModel.apply {
+            filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<FilterType> ->
+                if (event.hasBeenHandled) return@Observer
+
+                Toast.makeText(context, event.getContentIfNotHandled()?.name, Toast.LENGTH_LONG).show()
+                /* when (filterType) {
+                     FilterType.BY_PRIORITY -> TODO()
+                     FilterType.BY_CATEGORY -> TODO()
+                     FilterType.BY_HIGH_TO_LOW -> TODO()
+                     FilterType.BY_LOW_TO_HIGH -> TODO()
+                     FilterType.BY_ARCHIVED -> TODO()
+                 }*/
             })
         }
     }

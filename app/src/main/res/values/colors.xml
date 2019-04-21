@@ -10,6 +10,6 @@
     <color name="secondaryTextColor">#fafafa</color>
 
     <color name="priority_low">#94af76</color>
-    <color name="priority_mid">#cbc693</color>
+    <color name="priority_mid">#ffd54f</color>
     <color name="priority_high">#ffccbc</color>
 </resources>

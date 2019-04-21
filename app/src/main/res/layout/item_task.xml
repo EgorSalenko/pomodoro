@@ -11,7 +11,52 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:id="@+id/swipe_result_content"
+            android:paddingEnd="@dimen/default_margin"
+            android:paddingLeft="@dimen/default_margin"
+            android:paddingRight="@dimen/default_margin"
+            android:paddingStart="@dimen/default_margin"
+            android:gravity="center_vertical"
+            android:visibility="visible"
+            android:background="@color/md_red_900">
+
+        <TextView
+                android:id="@+id/swiped_text"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:singleLine="true"
+                android:textDirection="anyRtl"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="16sp"
+                tools:text="Removed"/>
+
+        <TextView
+                android:id="@+id/swiped_action"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif"
+                android:gravity="center_vertical|start"
+                android:lines="1"
+                android:singleLine="true"
+                android:textDirection="anyRtl"
+                android:textAllCaps="true"
+                android:textColor="@android:color/primary_text_dark"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="@string/action_undo"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/item_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="invisible"
             android:layout_margin="@dimen/default_margin"
+            android:visibility="invisible"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:orientation="vertical">
 

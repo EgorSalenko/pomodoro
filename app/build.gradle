@@ -67,6 +67,7 @@ dependencies {
     implementation "com.mikepenz:fastadapter:$fast_adapter"
     implementation "com.mikepenz:fastadapter-commons:$fast_adapter"
     implementation "com.mikepenz:fastadapter-extensions-expandable:$fast_adapter"
+    implementation "com.mikepenz:fastadapter-extensions:$fast_adapter"
 
 
     testImplementation 'junit:junit:4.12'

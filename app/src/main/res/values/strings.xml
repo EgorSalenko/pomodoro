@@ -12,11 +12,9 @@
     <string name="task_popup_tip">For highest productivity you must to specify your task:</string>
 
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-        aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-        fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-        anim id est laborum.
+        ut labore et dolore magna aliqua.
     </string>
+    <string name="action_undo">UNDO</string>
 
     <string-array name="array_task_type">
         <item>Work</item>

@@ -2,12 +2,20 @@ package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
+import com.mikepenz.fastadapter_extensions.drag.ItemTouchCallback
+import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback
+import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
+import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeDragCallback
+import com.mikepenz.fastadapter_extensions.utilities.DragDropUtil
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.ui.adapter.TaskItem
@@ -19,7 +27,54 @@ import kotlinx.android.synthetic.main.fragment_to_do_list.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ToDoListFragment : BaseFragment() {
+class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.ItemSwipeCallback {
+
+    override fun itemTouchOnMove(oldPosition: Int, newPosition: Int): Boolean {
+        DragDropUtil.onMove(itemAdapter, oldPosition, newPosition)  // change position
+        return true
+    }
+
+    override fun itemTouchDropped(oldPosition: Int, newPosition: Int) {
+        // save the new item order, i.e. in your database
+    }
+
+    override fun itemSwiped(position: Int, direction: Int) {
+        // -- Option 1: Direct action --
+        //do something when swiped such as: select, remove, update, ...:
+        //A) fastItemAdapter.select(position);
+        //B) fastItemAdapter.remove(position);
+        //C) update item, set "read" if an email etc
+
+        // -- Option 2: Delayed action --
+        val item = itemAdapter.getAdapterItem(position)
+        item.swipedDirection = direction
+
+        // This can vary depending on direction but remove & archive simulated here both results in
+        // removal from list
+        val removeRunnable = Runnable {
+            item.swipedAction = null
+            val _position = itemAdapter.getAdapterPosition(item)
+            if (_position != RecyclerView.NO_POSITION) {
+                //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
+                itemAdapter.remove(_position)
+            }
+        }
+
+        toDoList.postDelayed(removeRunnable, 3000)
+
+        item.swipedAction = Runnable {
+            toDoList.removeCallbacks(removeRunnable)
+            item.swipedDirection = 0
+            val _position = itemAdapter.getAdapterPosition(item)
+            if (_position != RecyclerView.NO_POSITION) {
+                fastAdapter.notifyItemChanged(_position)
+            }
+        }
+
+        fastAdapter.notifyItemChanged(position)
+
+        //TODO can this above be made more generic, along with the support in the item?
+    }
 
     companion object {
         const val TAG = "ToDoListFragment"
@@ -33,6 +88,10 @@ class ToDoListFragment : BaseFragment() {
     private lateinit var fastAdapter: FastAdapter<TaskItem>
     private lateinit var itemAdapter: ItemAdapter<TaskItem>
 
+    //drag & drop
+    private lateinit var touchCallback: SimpleDragCallback
+    private lateinit var touchHelper: ItemTouchHelper
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
@@ -45,6 +104,25 @@ class ToDoListFragment : BaseFragment() {
         fastAdapter = FastAdapter.with(itemAdapter)
         toDoList.layoutManager = LinearLayoutManager(context)
         toDoList.adapter = fastAdapter
+
+        val leaveBehindDrawableLeft = context?.getDrawable(R.drawable.ic_round_clear_24px)
+
+        val leaveBehindDrawableRight = context?.getDrawable(R.drawable.ic_round_save_24px)
+
+        touchCallback = SimpleSwipeDragCallback(
+            this,
+            this,
+            leaveBehindDrawableLeft,
+            ItemTouchHelper.LEFT,
+            ContextCompat.getColor(context!!, R.color.md_red_900)
+        )
+            .withBackgroundSwipeRight(ContextCompat.getColor(context!!, R.color.md_blue_900))
+            .withLeaveBehindSwipeRight(leaveBehindDrawableRight)
+
+        touchHelper =
+            ItemTouchHelper(touchCallback) // Create ItemTouchHelper and pass with parameter the SimpleDragCallback
+        touchHelper.attachToRecyclerView(toDoList) // Attach ItemTouchHelper to RecyclerView
+
     }
 
     private fun subscribeUi() {

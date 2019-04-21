@@ -20,6 +20,7 @@ import com.mikepenz.fastadapter_extensions.utilities.DragDropUtil
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.domain.model.TaskCategory
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -153,7 +154,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                                         task.id,
                                         task.description,
                                         task.date,
-                                        task.type,
+                                        TaskCategory.values()[task.category].category,
                                         task.priority
                                     )
                                 )

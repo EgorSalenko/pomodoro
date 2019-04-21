@@ -33,11 +33,11 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             .addToCompositeDisposable()
     }
 
-    fun addTask(type: String, taskDescription: String, priority: Int) {
+    fun addTask(category: Int, taskDescription: String, priority: Int) {
         Single
             .just(
                 Task(
-                    type = type,
+                    category = category,
                     description = taskDescription,
                     priority = priority,
                     date = Date().time

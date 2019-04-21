@@ -83,7 +83,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         toDoListVIewModel.addTask(
-            type = taskCategory.category,
+            category = taskCategory.ordinal,
             taskDescription = text,
             priority = taskPriority.ordinal
         )

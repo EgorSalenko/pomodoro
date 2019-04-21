@@ -15,16 +15,12 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun get(id: Long): Maybe<Task> {
+    override fun get(id: Long): Task {
         return taskDao.get(id)
-            .subscribeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun get(item: Task): Maybe<Task> {
+    override fun get(item: Task): Task {
         return taskDao.get(item.id)
-            .subscribeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
     }
 
     override fun add(item: Task) {
@@ -41,6 +37,12 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
 
     override fun deleteAll() {
         taskDao.deleteAll()
+    }
+
+    fun archive(id: Long) {
+        val task: Task = taskDao.get(id)
+        task.isArchived = true
+        taskDao.insert(task)
     }
 
 }

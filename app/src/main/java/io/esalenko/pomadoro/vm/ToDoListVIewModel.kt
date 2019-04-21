@@ -9,6 +9,7 @@ import io.esalenko.pomadoro.vm.common.BaseViewModel
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.error
+import org.jetbrains.anko.info
 import java.util.*
 
 
@@ -24,6 +25,7 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             .getAll()
             .subscribe({ taskList: List<Task> ->
                 _toDoListLiveData.postValue(RxResult.success(taskList))
+                info { taskList }
             }, {
                 _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
                 error { it }
@@ -49,6 +51,36 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                 error { error }
             })
             .addToCompositeDisposable()
+    }
+
+    fun remove(id: Long) {
+        Single
+            .just(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(
+                {
+                    taskRepository.delete(it)
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun archive(id: Long) {
+        Single.just(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(
+                {
+                    taskRepository.archive(id)
+                },
+                { error ->
+                    error { error }
+                }
+            ).addToCompositeDisposable()
     }
 
 }

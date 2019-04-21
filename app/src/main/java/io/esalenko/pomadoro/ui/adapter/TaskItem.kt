@@ -19,7 +19,12 @@ import java.util.*
 
 
 class TaskItem(
-    val text: String, val time: Long, val taskType: String, val taskPriority: Int, var swipeable: Boolean = true,
+    val id: Long,
+    val text: String,
+    val time: Long,
+    val taskType: String,
+    val taskPriority: Int,
+    var swipeable: Boolean = true,
     var draggable: Boolean = true
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
@@ -56,7 +61,7 @@ class TaskItem(
         viewHolder.text.text = text
         viewHolder.date.text = Date(time).toString()
 
-        val color = when (taskPriority) {
+        val priorityColor = when (taskPriority) {
             TaskPriority.LOW.ordinal -> {
                 R.color.priority_low
             }
@@ -66,14 +71,15 @@ class TaskItem(
             TaskPriority.HIGH.ordinal -> {
                 R.color.priority_high
             }
-            else -> android.R.color.white
+            else -> android.R.color.transparent
         }
 
-        viewHolder.parent.setCardBackgroundColor(ContextCompat.getColor(viewHolder.ctx, color))
 
-        viewHolder.swipeResultContent.visibility = if (swipedDirection != 0) View.VISIBLE else View.INVISIBLE
-        viewHolder.itemContent.visibility = if (swipedDirection != 0) View.INVISIBLE else View.VISIBLE
-
+        viewHolder.apply {
+            parent.setCardBackgroundColor(ContextCompat.getColor(viewHolder.ctx, priorityColor))
+            swipeResultContent.visibility = if (swipedDirection != 0) View.VISIBLE else View.INVISIBLE
+            itemContent.visibility = if (swipedDirection != 0) View.INVISIBLE else View.VISIBLE
+        }
 
         var swipedAction: CharSequence? = null
         var swipedText: CharSequence? = null
@@ -83,7 +89,7 @@ class TaskItem(
             viewHolder.swipeResultContent.setBackgroundColor(
                 ContextCompat.getColor(
                     viewHolder.itemView.context,
-                    if (swipedDirection == ItemTouchHelper.LEFT) R.color.md_red_900 else R.color.md_blue_900
+                    if (swipedDirection == ItemTouchHelper.LEFT) R.color.md_red_900 else R.color.primaryColor
                 )
             )
         }

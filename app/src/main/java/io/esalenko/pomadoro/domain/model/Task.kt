@@ -8,4 +8,6 @@ data class Task(@PrimaryKey(autoGenerate = true) val id: Long = 0L,
                 val type: String,
                 val description: String,
                 val priority: Int,
-                val date : Long)
+                val date: Long,
+                var isArchived: Boolean = false
+)

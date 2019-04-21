@@ -7,9 +7,9 @@ interface Repository<Item> {
 
     fun getAll(): Maybe<List<Item>>
 
-    fun get(id: Long): Maybe<Item>
+    fun get(id: Long): Item
 
-    fun get(item: Item): Maybe<Item>
+    fun get(item: Item): Item
 
     fun add(item : Item)
 

@@ -24,6 +24,7 @@ import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.vm.ToDoListVIewModel
 import kotlinx.android.synthetic.main.fragment_to_do_list.*
+import org.jetbrains.anko.info
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -53,10 +54,15 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
         // removal from list
         val removeRunnable = Runnable {
             item.swipedAction = null
-            val _position = itemAdapter.getAdapterPosition(item)
+            val _position: Int = itemAdapter.getAdapterPosition(item)
             if (_position != RecyclerView.NO_POSITION) {
                 //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
                 itemAdapter.remove(_position)
+
+                when (item.swipedDirection) {
+                    ItemTouchHelper.LEFT -> toDoListViewModel.remove(item.id)
+                    ItemTouchHelper.RIGHT -> toDoListViewModel.archive(item.id)
+                }
             }
         }
 
@@ -72,8 +78,6 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
         }
 
         fastAdapter.notifyItemChanged(position)
-
-        //TODO can this above be made more generic, along with the support in the item?
     }
 
     companion object {
@@ -83,7 +87,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     override val layoutRes: Int
         get() = R.layout.fragment_to_do_list
 
-    private val toDoListVIewModel: ToDoListVIewModel by viewModel()
+    private val toDoListViewModel: ToDoListVIewModel by viewModel()
 
     private lateinit var fastAdapter: FastAdapter<TaskItem>
     private lateinit var itemAdapter: ItemAdapter<TaskItem>
@@ -95,7 +99,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
-        toDoListVIewModel.fetchToDoList()
+        toDoListViewModel.fetchToDoList()
         subscribeUi()
     }
 
@@ -126,7 +130,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
     }
 
     private fun subscribeUi() {
-        toDoListVIewModel.apply {
+        toDoListViewModel.apply {
             toDoListLiveData.observe(viewLifecycleOwner, Observer { result: RxResult<List<Task>> ->
                 val items = ArrayList<TaskItem>()
                 when (result.status) {
@@ -134,20 +138,24 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                         loading.visibility = View.GONE
                         result
                             .data
+                            ?.filter { !it.isArchived }
                             ?.forEach { task: Task ->
                                 items.add(
                                     TaskItem(
+                                        task.id,
                                         task.description,
                                         task.date,
                                         task.type,
                                         task.priority
                                     )
                                 )
+                                info { task }
                             }
                         FastAdapterDiffUtil.set(itemAdapter, items)
                     }
                     RxStatus.ERROR -> {
-                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_SHORT)
+                        loading.visibility = View.GONE
+                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_INDEFINITE).show()
                     }
                     RxStatus.LOADING -> {
                         loading.visibility = View.VISIBLE

@@ -17,7 +17,7 @@ interface TaskDao {
     fun getAll(): Maybe<List<Task>>
 
     @Query("select * from task_table where id =:id")
-    fun get(id: Long): Maybe<Task>
+    fun get(id: Long): Task
 
     @Query("delete from task_table where id=:id")
     fun delete(id: Long)

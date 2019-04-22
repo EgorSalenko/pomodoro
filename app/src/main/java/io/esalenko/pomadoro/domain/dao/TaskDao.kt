@@ -25,4 +25,6 @@ interface TaskDao {
     @Query("delete from task_table")
     fun deleteAll()
 
+    @Query("select * from task_table order by priority ASC")
+    fun getAllByPriority(): Maybe<List<Task>>
 }

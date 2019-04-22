@@ -45,4 +45,11 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
         taskDao.insert(task)
     }
 
+    fun getAllByPriority(): Maybe<List<Task>> {
+        return taskDao
+            .getAllByPriority()
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
 }

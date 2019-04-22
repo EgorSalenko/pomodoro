@@ -2,7 +2,6 @@ package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -177,16 +176,19 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
 
         sharedViewModel.apply {
             filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<FilterType> ->
-                if (event.hasBeenHandled) return@Observer
-
-                Toast.makeText(context, event.getContentIfNotHandled()?.name, Toast.LENGTH_LONG).show()
-                /* when (filterType) {
-                     FilterType.BY_PRIORITY -> TODO()
-                     FilterType.BY_CATEGORY -> TODO()
-                     FilterType.BY_HIGH_TO_LOW -> TODO()
-                     FilterType.BY_LOW_TO_HIGH -> TODO()
-                     FilterType.BY_ARCHIVED -> TODO()
-                 }*/
+                when (event.getContentIfNotHandled()) {
+                    FilterType.BY_PRIORITY -> {
+                        viewModel.getToDoListByPriority()
+                    }
+                    FilterType.BY_CATEGORY -> {
+                    }
+                    FilterType.BY_HIGH_TO_LOW -> {
+                    }
+                    FilterType.BY_LOW_TO_HIGH -> {
+                    }
+                    FilterType.BY_ARCHIVED -> {
+                    }
+                }
             })
         }
     }

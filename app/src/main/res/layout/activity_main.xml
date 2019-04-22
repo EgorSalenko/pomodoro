@@ -20,6 +20,7 @@
                 android:layout_gravity="bottom"
                 android:gravity="center"
                 android:elevation="5dp"
+                android:backgroundTint="@color/primaryLightColor"
                 app:popupTheme="@color/secondaryColor"
                 app:fabAlignmentMode="center"
                 app:hideOnScroll="true"/>

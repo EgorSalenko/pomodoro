@@ -52,4 +52,10 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(AndroidSchedulers.mainThread())
     }
 
+    fun getAllArchived(): Maybe<List<Task>> {
+        return taskDao.getAllArchived()
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
 }

@@ -42,6 +42,23 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                     _toDoListLiveData.postValue(RxResult.success(listByPriority))
                 },
                 { error ->
+                    _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun getToDoListArchived() {
+        _toDoListLiveData.postValue(RxResult.loading(null))
+        taskRepository
+            .getAllArchived()
+            .subscribe(
+                { archivedList: List<Task> ->
+                    _toDoListLiveData.postValue(RxResult.success(archivedList))
+                },
+                { error ->
+                    _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
                     error { error }
                 }
             )

@@ -143,10 +143,9 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                 val items = ArrayList<TaskItem>()
                 when (result.status) {
                     RxStatus.SUCCESS -> {
-                        loading.visibility = View.GONE
+                        itemAdapter.clear()
                         result
                             .data
-                            ?.filter { !it.isArchived }
                             ?.forEach { task: Task ->
                                 items.add(
                                     TaskItem(
@@ -160,6 +159,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                                 info { task }
                             }
                         FastAdapterDiffUtil.set(itemAdapter, items)
+                        loading.visibility = View.GONE
                     }
                     RxStatus.ERROR -> {
                         loading.visibility = View.GONE
@@ -181,12 +181,16 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                         viewModel.getToDoListByPriority()
                     }
                     FilterType.BY_CATEGORY -> {
+
                     }
                     FilterType.BY_HIGH_TO_LOW -> {
+
                     }
                     FilterType.BY_LOW_TO_HIGH -> {
+
                     }
                     FilterType.BY_ARCHIVED -> {
+                        viewModel.getToDoListArchived()
                     }
                 }
             })

@@ -14,6 +14,7 @@ import com.mikepenz.fastadapter_extensions.drag.IDraggable
 import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.TaskPriority
+import io.esalenko.pomadoro.util.formatDateTime
 import org.jetbrains.anko.find
 import java.util.*
 
@@ -21,11 +22,9 @@ import java.util.*
 class TaskItem(
     val id: Long,
     val text: String,
-    val time: Date?,
+    val date: Date?,
     val taskType: String,
-    val taskPriority: TaskPriority,
-    var swipeable: Boolean = true,
-    var draggable: Boolean = true
+    val taskPriority: TaskPriority
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
     ISwipeable<TaskItem, IItem<*, *>>,
@@ -33,6 +32,8 @@ class TaskItem(
 
     var swipedDirection: Int = 0
     var swipedAction: Runnable? = null
+    var swipeable: Boolean = true
+    var draggable: Boolean = true
 
     override fun withIsSwipeable(swipeable: Boolean): TaskItem {
         this.swipeable = swipeable
@@ -54,12 +55,12 @@ class TaskItem(
 
     override fun getLayoutRes(): Int = R.layout.item_task
 
-
     override fun bindView(viewHolder: TaskItemViewHolder, payloads: MutableList<Any>) {
         super.bindView(viewHolder, payloads)
         viewHolder.taskType.text = taskType
         viewHolder.text.text = text
-        viewHolder.date.text = time.toString()
+
+        viewHolder.date.text = date?.formatDateTime()
 
         val priorityColor = when (taskPriority) {
             TaskPriority.LOW -> {
@@ -72,7 +73,6 @@ class TaskItem(
                 R.color.priority_high
             }
         }
-
 
         viewHolder.apply {
             parent.setCardBackgroundColor(ContextCompat.getColor(viewHolder.ctx, priorityColor))
@@ -101,7 +101,6 @@ class TaskItem(
     inner class TaskItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val ctx: Context = view.context
-
         val taskType = view.find<TextView>(R.id.taskType)
         val text = view.find<TextView>(R.id.taskText)
         val date = view.find<TextView>(R.id.taskDate)

@@ -34,7 +34,6 @@
                 app:layout_anchor="@id/bottomAppBar"
                 android:src="@drawable/ic_round_add_24px"/>
 
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <FrameLayout

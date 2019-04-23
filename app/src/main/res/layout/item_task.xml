@@ -5,8 +5,7 @@
         android:id="@+id/taskCardView"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin"
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        app:cardElevation="8dp">
+        app:cardCornerRadius="@dimen/card_corner_radius">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -71,6 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:background="@android:color/transparent"
                 android:gravity="center">
 
             <TextView

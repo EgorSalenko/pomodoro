@@ -7,7 +7,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
@@ -163,7 +162,6 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                     RxStatus.ERROR -> {
                         loading.visibility = View.GONE
                         sharedViewModel.showError(result.msg)
-//                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_INDEFINITE).show()
                     }
                     RxStatus.LOADING -> {
                         loading.visibility = View.VISIBLE
@@ -175,6 +173,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
         }
 
         sharedViewModel.apply {
+
             filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<FilterType> ->
                 when (event.getContentIfNotHandled()) {
                     FilterType.BY_PRIORITY -> {
@@ -187,6 +186,10 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                         viewModel.getToDoListArchived()
                     }
                 }
+            })
+
+            errorRetryLiveData.observe(viewLifecycleOwner, Observer {
+                viewModel.fetchToDoList()
             })
         }
     }

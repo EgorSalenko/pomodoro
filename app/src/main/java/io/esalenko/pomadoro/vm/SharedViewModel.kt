@@ -21,6 +21,10 @@ class SharedViewModel : BaseViewModel() {
     val errorLiveData: LiveData<Event<String>>
         get() = _errorLiveData
 
+    private val _errorRetryLiveData = MutableLiveData<Event<Any>>()
+    val errorRetryLiveData: LiveData<Event<Any>>
+        get() = _errorRetryLiveData
+
     fun openMainScreen() {
         _mainScreenLiveData.value = Event("Saved")
     }
@@ -31,6 +35,10 @@ class SharedViewModel : BaseViewModel() {
 
     fun showError(msg: String?) {
         _errorLiveData.value = Event(msg ?: "Error occurred")
+    }
+
+    fun onErrorRetry() {
+        _errorRetryLiveData.value = Event(Any())
     }
 
 }

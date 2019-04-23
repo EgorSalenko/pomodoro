@@ -24,6 +24,7 @@
     <string name="text_popup_by_date">By Date</string>
     <string name="text_popup_by_priority">by Priority</string>
     <string name="text_popup_archived">Archived</string>
+    <string name="snackbar_action_retry">RETRY</string>
 
     <string-array name="array_task_type">
         <item>Work</item>

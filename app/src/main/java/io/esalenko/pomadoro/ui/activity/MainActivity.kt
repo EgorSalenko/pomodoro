@@ -1,7 +1,6 @@
 package io.esalenko.pomadoro.ui.activity
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.MenuItem
 import android.widget.PopupMenu
 import androidx.lifecycle.Observer
@@ -63,6 +62,9 @@ class MainActivity : BaseActivity() {
             errorLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
                 Snackbar.make(coordinatorLayout, event.getContentIfNotHandled().toString(), Snackbar.LENGTH_INDEFINITE)
                     .setAnchorView(addTaskButton)
+                    .setAction(R.string.snackbar_action_retry) {
+                        sharedViewModel.onErrorRetry()
+                    }
                     .show()
             })
         }

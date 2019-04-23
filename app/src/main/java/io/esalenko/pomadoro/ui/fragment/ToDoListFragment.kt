@@ -19,7 +19,6 @@ import com.mikepenz.fastadapter_extensions.utilities.DragDropUtil
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
-import io.esalenko.pomadoro.domain.model.TaskCategory
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -152,7 +151,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                                         task.id,
                                         task.description,
                                         task.date,
-                                        TaskCategory.values()[task.category].category,
+                                        task.category.categoryName,
                                         task.priority
                                     )
                                 )
@@ -163,7 +162,8 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                     }
                     RxStatus.ERROR -> {
                         loading.visibility = View.GONE
-                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_INDEFINITE).show()
+                        sharedViewModel.showError(result.msg)
+//                        Snackbar.make(toDoList, "Error occurred while tasks loading", Snackbar.LENGTH_INDEFINITE).show()
                     }
                     RxStatus.LOADING -> {
                         loading.visibility = View.VISIBLE

@@ -3,6 +3,8 @@ package io.esalenko.pomadoro.vm
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.domain.model.TaskCategory
+import io.esalenko.pomadoro.domain.model.TaskPriority
 import io.esalenko.pomadoro.repository.TaskRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
@@ -23,13 +25,15 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
         _toDoListLiveData.postValue(RxResult.loading(null))
         taskRepository
             .getAll()
-            .subscribe({ taskList: List<Task> ->
-                _toDoListLiveData.postValue(RxResult.success(taskList))
-                info { taskList }
-            }, {
-                _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                error { it }
-            })
+            .subscribe(
+                { taskList: List<Task> ->
+                    _toDoListLiveData.postValue(RxResult.success(taskList))
+                    info { taskList }
+                },
+                { error ->
+                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
+                    error { error }
+                })
             .addToCompositeDisposable()
     }
 
@@ -67,7 +71,8 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
 
     fun getToDoListLatest() {
         _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository.getAllLatest()
+        taskRepository
+            .getAllLatest()
             .subscribe(
                 { latest: List<Task> ->
                     _toDoListLiveData.postValue(RxResult.success(latest))
@@ -80,23 +85,25 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             .addToCompositeDisposable()
     }
 
-    fun addTask(category: Int, taskDescription: String, priority: Int) {
+    fun addTask(category: TaskCategory, taskDescription: String, priority: TaskPriority) {
         Single
             .just(
                 Task(
                     category = category,
                     description = taskDescription,
                     priority = priority,
-                    date = Date().time
+                    date = Date()
                 )
             )
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
-            .subscribe({ task: Task ->
-                taskRepository.add(task)
-            }, { error ->
-                error { error }
-            })
+            .subscribe(
+                { task: Task ->
+                    taskRepository.add(task)
+                },
+                { error ->
+                    error { error }
+                })
             .addToCompositeDisposable()
     }
 
@@ -117,7 +124,8 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
     }
 
     fun archive(id: Long) {
-        Single.just(id)
+        Single
+            .just(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(
@@ -127,7 +135,8 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                 { error ->
                     error { error }
                 }
-            ).addToCompositeDisposable()
+            )
+            .addToCompositeDisposable()
     }
 
 }

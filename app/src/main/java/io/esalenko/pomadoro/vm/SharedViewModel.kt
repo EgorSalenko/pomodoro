@@ -17,12 +17,20 @@ class SharedViewModel : BaseViewModel() {
     val filterLiveData: LiveData<Event<FilterType>>
         get() = _filterLiveData
 
+    private val _errorLiveData = MutableLiveData<Event<String>>()
+    val errorLiveData: LiveData<Event<String>>
+        get() = _errorLiveData
+
     fun openMainScreen() {
         _mainScreenLiveData.value = Event("Saved")
     }
 
     fun setFilter(filterType: FilterType) {
         _filterLiveData.value = Event(filterType)
+    }
+
+    fun showError(msg: String?) {
+        _errorLiveData.value = Event(msg ?: "Error occurred")
     }
 
 }

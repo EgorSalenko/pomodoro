@@ -1,7 +1,7 @@
 package io.esalenko.pomadoro.domain.model
 
 
-enum class TaskCategory(val category: String) {
+enum class TaskCategory(val categoryName: String) {
     NONE(""),
     WORK("Work"),
     SELF_IMPROVEMENT("Self Improvement"),
@@ -9,7 +9,7 @@ enum class TaskCategory(val category: String) {
     EDUCATION("Education");
 
     override fun toString(): String {
-        return this.category
+        return this.categoryName
     }
 }
 

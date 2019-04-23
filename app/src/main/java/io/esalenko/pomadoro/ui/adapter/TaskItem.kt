@@ -21,9 +21,9 @@ import java.util.*
 class TaskItem(
     val id: Long,
     val text: String,
-    val time: Long,
+    val time: Date?,
     val taskType: String,
-    val taskPriority: Int,
+    val taskPriority: TaskPriority,
     var swipeable: Boolean = true,
     var draggable: Boolean = true
 ) :
@@ -59,19 +59,18 @@ class TaskItem(
         super.bindView(viewHolder, payloads)
         viewHolder.taskType.text = taskType
         viewHolder.text.text = text
-        viewHolder.date.text = Date(time).toString()
+        viewHolder.date.text = time.toString()
 
         val priorityColor = when (taskPriority) {
-            TaskPriority.LOW.ordinal -> {
+            TaskPriority.LOW -> {
                 R.color.priority_low
             }
-            TaskPriority.MID.ordinal -> {
+            TaskPriority.MID -> {
                 R.color.priority_mid
             }
-            TaskPriority.HIGH.ordinal -> {
+            TaskPriority.HIGH -> {
                 R.color.priority_high
             }
-            else -> android.R.color.transparent
         }
 
 

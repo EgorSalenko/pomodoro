@@ -1,9 +1,11 @@
 package io.esalenko.pomadoro.ui.activity
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.MenuItem
 import android.widget.PopupMenu
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.ui.common.BaseActivity
@@ -57,6 +59,11 @@ class MainActivity : BaseActivity() {
                     supportFragmentManager.findFragmentByTag(NewTaskFragment.TAG)?.remove()
                     ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
                 }
+            })
+            errorLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
+                Snackbar.make(coordinatorLayout, event.getContentIfNotHandled().toString(), Snackbar.LENGTH_INDEFINITE)
+                    .setAnchorView(addTaskButton)
+                    .show()
             })
         }
     }

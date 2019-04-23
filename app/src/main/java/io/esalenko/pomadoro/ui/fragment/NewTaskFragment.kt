@@ -83,9 +83,9 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         toDoListVIewModel.addTask(
-            category = taskCategory.ordinal,
+            category = taskCategory,
             taskDescription = text,
-            priority = taskPriority.ordinal
+            priority = taskPriority
         )
         sharedViewModel.openMainScreen()
     }

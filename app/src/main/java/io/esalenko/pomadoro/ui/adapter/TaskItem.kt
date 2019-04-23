@@ -1,5 +1,6 @@
 package io.esalenko.pomadoro.ui.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.widget.LinearLayout
@@ -14,7 +15,7 @@ import com.mikepenz.fastadapter_extensions.drag.IDraggable
 import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.TaskPriority
-import io.esalenko.pomadoro.util.formatDateTime
+import io.esalenko.pomadoro.util.formatDate
 import org.jetbrains.anko.find
 import java.util.*
 
@@ -55,12 +56,13 @@ class TaskItem(
 
     override fun getLayoutRes(): Int = R.layout.item_task
 
+    @SuppressLint("CheckResult")
     override fun bindView(viewHolder: TaskItemViewHolder, payloads: MutableList<Any>) {
         super.bindView(viewHolder, payloads)
         viewHolder.taskType.text = taskType
         viewHolder.text.text = text
 
-        viewHolder.date.text = date?.formatDateTime()
+        viewHolder.date.text = date?.formatDate()
 
         val priorityColor = when (taskPriority) {
             TaskPriority.LOW -> {

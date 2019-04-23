@@ -30,4 +30,7 @@ interface TaskDao {
 
     @Query("select * from task_table where isArchived == 1")
     fun getAllArchived(): Maybe<List<Task>>
+
+    @Query("select * from task_table where isArchived == 0 order by date DESC")
+    fun getAllLatest(): Maybe<List<Task>>
 }

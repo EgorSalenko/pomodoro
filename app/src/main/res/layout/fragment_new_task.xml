@@ -7,13 +7,19 @@
         android:orientation="vertical"
         android:background="@android:color/background_light">
 
-    <androidx.appcompat.widget.AppCompatSpinner
+    <Spinner
+            style="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
             android:id="@+id/spinnerTaskTypes"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_margin="8dp"/>
+            android:layout_margin="8dp"
+            android:elevation="10dp"
+            android:spinnerMode="dropdown"
+            android:tooltipText="Category"
+            android:popupBackground="@drawable/background_spinner"/>
 
     <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:id="@+id/inputNewTaskLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,22 +29,23 @@
                 android:id="@+id/inputNewTask"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:gravity="top"
                 android:inputType="text|textMultiLine|textCapSentences"
                 android:imeOptions="actionNone"
                 android:maxLines="10"
                 android:lines="8"
                 android:minLines="6"
-                android:lineSpacingExtra="2dp"
-                android:scrollbars="vertical"/>
+                android:scrollbars="vertical"
+                android:hint="@string/text_hint_new_task"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-            style="@style/TextAppearance.AppCompat.Headline"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/default_margin"
-            android:text="Task priority:"/>
+            android:text="@string/text_task_priority"/>
 
     <RadioGroup
             android:id="@+id/radioGroupPriority"
@@ -50,19 +57,19 @@
                 android:id="@+id/radioBtnHigh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="High"/>
+                android:text="@string/text_high"/>
 
         <RadioButton
                 android:id="@+id/radioBtnMid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mid"/>
+                android:text="@string/text_mid"/>
 
         <RadioButton
                 android:id="@+id/radioBtnLow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Low"/>
+                android:text="@string/text_low"/>
 
     </RadioGroup>
 
@@ -80,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/small_margin"
                 app:icon="@drawable/ic_round_clear_24px"
-                android:text="cancel"/>
+                android:text="@android:string/cancel"/>
 
         <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button"
@@ -89,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/small_margin"
                 app:icon="@drawable/ic_round_save_24px"
-                android:text="SAVE"/>
+                android:text="@string/btn_text_save"/>
 
     </LinearLayout>
 

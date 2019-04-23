@@ -27,7 +27,7 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                 _toDoListLiveData.postValue(RxResult.success(taskList))
                 info { taskList }
             }, {
-                _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
+                _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
                 error { it }
             })
             .addToCompositeDisposable()
@@ -42,7 +42,7 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                     _toDoListLiveData.postValue(RxResult.success(listByPriority))
                 },
                 { error ->
-                    _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
+                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
                     error { error }
                 }
             )
@@ -58,7 +58,22 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
                     _toDoListLiveData.postValue(RxResult.success(archivedList))
                 },
                 { error ->
-                    _toDoListLiveData.postValue(RxResult.error("ToDo List::error occurred", null))
+                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun getToDoListLatest() {
+        _toDoListLiveData.postValue(RxResult.loading(null))
+        taskRepository.getAllLatest()
+            .subscribe(
+                { latest: List<Task> ->
+                    _toDoListLiveData.postValue(RxResult.success(latest))
+                },
+                { error ->
+                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
                     error { error }
                 }
             )

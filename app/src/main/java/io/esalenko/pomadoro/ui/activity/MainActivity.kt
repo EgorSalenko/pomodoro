@@ -38,7 +38,7 @@ class MainActivity : BaseActivity() {
             }
         }
         addTaskButton.setOnClickListener {
-            NewTaskFragment().replace(R.id.overlayFragmentContainer, NewTaskFragment.TAG)
+            NewTaskFragment().replace(R.id.overlayFragmentContainer, NewTaskFragment.TAG, addToBackStack = true)
         }
         setupPopUp()
         subscribeUi()
@@ -81,12 +81,8 @@ class MainActivity : BaseActivity() {
                     sharedViewModel.setFilter(FilterType.BY_PRIORITY)
                     true
                 }
-                R.id.filter_by_category_h_l -> {
-                    sharedViewModel.setFilter(FilterType.BY_HIGH_TO_LOW)
-                    true
-                }
-                R.id.filter_by_category_l_h -> {
-                    sharedViewModel.setFilter(FilterType.BY_LOW_TO_HIGH)
+                R.id.filter_by_date -> {
+                    sharedViewModel.setFilter(FilterType.BY_DATE)
                     true
                 }
                 R.id.filter_by_archived -> {

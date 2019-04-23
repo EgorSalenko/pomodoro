@@ -15,6 +15,15 @@
         ut labore et dolore magna aliqua.
     </string>
     <string name="action_undo">UNDO</string>
+    <string name="text_task_priority">Task priority:</string>
+    <string name="text_high">High</string>
+    <string name="text_mid">Mid</string>
+    <string name="text_low">Low</string>
+    <string name="btn_text_save">save</string>
+    <string name="text_hint_new_task">New task</string>
+    <string name="text_popup_by_date">By Date</string>
+    <string name="text_popup_by_priority">by Priority</string>
+    <string name="text_popup_archived">Archived</string>
 
     <string-array name="array_task_type">
         <item>Work</item>

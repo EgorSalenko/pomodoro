@@ -180,14 +180,8 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                     FilterType.BY_PRIORITY -> {
                         viewModel.getToDoListByPriority()
                     }
-                    FilterType.BY_CATEGORY -> {
-
-                    }
-                    FilterType.BY_HIGH_TO_LOW -> {
-
-                    }
-                    FilterType.BY_LOW_TO_HIGH -> {
-
+                    FilterType.BY_DATE -> {
+                        viewModel.getToDoListLatest()
                     }
                     FilterType.BY_ARCHIVED -> {
                         viewModel.getToDoListArchived()

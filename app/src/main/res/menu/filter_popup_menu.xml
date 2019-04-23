@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/filter_by_date"
+          android:title="@string/text_popup_by_date"
+          android:icon="@drawable/ic_round_calendar_today_24px"
+          app:showAsAction="ifRoom"/>
+
     <item android:id="@+id/filter_by_priority"
-          android:title="by Priority"
-          app:showAsAction="never"/>
-
-    <item android:id="@+id/filter_by_category_h_l"
-          android:title="By Category: High -> Low"
-          app:showAsAction="never"/>
-
-    <item android:id="@+id/filter_by_category_l_h"
-          android:title="By Category: Low -> High"
-          app:showAsAction="never"/>
+          android:title="@string/text_popup_by_priority"
+          android:icon="@drawable/ic_round_sort_24px"
+          app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/filter_by_archived"
-          android:title="By Archived"
-          app:showAsAction="never"/>
+          android:title="@string/text_popup_archived"
+          android:icon="@drawable/ic_round_unarchive_24px"
+          app:showAsAction="ifRoom"/>
 
 </menu>

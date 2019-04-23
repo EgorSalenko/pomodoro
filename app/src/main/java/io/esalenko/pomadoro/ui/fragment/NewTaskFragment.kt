@@ -58,7 +58,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             addTask()
         }
 
-        radioGroupPriority.setOnCheckedChangeListener { group: RadioGroup, checkedId: Int ->
+        radioGroupPriority.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
             taskPriority = when (checkedId) {
                 R.id.radioBtnLow -> LOW
                 R.id.radioBtnMid -> MID

@@ -48,7 +48,6 @@ class MainActivity : BaseActivity() {
     private fun setupPopUp() {
         popupMenu = PopupMenu(this, bottomAppBar.find(R.id.menu_filter))
         popupMenu.inflate(R.menu.filter_popup_menu)
-
     }
 
     private fun subscribeUi() {

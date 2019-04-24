@@ -24,7 +24,6 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
     protected fun Fragment.add(@IdRes containerId: Int, tag: String? = null) {
         childFragmentManager
             .beginTransaction()
-            // TODO :: Replace on custom animations
             .setCustomAnimations(
                 android.R.animator.fade_in,
                 android.R.animator.fade_out,
@@ -38,7 +37,6 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
     protected fun Fragment.replace(@IdRes containerId: Int, tag: String? = null) {
         childFragmentManager
             .beginTransaction()
-            // TODO :: Replace on custom animations
             .setCustomAnimations(
                 android.R.animator.fade_in,
                 android.R.animator.fade_out,
@@ -52,7 +50,6 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
     protected fun Fragment.remove() {
         childFragmentManager
             .beginTransaction()
-            // TODO :: Replace on custom animations
             .setCustomAnimations(
                 android.R.animator.fade_in,
                 android.R.animator.fade_out,
@@ -66,7 +63,6 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
     protected fun Fragment.show() {
         childFragmentManager
             .beginTransaction()
-            // TODO :: Replace on custom animations
             .setCustomAnimations(
                 android.R.animator.fade_in,
                 android.R.animator.fade_out,
@@ -80,7 +76,6 @@ abstract class BaseFragment : Fragment(), KoinComponent, AnkoLogger {
     protected fun Fragment.hide() {
         childFragmentManager
             .beginTransaction()
-            // TODO :: Replace on custom animations
             .setCustomAnimations(
                 android.R.animator.fade_in,
                 android.R.animator.fade_out,

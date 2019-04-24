@@ -19,24 +19,22 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.koin.core.KoinComponent
-import org.koin.core.get
+import org.koin.core.inject
 import java.util.concurrent.TimeUnit
 
 class CountdownService : Service(), KoinComponent {
 
-    private var sharedPreferenceManager: SharedPreferenceManager = get()
-
-    private var localNotificationManager: LocalNotificationManager = get()
+    private val sharedPreferenceManager: SharedPreferenceManager by inject()
+    private val localNotificationManager: LocalNotificationManager by inject()
 
     private lateinit var notificationManager: NotificationManager
-
-    private var timerResult: Long = 0
+    private lateinit var notificationBuilder: NotificationCompat.Builder
 
     private val binder = CountdownBinder()
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-
     private lateinit var callback: CountdownCommunicationCallback
-    private lateinit var notificationBuilder: NotificationCompat.Builder
+
+    private var timerResult: Long = 0
 
     inner class CountdownBinder : Binder() {
         val countdownService: CountdownService
@@ -68,7 +66,6 @@ class CountdownService : Service(), KoinComponent {
     fun startTimer() {
 
         val isPause = sharedPreferenceManager.isPause
-        // TODO :: Extract strings into resources
         val notification: Notification? =
             localNotificationManager.createNotification(
                 this,

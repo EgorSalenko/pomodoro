@@ -33,60 +33,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.ItemSwipeCallback {
 
-    override fun itemTouchOnMove(oldPosition: Int, newPosition: Int): Boolean {
-        DragDropUtil.onMove(itemAdapter, oldPosition, newPosition)  // change position
-        return true
-    }
-
-    override fun itemTouchDropped(oldPosition: Int, newPosition: Int) {
-        // save the new item order, i.e. in your database
-        val oldItem: TaskItem = itemAdapter.getAdapterItem(oldPosition)
-        val newItem: TaskItem = itemAdapter.getAdapterItem(newPosition)
-
-        viewModel.exchangeItems(oldItem.id, newItem.id)
-    }
-
-    override fun itemSwiped(position: Int, direction: Int) {
-        // -- Option 1: Direct action --
-        //do something when swiped such as: select, remove, update, ...:
-        //A) fastItemAdapter.select(position);
-        //B) fastItemAdapter.remove(position);
-        //C) update item, set "read" if an email etc
-
-        // -- Option 2: Delayed action --
-        val item = itemAdapter.getAdapterItem(position)
-        item.swipedDirection = direction
-
-        // This can vary depending on direction but remove & archive simulated here both results in
-        // removal from list
-        val removeRunnable = Runnable {
-            item.swipedAction = null
-            val _position: Int = itemAdapter.getAdapterPosition(item)
-            if (_position != RecyclerView.NO_POSITION) {
-                //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
-                itemAdapter.remove(_position)
-
-                when (item.swipedDirection) {
-                    ItemTouchHelper.LEFT -> viewModel.remove(item.id)
-                    ItemTouchHelper.RIGHT -> viewModel.archive(item.id)
-                }
-            }
-        }
-
-        toDoList.postDelayed(removeRunnable, 3000)
-
-        item.swipedAction = Runnable {
-            toDoList.removeCallbacks(removeRunnable)
-            item.swipedDirection = 0
-            val _position = itemAdapter.getAdapterPosition(item)
-            if (_position != RecyclerView.NO_POSITION) {
-                fastAdapter.notifyItemChanged(_position)
-            }
-        }
-
-        fastAdapter.notifyItemChanged(position)
-    }
-
     companion object {
         const val TAG = "ToDoListFragment"
     }
@@ -198,4 +144,57 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
         }
     }
 
+    override fun itemTouchOnMove(oldPosition: Int, newPosition: Int): Boolean {
+        DragDropUtil.onMove(itemAdapter, oldPosition, newPosition)  // change position
+        return true
+    }
+
+    override fun itemTouchDropped(oldPosition: Int, newPosition: Int) {
+        // save the new item order, i.e. in your database
+        val oldItem: TaskItem = itemAdapter.getAdapterItem(oldPosition)
+        val newItem: TaskItem = itemAdapter.getAdapterItem(newPosition)
+
+        viewModel.exchangeItems(oldItem.id, newItem.id)
+    }
+
+    override fun itemSwiped(position: Int, direction: Int) {
+        // -- Option 1: Direct action --
+        //do something when swiped such as: select, remove, update, ...:
+        //A) fastItemAdapter.select(position);
+        //B) fastItemAdapter.remove(position);
+        //C) update item, set "read" if an email etc
+
+        // -- Option 2: Delayed action --
+        val item = itemAdapter.getAdapterItem(position)
+        item.swipedDirection = direction
+
+        // This can vary depending on direction but remove & archive simulated here both results in
+        // removal from list
+        val removeRunnable = Runnable {
+            item.swipedAction = null
+            val _position: Int = itemAdapter.getAdapterPosition(item)
+            if (_position != RecyclerView.NO_POSITION) {
+                //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
+                itemAdapter.remove(_position)
+
+                when (item.swipedDirection) {
+                    ItemTouchHelper.LEFT -> viewModel.remove(item.id)
+                    ItemTouchHelper.RIGHT -> viewModel.archive(item.id)
+                }
+            }
+        }
+
+        toDoList.postDelayed(removeRunnable, 3000)
+
+        item.swipedAction = Runnable {
+            toDoList.removeCallbacks(removeRunnable)
+            item.swipedDirection = 0
+            val _position = itemAdapter.getAdapterPosition(item)
+            if (_position != RecyclerView.NO_POSITION) {
+                fastAdapter.notifyItemChanged(_position)
+            }
+        }
+
+        fastAdapter.notifyItemChanged(position)
+    }
 }

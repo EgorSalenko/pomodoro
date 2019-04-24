@@ -61,7 +61,6 @@ class TaskItem(
         super.bindView(viewHolder, payloads)
         viewHolder.taskType.text = taskType
         viewHolder.text.text = text
-
         viewHolder.date.text = date?.formatDate()
 
         val priorityColor = when (taskPriority) {
@@ -94,9 +93,11 @@ class TaskItem(
                 )
             )
         }
-        viewHolder.swipedAction.text = swipedAction ?: ""
-        viewHolder.swipedText.text = swipedText ?: ""
-        viewHolder.swipedActionRunnable = this.swipedAction
+        viewHolder.also {
+            it.swipedAction.text = swipedAction ?: ""
+            it.swipedText.text = swipedText ?: ""
+            it.swipedActionRunnable = this.swipedAction
+        }
 
     }
 

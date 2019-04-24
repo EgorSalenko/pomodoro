@@ -6,12 +6,11 @@ import java.util.*
 
 @Entity(tableName = "task_table")
 data class Task(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
-    // TODO :: Implement type converter
-    val category: TaskCategory,
-    val description: String,
-    val priority: TaskPriority,
-    val date: Date?,
+    @PrimaryKey(autoGenerate = true) var id: Long = 0L,
+    var category: TaskCategory,
+    var description: String,
+    var priority: TaskPriority,
+    var date: Date?,
     var isArchived: Boolean = false,
     var isCompleted: Boolean = false
 )

@@ -40,6 +40,10 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
 
     override fun itemTouchDropped(oldPosition: Int, newPosition: Int) {
         // save the new item order, i.e. in your database
+        val oldItem: TaskItem = itemAdapter.getAdapterItem(oldPosition)
+        val newItem: TaskItem = itemAdapter.getAdapterItem(newPosition)
+
+        viewModel.exchangeItems(oldItem.id, newItem.id)
     }
 
     override fun itemSwiped(position: Int, direction: Int) {

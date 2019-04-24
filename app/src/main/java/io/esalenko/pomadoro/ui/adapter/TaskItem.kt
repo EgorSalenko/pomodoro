@@ -100,6 +100,14 @@ class TaskItem(
 
     }
 
+    override fun toString(): String {
+        return "id: Long = $id, " +
+                "text: String =$text, " +
+                "date: Date? = ${date.toString()}, " +
+                "taskType: String =$taskType, " +
+                "taskPriority: TaskPriority = ${taskPriority.name}"
+    }
+
     inner class TaskItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val ctx: Context = view.context

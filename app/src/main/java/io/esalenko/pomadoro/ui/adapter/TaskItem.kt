@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.IItem
 import com.mikepenz.fastadapter.items.AbstractItem
-import com.mikepenz.fastadapter_extensions.drag.IDraggable
 import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.TaskPriority
@@ -28,13 +27,11 @@ class TaskItem(
     val taskPriority: TaskPriority
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
-    ISwipeable<TaskItem, IItem<*, *>>,
-    IDraggable<TaskItem, IItem<*, *>> {
+    ISwipeable<TaskItem, IItem<*, *>> {
 
     var swipedDirection: Int = 0
     var swipedAction: Runnable? = null
     var swipeable: Boolean = true
-    var draggable: Boolean = true
 
     override fun withIsSwipeable(swipeable: Boolean): TaskItem {
         this.swipeable = swipeable
@@ -42,13 +39,6 @@ class TaskItem(
     }
 
     override fun isSwipeable(): Boolean = swipeable
-
-    override fun withIsDraggable(draggable: Boolean): TaskItem {
-        this.draggable = draggable
-        return this
-    }
-
-    override fun isDraggable(): Boolean = draggable
 
     override fun getType(): Int = R.id.fast_item_task
 

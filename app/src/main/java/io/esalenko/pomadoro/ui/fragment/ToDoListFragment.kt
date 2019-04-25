@@ -10,11 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
-import com.mikepenz.fastadapter_extensions.drag.ItemTouchCallback
 import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeDragCallback
-import com.mikepenz.fastadapter_extensions.utilities.DragDropUtil
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
@@ -31,7 +29,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.ItemSwipeCallback {
+class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
     companion object {
         const val TAG = "ToDoListFragment"
@@ -68,7 +66,7 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
         val leaveBehindDrawableRight = context?.getDrawable(R.drawable.ic_round_save_24px)
 
         touchCallback = SimpleSwipeDragCallback(
-            this,
+            null,
             this,
             leaveBehindDrawableLeft,
             ItemTouchHelper.LEFT,
@@ -142,19 +140,6 @@ class ToDoListFragment : BaseFragment(), ItemTouchCallback, SimpleSwipeCallback.
                 viewModel.fetchToDoList()
             })
         }
-    }
-
-    override fun itemTouchOnMove(oldPosition: Int, newPosition: Int): Boolean {
-        DragDropUtil.onMove(itemAdapter, oldPosition, newPosition)  // change position
-        return true
-    }
-
-    override fun itemTouchDropped(oldPosition: Int, newPosition: Int) {
-        // save the new item order, i.e. in your database
-        val oldItem: TaskItem = itemAdapter.getAdapterItem(oldPosition)
-        val newItem: TaskItem = itemAdapter.getAdapterItem(newPosition)
-
-        viewModel.exchangeItems(oldItem.id, newItem.id)
     }
 
     override fun itemSwiped(position: Int, direction: Int) {

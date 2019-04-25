@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.domain.model.TaskCategory
 import io.esalenko.pomadoro.domain.model.TaskPriority
-import io.esalenko.pomadoro.repository.TaskRepository
+import io.esalenko.pomadoro.repository.TaskRxRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
 import io.reactivex.Single
@@ -15,7 +15,7 @@ import org.jetbrains.anko.info
 import java.util.*
 
 
-class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewModel() {
+class ToDoListVIewModel(private val taskRepository: TaskRxRepository) : BaseViewModel() {
 
     private val _toDoListLiveData = MutableLiveData<RxResult<List<Task>>>()
     val toDoListLiveData: LiveData<RxResult<List<Task>>>

@@ -14,6 +14,7 @@ import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.ui.activity.TimerActivity.Companion.createTimerActivityIntent
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -76,6 +77,11 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             ItemTouchHelper(touchCallback).also {
                 it.attachToRecyclerView(toDoList)
             }
+
+        fastAdapter.withOnClickListener { v, adapter, item: TaskItem, position ->
+            startActivity(createTimerActivityIntent(requireContext(), item.id))
+            true
+        }
     }
 
     private fun subscribeUi() {

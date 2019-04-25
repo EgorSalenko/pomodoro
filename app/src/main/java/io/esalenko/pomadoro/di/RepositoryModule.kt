@@ -1,9 +1,9 @@
 package io.esalenko.pomadoro.di
 
-import io.esalenko.pomadoro.repository.TaskRepository
+import io.esalenko.pomadoro.repository.TaskRxRepository
 import org.koin.dsl.module
 
 
 val repositoryModule = module {
-    single { TaskRepository(get()) }
+    single { TaskRxRepository(get()) }
 }

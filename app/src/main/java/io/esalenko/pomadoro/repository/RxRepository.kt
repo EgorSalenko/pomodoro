@@ -1,15 +1,16 @@
 package io.esalenko.pomadoro.repository
 
 import io.reactivex.Maybe
+import io.reactivex.Single
 
 
-interface Repository<Item> {
+interface RxRepository<Item> {
 
     fun getAll(): Maybe<List<Item>>
 
-    fun get(id: Long): Item
+    fun get(id: Long): Single<Item>
 
-    fun get(item: Item): Item
+    fun get(item: Item): Single<Item>
 
     fun add(item : Item)
 

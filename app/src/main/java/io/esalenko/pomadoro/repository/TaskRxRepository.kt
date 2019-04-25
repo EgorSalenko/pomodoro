@@ -1,12 +1,14 @@
 package io.esalenko.pomadoro.repository
 
+import android.annotation.SuppressLint
 import io.esalenko.pomadoro.domain.dao.TaskDao
 import io.esalenko.pomadoro.domain.model.Task
 import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
+class TaskRxRepository(private val taskDao: TaskDao) : RxRepository<Task> {
 
     override fun getAll(): Maybe<List<Task>> {
         return taskDao
@@ -15,12 +17,16 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun get(id: Long): Task {
+    override fun get(id: Long): Single<Task> {
         return taskDao.get(id)
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun get(item: Task): Task {
+    override fun get(item: Task): Single<Task> {
         return taskDao.get(item.id)
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
     }
 
     override fun add(item: Task) {
@@ -39,10 +45,18 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
         taskDao.deleteAll()
     }
 
+    @SuppressLint("CheckResult")
     fun archive(id: Long) {
-        val task: Task = taskDao.get(id)
-        task.isArchived = true
-        taskDao.insert(task)
+        taskDao.get(id)
+            .subscribe(
+                { task ->
+                    task.isArchived = true
+                    taskDao.insert(task)
+                },
+                { error ->
+                    error { error }
+                }
+            )
     }
 
     fun getAllByPriority(): Maybe<List<Task>> {

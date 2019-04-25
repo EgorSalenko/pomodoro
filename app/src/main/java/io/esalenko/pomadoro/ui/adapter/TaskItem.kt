@@ -15,6 +15,8 @@ import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.TaskPriority
 import io.esalenko.pomadoro.util.formatDate
+import io.esalenko.pomadoro.util.getPriorityColor
+import io.esalenko.pomadoro.util.getPriorityIcon
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import java.util.*
@@ -56,29 +58,8 @@ class TaskItem(
             it.date.text = date?.formatDate()
             it.pomidorsCounter.text = "x $pomidors"
         }
-        val priorityColor = when (taskPriority) {
-            TaskPriority.LOW -> {
-                R.color.priority_low
-            }
-            TaskPriority.MID -> {
-                R.color.priority_mid
-            }
-            TaskPriority.HIGH -> {
-                R.color.priority_high
-            }
-        }
-
-        val priorityDrawableRes = when (taskPriority) {
-            TaskPriority.LOW -> {
-                R.drawable.ic_priority_low
-            }
-            TaskPriority.MID -> {
-                R.drawable.ic_priority_mid
-            }
-            TaskPriority.HIGH -> {
-                R.drawable.ic_priority_high
-            }
-        }
+        val priorityColor = taskPriority.getPriorityColor()
+        val priorityDrawableRes = taskPriority.getPriorityIcon()
 
         val priorityDrawable = ContextCompat.getDrawable(viewHolder.ctx, priorityDrawableRes)
 

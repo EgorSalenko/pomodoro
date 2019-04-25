@@ -33,7 +33,7 @@ class SharedViewModel : BaseViewModel() {
         _filterLiveData.value = Event(filterType)
     }
 
-    fun showError(msg: String?) {
+    fun showError(msg: String? = null) {
         _errorLiveData.value = Event(msg ?: "Error occurred")
     }
 

@@ -69,22 +69,6 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             .addToCompositeDisposable()
     }
 
-    fun getToDoListLatest() {
-        _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository
-            .getAllLatest()
-            .subscribe(
-                { latest: List<Task> ->
-                    _toDoListLiveData.postValue(RxResult.success(latest))
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
-    }
-
     fun addTask(category: TaskCategory, taskDescription: String, priority: TaskPriority) {
         Single
             .just(
@@ -138,28 +122,4 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             )
             .addToCompositeDisposable()
     }
-
-    fun exchangeItems(oldItemId: Long, newItemId: Long) {
-        Single.just(Unit)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe(
-                {
-                    val oldTask: Task = taskRepository.get(oldItemId) //0
-                    val newTask: Task = taskRepository.get(newItemId) //2
-
-                    val tempId = oldTask.id // 0
-                    oldTask.id = newTask.id // 2
-                    taskRepository.add(oldTask)
-                    newTask.id = tempId // 0
-                    taskRepository.add(newTask)
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
-    }
-
 }

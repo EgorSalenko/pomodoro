@@ -13,7 +13,7 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(task: Task)
 
-    @Query("select * from task_table where isArchived == 0")
+    @Query("select * from task_table where isArchived == 0 order by date DESC")
     fun getAll(): Maybe<List<Task>>
 
     @Query("select * from task_table where id =:id")
@@ -28,9 +28,6 @@ interface TaskDao {
     @Query("select * from task_table where isArchived == 0 order by priority ASC")
     fun getAllByPriority(): Maybe<List<Task>>
 
-    @Query("select * from task_table where isArchived == 1")
+    @Query("select * from task_table where isArchived == 1 order by date DESC")
     fun getAllArchived(): Maybe<List<Task>>
-
-    @Query("select * from task_table where isArchived == 0 order by date DESC")
-    fun getAllLatest(): Maybe<List<Task>>
 }

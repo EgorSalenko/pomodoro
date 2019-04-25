@@ -132,7 +132,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                         viewModel.getToDoListByPriority()
                     }
                     FilterType.BY_DATE -> {
-                        viewModel.getToDoListLatest()
+                        viewModel.fetchToDoList()
                     }
                     FilterType.BY_ARCHIVED -> {
                         viewModel.getToDoListArchived()

@@ -20,8 +20,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="center"
-                android:backgroundTint="@color/primaryLightColor"
-                app:popupTheme="@color/secondaryColor"
                 app:fabAlignmentMode="center"
                 app:hideOnScroll="true"/>
 
@@ -29,8 +27,8 @@
                 android:id="@+id/addTaskButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:backgroundTint="@color/primaryDarkColor"
                 app:fabSize="normal"
+                app:backgroundTint="@color/primaryColor"
                 app:layout_anchor="@id/bottomAppBar"
                 android:src="@drawable/ic_round_add_24px"/>
 

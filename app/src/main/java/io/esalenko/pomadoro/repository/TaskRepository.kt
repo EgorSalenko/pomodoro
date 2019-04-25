@@ -57,11 +57,4 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(Schedulers.io())
             .subscribeOn(AndroidSchedulers.mainThread())
     }
-
-    fun getAllLatest(): Maybe<List<Task>> {
-        return taskDao.getAllLatest()
-            .subscribeOn(Schedulers.io())
-            .subscribeOn(AndroidSchedulers.mainThread())
-    }
-
 }

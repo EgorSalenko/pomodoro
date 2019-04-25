@@ -69,6 +69,7 @@ dependencies {
     implementation "com.mikepenz:fastadapter-extensions-expandable:$fast_adapter"
     implementation "com.mikepenz:fastadapter-extensions:$fast_adapter"
 
+    implementation "com.andkulikov:transitionseverywhere:2.0.0-beta01"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

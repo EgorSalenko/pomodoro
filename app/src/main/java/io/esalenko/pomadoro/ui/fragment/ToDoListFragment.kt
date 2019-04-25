@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
-import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
-import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeDragCallback
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.FilterType
 import io.esalenko.pomadoro.domain.model.Task
@@ -45,7 +43,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     private lateinit var itemAdapter: ItemAdapter<TaskItem>
 
     //drag & drop
-    private lateinit var touchCallback: SimpleDragCallback
+    private lateinit var touchCallback: SimpleSwipeCallback
     private lateinit var touchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,12 +59,11 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         toDoList.layoutManager = LinearLayoutManager(context)
         toDoList.adapter = fastAdapter
 
-        val leaveBehindDrawableLeft = context?.getDrawable(R.drawable.ic_round_clear_24px)
+        val leaveBehindDrawableLeft = context?.getDrawable(R.drawable.ic_round_delete_sweep_24px)
 
-        val leaveBehindDrawableRight = context?.getDrawable(R.drawable.ic_round_save_24px)
+        val leaveBehindDrawableRight = context?.getDrawable(R.drawable.ic_round_archive_24px)
 
-        touchCallback = SimpleSwipeDragCallback(
-            null,
+        touchCallback = SimpleSwipeCallback(
             this,
             leaveBehindDrawableLeft,
             ItemTouchHelper.LEFT,
@@ -76,9 +73,9 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             .withLeaveBehindSwipeRight(leaveBehindDrawableRight)
 
         touchHelper =
-            ItemTouchHelper(touchCallback) // Create ItemTouchHelper and pass with parameter the SimpleDragCallback
-        touchHelper.attachToRecyclerView(toDoList) // Attach ItemTouchHelper to RecyclerView
-
+            ItemTouchHelper(touchCallback).also {
+                it.attachToRecyclerView(toDoList)
+            }
     }
 
     private fun subscribeUi() {
@@ -90,25 +87,32 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 when (result.status) {
                     RxStatus.SUCCESS -> {
                         itemAdapter.clear()
-                        result
-                            .data
-                            ?.forEach { task: Task ->
-                                items.add(
-                                    TaskItem(
-                                        task.id,
-                                        task.description,
-                                        task.date,
-                                        task.category.categoryName,
-                                        task.priority
+                        if (result.data?.isEmpty()!!) {
+                            warning_msg_empty_list.visibility = View.VISIBLE
+                        } else {
+                            warning_msg_empty_list.visibility = View.GONE
+                            result
+                                .data
+                                .forEach { task: Task ->
+                                    items.add(
+                                        TaskItem(
+                                            task.id,
+                                            task.description,
+                                            task.date,
+                                            task.category.categoryName,
+                                            task.priority,
+                                            task.pomidors
+                                        )
                                     )
-                                )
-                                info { task }
-                            }
-                        FastAdapterDiffUtil.set(itemAdapter, items)
+                                    info { task }
+                                }
+                            FastAdapterDiffUtil.set(itemAdapter, items)
+                        }
                         loading.visibility = View.GONE
                     }
                     RxStatus.ERROR -> {
                         loading.visibility = View.GONE
+                        warning_msg_empty_list.visibility = View.VISIBLE
                         sharedViewModel.showError(result.msg)
                     }
                     RxStatus.LOADING -> {
@@ -143,18 +147,10 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     }
 
     override fun itemSwiped(position: Int, direction: Int) {
-        // -- Option 1: Direct action --
-        //do something when swiped such as: select, remove, update, ...:
-        //A) fastItemAdapter.select(position);
-        //B) fastItemAdapter.remove(position);
-        //C) update item, set "read" if an email etc
-
-        // -- Option 2: Delayed action --
         val item = itemAdapter.getAdapterItem(position)
         item.swipedDirection = direction
+        info { item.swipedDirection }
 
-        // This can vary depending on direction but remove & archive simulated here both results in
-        // removal from list
         val removeRunnable = Runnable {
             item.swipedAction = null
             val _position: Int = itemAdapter.getAdapterPosition(item)
@@ -162,6 +158,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
                 itemAdapter.remove(_position)
 
+                ItemTouchHelper.ACTION_STATE_DRAG
                 when (item.swipedDirection) {
                     ItemTouchHelper.LEFT -> viewModel.remove(item.id)
                     ItemTouchHelper.RIGHT -> viewModel.archive(item.id)

@@ -12,5 +12,6 @@ data class Task(
     var priority: TaskPriority,
     var date: Date?,
     var isArchived: Boolean = false,
-    var isCompleted: Boolean = false
+    var isCompleted: Boolean = false,
+    var pomidors: Int = 0
 )

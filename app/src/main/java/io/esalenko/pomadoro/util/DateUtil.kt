@@ -39,8 +39,12 @@ fun Date.formatDate(): String {
         TimeUnit.HOURS.toMillis(1) > System.currentTimeMillis() - this.time -> {
             "Hour ago"
         }
+        TimeUnit.HOURS.toMillis(24) > System.currentTimeMillis() - this.time -> {
+            val sdf = SimpleDateFormat("HH:mm")
+            sdf.format(this)
+        }
         else -> {
-            val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm")
+            val sdf = SimpleDateFormat("dd.MM")
             sdf.format(this)
         }
     }

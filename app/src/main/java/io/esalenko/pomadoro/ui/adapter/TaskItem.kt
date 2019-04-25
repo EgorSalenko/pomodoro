@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +15,7 @@ import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.TaskPriority
 import io.esalenko.pomadoro.util.formatDate
+import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
 import java.util.*
 
@@ -24,7 +25,8 @@ class TaskItem(
     val text: String,
     val date: Date?,
     val taskType: String,
-    val taskPriority: TaskPriority
+    val taskPriority: TaskPriority,
+    val pomidors: Int
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
     ISwipeable<TaskItem, IItem<*, *>> {
@@ -46,13 +48,14 @@ class TaskItem(
 
     override fun getLayoutRes(): Int = R.layout.item_task
 
-    @SuppressLint("CheckResult")
     override fun bindView(viewHolder: TaskItemViewHolder, payloads: MutableList<Any>) {
         super.bindView(viewHolder, payloads)
-        viewHolder.taskType.text = taskType
-        viewHolder.text.text = text
-        viewHolder.date.text = date?.formatDate()
-
+        viewHolder.also {
+            it.taskType.text = taskType
+            it.text.text = text
+            it.date.text = date?.formatDate()
+            it.pomidorsCounter.text = "x $pomidors"
+        }
         val priorityColor = when (taskPriority) {
             TaskPriority.LOW -> {
                 R.color.priority_low
@@ -65,8 +68,26 @@ class TaskItem(
             }
         }
 
+        val priorityDrawableRes = when (taskPriority) {
+            TaskPriority.LOW -> {
+                R.drawable.ic_priority_low
+            }
+            TaskPriority.MID -> {
+                R.drawable.ic_priority_mid
+            }
+            TaskPriority.HIGH -> {
+                R.drawable.ic_priority_high
+            }
+        }
+
+        val priorityDrawable = ContextCompat.getDrawable(viewHolder.ctx, priorityDrawableRes)
+
+        viewHolder.taskType.apply {
+            setCompoundDrawablesWithIntrinsicBounds(priorityDrawable, null, null, null)
+            setTextColor(ContextCompat.getColor(viewHolder.ctx, priorityColor))
+        }
+
         viewHolder.apply {
-            parent.setCardBackgroundColor(ContextCompat.getColor(viewHolder.ctx, priorityColor))
             swipeResultContent.visibility = if (swipedDirection != 0) View.VISIBLE else View.INVISIBLE
             itemContent.visibility = if (swipedDirection != 0) View.INVISIBLE else View.VISIBLE
         }
@@ -79,7 +100,7 @@ class TaskItem(
             viewHolder.swipeResultContent.setBackgroundColor(
                 ContextCompat.getColor(
                     viewHolder.itemView.context,
-                    if (swipedDirection == ItemTouchHelper.LEFT) R.color.md_red_900 else R.color.primaryColor
+                    if (swipedDirection == ItemTouchHelper.LEFT) R.color.md_red_900 else R.color.md_blue_900
                 )
             )
         }
@@ -99,18 +120,19 @@ class TaskItem(
                 "taskPriority: TaskPriority = ${taskPriority.name}"
     }
 
-    inner class TaskItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    @SuppressLint("CheckResult", "ClickableViewAccessibility")
+    inner class TaskItemViewHolder(view: View) : RecyclerView.ViewHolder(view), AnkoLogger {
 
         val ctx: Context = view.context
         val taskType = view.find<TextView>(R.id.taskType)
         val text = view.find<TextView>(R.id.taskText)
         val date = view.find<TextView>(R.id.taskDate)
-        val parent = view.find<CardView>(R.id.taskCardView)
+        val pomidorsCounter = view.find<TextView>(R.id.pomidorsCounter)
 
         val swipedAction = view.find<TextView>(R.id.swiped_action)
         val swipedText = view.find<TextView>(R.id.swiped_text)
         val swipeResultContent = view.find<LinearLayout>(R.id.swipe_result_content)
-        val itemContent = view.find<LinearLayout>(R.id.item_content)
+        val itemContent = view.find<ConstraintLayout>(R.id.item_content)
 
         var swipedActionRunnable: Runnable? = null
 

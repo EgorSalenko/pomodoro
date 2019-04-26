@@ -6,22 +6,11 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.View
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.common.BaseActivity
-import io.esalenko.pomadoro.util.RxResult
-import io.esalenko.pomadoro.util.RxStatus
-import io.esalenko.pomadoro.util.getPriorityColor
-import io.esalenko.pomadoro.util.getPriorityIcon
-import io.esalenko.pomadoro.vm.TimerViewModel
-import kotlinx.android.synthetic.main.activity_timer.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import io.esalenko.pomadoro.ui.fragment.TaskFragment
 
 
 class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
@@ -29,11 +18,8 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
     override val layoutRes: Int
         get() = R.layout.activity_timer
 
-    private val timerViewModel: TimerViewModel by viewModel()
-
     private var itemId: Long = -1L
     private var isBound: Boolean = false
-
 
     companion object {
         private const val KEY_ITEM_ID = "key_item_id"
@@ -70,50 +56,11 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
         requireNotNull(intent)
         itemId = intent.extras[KEY_ITEM_ID] as Long
         if (itemId == -1L) throw IllegalStateException("ItemId can't be -1")
-        timerViewModel.getTask(itemId)
-        subscribeUi()
-    }
-
-    private fun subscribeUi() {
-        timerViewModel.apply {
-            taskLiveData.observe(this@TimerActivity, Observer { result: RxResult<Task> ->
-                when (result.status) {
-                    RxStatus.LOADING -> {
-                        loading.visibility = View.VISIBLE
-                    }
-                    RxStatus.SUCCESS -> {
-                        loading.visibility = View.GONE
-                        val task = result.data ?: return@Observer
-
-                        pomodidorCount.text = task.pomidors.toString()
-                        taskCategory.text = task.category.categoryName
-                        taskCategory.setCompoundDrawablesWithIntrinsicBounds(
-                            task.priority.getPriorityIcon(),
-                            0,
-                            0,
-                            0
-                        )
-                        taskCategory.setTextColor(
-                            ContextCompat.getColor(
-                                this@TimerActivity,
-                                task.priority.getPriorityColor()
-                            )
-                        )
-                        taskText.text = task.description
-
-                    }
-                    RxStatus.ERROR -> {
-                        loading.visibility = View.GONE
-                        Snackbar.make(parentTimer, " 0", Snackbar.LENGTH_LONG)
-                            .setAction(R.string.snackbar_action_retry) {
-                                timerViewModel.getTask(itemId)
-                            }
-                            .show()
-                    }
-                }
-            })
+        if (savedInstanceState == null) {
+            TaskFragment.newInstance(itemId).replace(R.id.fragmentContainer, TaskFragment.TAG, addToBackStack = false)
         }
     }
+
 
     private fun startCountdown() {
         countdownService?.startTimer()

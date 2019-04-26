@@ -26,8 +26,8 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
                 android.R.animator.fade_out
             )
             .replace(containerId, this@replace, tag)
-            .addToBackStack(if (addToBackStack) tag else null)
-            .commitAllowingStateLoss()
+//            .addToBackStack(if (addToBackStack) tag else null)
+            .commit()
     }
 
     protected fun Fragment.add(@IdRes containerId: Int, tag: String?, addToBackStack: Boolean = false) {
@@ -41,7 +41,7 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
             )
             .add(containerId, this@add, tag)
             .addToBackStack(if (addToBackStack) tag else null)
-            .commitAllowingStateLoss()
+            .commit()
     }
 
     protected fun Fragment.remove() {
@@ -54,7 +54,7 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
                 android.R.animator.fade_out
             )
             .remove(this@remove)
-            .commitNowAllowingStateLoss()
+            .commit()
     }
 
     @get:LayoutRes

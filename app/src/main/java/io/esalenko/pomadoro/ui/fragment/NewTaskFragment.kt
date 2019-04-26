@@ -35,7 +35,6 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        retainInstance = true
         spinnerTaskTypes.onItemSelectedListener = this
         radioBtnLow.isChecked = true
 

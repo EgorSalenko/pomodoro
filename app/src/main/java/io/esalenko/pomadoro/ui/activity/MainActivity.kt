@@ -3,6 +3,7 @@ package io.esalenko.pomadoro.ui.activity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
@@ -39,7 +40,7 @@ class MainActivity : BaseActivity() {
             }
         }
         addTaskButton.setOnClickListener {
-            NewTaskFragment().replace(R.id.overlayFragmentContainer, NewTaskFragment.TAG, addToBackStack = true)
+            NewTaskFragment().add(R.id.overlayFragmentContainer, NewTaskFragment.TAG, addToBackStack = true)
         }
         setupPopUp()
         subscribeUi()
@@ -54,7 +55,10 @@ class MainActivity : BaseActivity() {
         sharedViewModel.apply {
             mainScreenLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
                 if (!event.hasBeenHandled) {
-                    supportFragmentManager.findFragmentByTag(NewTaskFragment.TAG)?.remove()
+                    val newTaskFragment: Fragment? = supportFragmentManager.findFragmentByTag(NewTaskFragment.TAG)
+                    if (newTaskFragment?.isAdded!!) {
+                        newTaskFragment.remove()
+                    }
                     ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
                 }
             })

@@ -3,13 +3,19 @@ package io.esalenko.pomadoro.vm
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.repository.TaskRxRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.error
 
 
-class TimerViewModel(private val taskRepository: TaskRxRepository) : BaseViewModel() {
+class TimerViewModel(
+    private val taskRepository: TaskRxRepository,
+    private val sharedPreferenceManager: SharedPreferenceManager
+) : BaseViewModel() {
 
     private val _taskLiveData = MutableLiveData<RxResult<Task>>()
     val taskLiveData: LiveData<RxResult<Task>>
@@ -30,5 +36,56 @@ class TimerViewModel(private val taskRepository: TaskRxRepository) : BaseViewMod
             )
             .addToCompositeDisposable()
     }
+
+    fun completeTask(itemId: Long) {
+        taskRepository
+            .get(itemId)
+            .subscribe(
+                { task ->
+                    task.isCompleted = true
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun removeTask(itemId: Long) {
+        Single
+            .just(itemId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(
+                { id ->
+                    taskRepository.delete(id)
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun saveLastStartedTaskId(itemId: Long) {
+        sharedPreferenceManager.lastStartedTaskId = itemId
+    }
+
+    fun increaseSession(itemId: Long) {
+        taskRepository
+            .get(itemId)
+            .subscribe(
+                { task ->
+                    task.pomidors += 1
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun isLastStartedTask(itemId: Long) =
+        itemId == sharedPreferenceManager.lastStartedTaskId && sharedPreferenceManager.lastStartedTaskId != -1L
 
 }

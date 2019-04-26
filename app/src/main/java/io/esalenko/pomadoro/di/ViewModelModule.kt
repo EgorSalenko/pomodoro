@@ -10,5 +10,5 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModel { ToDoListVIewModel(get()) }
     viewModel { SharedViewModel() }
-    viewModel { TimerViewModel(get()) }
+    viewModel { TimerViewModel(get(), get()) }
 }

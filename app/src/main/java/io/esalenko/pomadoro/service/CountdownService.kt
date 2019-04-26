@@ -10,29 +10,37 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
+import io.esalenko.pomadoro.repository.TaskRxRepository
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.error
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.concurrent.TimeUnit
 
-class CountdownService : Service(), KoinComponent {
+class CountdownService : Service(), KoinComponent, AnkoLogger {
 
     private val sharedPreferenceManager: SharedPreferenceManager by inject()
     private val localNotificationManager: LocalNotificationManager by inject()
+    private val repository: TaskRxRepository by inject()
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
+    private lateinit var callback: CountdownCommunicationCallback
+
+    var task: Task? = null
 
     private val binder = CountdownBinder()
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var callback: CountdownCommunicationCallback
 
     private var timerResult: Long = 0
 
@@ -42,7 +50,6 @@ class CountdownService : Service(), KoinComponent {
     }
 
     companion object {
-
         private const val NOTIFICATION_ID = 5002
         private const val REQUEST_CODE = 8002
 
@@ -64,8 +71,18 @@ class CountdownService : Service(), KoinComponent {
 
     @SuppressLint("CheckResult")
     fun startTimer() {
+        if (task == null) return
 
-        val isPause = sharedPreferenceManager.isPause
+        task?.isInProgress = true
+        updateTask(task!!)
+        val isPause: Boolean = task?.isPaused!!
+
+        val timerDuration: Long = if (isPause) {
+            sharedPreferenceManager.cooldownDuration
+        } else {
+            sharedPreferenceManager.timerDuration
+        }
+
         val notification: Notification? =
             localNotificationManager.createNotification(
                 this,
@@ -81,31 +98,19 @@ class CountdownService : Service(), KoinComponent {
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { timer: Long ->
-                timerResult = if (isPause) {
-                    sharedPreferenceManager.cooldownDuration - (timer * 1000)
-                } else {
-                    sharedPreferenceManager.timerDuration - (timer * 1000)
-                }
-                callback.isOnPause(isPause)
-                callback.onTimerStatusChanged(true)
+                timerResult = timerDuration - (timer * 1000)
+                callback.onTimerProcessingListener(true)
             }
             .takeUntil { timer: Long ->
-                timer * 1000 == if (isPause) {
-                    sharedPreferenceManager.cooldownDuration
-                } else {
-                    sharedPreferenceManager.timerDuration
-                }
+                timer * 1000 == timerDuration
             }
             .doOnComplete {
-                callback.isOnPause(isPause)
-                callback.onTimerStatusChanged(false)
-                if (!isPause) {
-                    sharedPreferenceManager.incrementSessionCounter()
-                }
-                callback.onSessionCounterUpdate(
-                    sharedPreferenceManager.sessionCounter
-                )
-                callback.countdownFinished()
+                callback.onTimerProcessingListener(false)
+                task?.isPaused = true
+                task?.isInProgress = false
+                task?.pomidors = task?.pomidors?.plus(1)!!
+                updateTask(task!!)
+                callback.onCountdownFinished()
                 LocalAlarmManager.startAlarm(this)
                 stopForeground(true)
                 stopSelf()
@@ -143,12 +148,29 @@ class CountdownService : Service(), KoinComponent {
 
     fun stopTimer() {
         notificationManager.cancel(NOTIFICATION_ID)
-        val isPause: Boolean = sharedPreferenceManager.isPause
-        sharedPreferenceManager.isPause = !isPause
-        callback.isOnPause(sharedPreferenceManager.isPause)
-        callback.onTimerStatusChanged(false)
+        task?.isPaused = false
+        task?.isInProgress = false
+        updateTask(task!!)
+        callback.onTimerProcessingListener(false)
         compositeDisposable.clear()
         stopSelf()
+    }
+
+    private fun updateTask(task: Task) {
+        addDisposable(
+            Single
+                .just(task)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(
+                    {
+                        repository.add(it)
+                    },
+                    { error ->
+                        error { error }
+                    }
+                )
+        )
     }
 
     fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback) {
@@ -158,12 +180,8 @@ class CountdownService : Service(), KoinComponent {
     interface CountdownCommunicationCallback {
         fun provideTimer(timer: String)
 
-        fun isOnPause(isPause: Boolean)
+        fun onTimerProcessingListener(isTimerProcessing: Boolean)
 
-        fun onTimerStatusChanged(isTimerProcessing: Boolean)
-
-        fun onSessionCounterUpdate(sessions: Int)
-
-        fun countdownFinished()
+        fun onCountdownFinished()
     }
 }

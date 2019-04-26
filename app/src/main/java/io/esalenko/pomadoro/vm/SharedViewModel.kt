@@ -25,6 +25,18 @@ class SharedViewModel : BaseViewModel() {
     val errorRetryLiveData: LiveData<Event<Any>>
         get() = _errorRetryLiveData
 
+    private val _timerLiveData = MutableLiveData<String>()
+    val timerLiveData: LiveData<String>
+        get() = _timerLiveData
+
+    private val _timerStateLiveData = MutableLiveData<TimerState>()
+    val timerStateLiveData: LiveData<TimerState>
+        get() = _timerStateLiveData
+
+    private val _timerEventLiveData = MutableLiveData<Event<CountdownEvent>>()
+    val timerEventLiveData: LiveData<Event<CountdownEvent>>
+        get() = _timerEventLiveData
+
     fun openMainScreen() {
         _mainScreenLiveData.value = Event("Saved")
     }
@@ -39,6 +51,33 @@ class SharedViewModel : BaseViewModel() {
 
     fun onErrorRetry() {
         _errorRetryLiveData.value = Event(Any())
+    }
+
+    fun setTime(time: String) {
+        _timerLiveData.value = time
+    }
+
+    fun updateState(state: TimerState) {
+        _timerStateLiveData.value = state
+    }
+
+    fun startTimer() {
+        _timerEventLiveData.value = Event(CountdownEvent.START)
+    }
+
+    fun stopTimer() {
+        _timerEventLiveData.value = Event(CountdownEvent.STOP)
+    }
+
+    enum class TimerState {
+        WORKING,
+        FINISHED,
+        STOPPED
+    }
+
+    enum class CountdownEvent {
+        START,
+        STOP
     }
 
 }

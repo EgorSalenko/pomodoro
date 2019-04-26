@@ -16,7 +16,7 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
         setContentView(layoutRes)
     }
 
-    protected fun Fragment.replace(@IdRes containerId: Int, tag: String?, addToBackStack: Boolean = false) {
+    protected fun Fragment.replace(@IdRes containerId: Int, tag: String?) {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(
@@ -26,7 +26,6 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
                 android.R.animator.fade_out
             )
             .replace(containerId, this@replace, tag)
-//            .addToBackStack(if (addToBackStack) tag else null)
             .commit()
     }
 

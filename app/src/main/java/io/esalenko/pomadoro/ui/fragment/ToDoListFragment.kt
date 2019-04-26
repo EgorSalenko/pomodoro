@@ -47,10 +47,14 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     private lateinit var touchCallback: SimpleSwipeCallback
     private lateinit var touchHelper: ItemTouchHelper
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchToDoList()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
-        viewModel.fetchToDoList()
         subscribeUi()
     }
 
@@ -107,7 +111,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                             task.date,
                                             task.category.categoryName,
                                             task.priority,
-                                            task.pomidors
+                                            task.pomidors,
+                                            task.isInProgress
                                         )
                                     )
                                     info { task }

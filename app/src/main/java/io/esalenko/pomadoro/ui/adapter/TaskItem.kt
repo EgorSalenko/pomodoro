@@ -28,7 +28,8 @@ class TaskItem(
     val date: Date?,
     val taskType: String,
     val taskPriority: TaskPriority,
-    val pomidors: Int
+    val pomidors: Int,
+    val isInProgress: Boolean
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
     ISwipeable<TaskItem, IItem<*, *>> {
@@ -57,6 +58,7 @@ class TaskItem(
             it.text.text = text
             it.date.text = date?.formatDate()
             it.pomidorsCounter.text = "x $pomidors"
+            it.taskStatus.visibility = if (isInProgress) View.VISIBLE else View.GONE
         }
         val priorityColor = taskPriority.getPriorityColor()
         val priorityDrawableRes = taskPriority.getPriorityIcon()
@@ -109,6 +111,7 @@ class TaskItem(
         val text = view.find<TextView>(R.id.taskText)
         val date = view.find<TextView>(R.id.taskDate)
         val pomidorsCounter = view.find<TextView>(R.id.pomidorsCounter)
+        val taskStatus = view.find<TextView>(R.id.taskStatus)
 
         val swipedAction = view.find<TextView>(R.id.swiped_action)
         val swipedText = view.find<TextView>(R.id.swiped_text)

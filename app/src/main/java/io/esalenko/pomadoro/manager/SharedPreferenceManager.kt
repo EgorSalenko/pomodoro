@@ -11,11 +11,10 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         const val SHARED_PREFERENCE_NAME = "local_shared_preference"
 
         const val KEY_TIMER_DURATION = "key_timer_duration"
-        const val KEY_IS_PAUSE = "key_is_pause"
         const val KEY_SHORT_COOLDOWN_TIMESTAMP = "key_short_cooldown_timestamp"
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
-        const val KEY_SESSIONS_COUNTER = "key_sessions_counter"
-        const val KEY_CACHED_TASK_DESCRIPTION = "key_cached_task_description"
+        const val KEY_LAST_STARTED_TASK_TIMER_ID = "key_last_task_timer_id"
+        const val KEY_IS_LONG_COOLDOWN_SESSION = "key_is_long_cooldown_session"
 
         const val LONG_COOLDOWN_SESSION = 4
 
@@ -24,15 +23,6 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         var DEFAULT_SHORT_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(5)
         var DEFAULT_LONG_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(15)
     }
-
-    var isPause: Boolean
-        get() = sharedPreferences.getBoolean(
-            KEY_IS_PAUSE,
-            false
-        )
-        set(value) = sharedPreferences.edit {
-            putBoolean(KEY_IS_PAUSE, value)
-        }
 
     var timerDuration: Long
         get() = sharedPreferences.getLong(
@@ -46,7 +36,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
     val cooldownDuration: Long
         get() = if (isLongCooldownSession) longCooldownDuration else shortCooldownDuration
 
-    var shortCooldownDuration: Long
+    private var shortCooldownDuration: Long
         get() = sharedPreferences.getLong(
             KEY_SHORT_COOLDOWN_TIMESTAMP,
             DEFAULT_SHORT_COOLDOWN_TIMESTAMP
@@ -55,7 +45,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
             putLong(KEY_SHORT_COOLDOWN_TIMESTAMP, value)
         }
 
-    var longCooldownDuration: Long
+    private var longCooldownDuration: Long
         get() = sharedPreferences.getLong(
             KEY_LONG_COOLDOWN_TIMESTAMP,
             DEFAULT_LONG_COOLDOWN_TIMESTAMP
@@ -64,30 +54,17 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
             putLong(KEY_LONG_COOLDOWN_TIMESTAMP, value)
         }
 
-    private var _sessionsCounter: Int
-        get() = sharedPreferences.getInt(KEY_SESSIONS_COUNTER, 0)
+    var isLongCooldownSession: Boolean
+        get() = sharedPreferences.getBoolean(KEY_IS_LONG_COOLDOWN_SESSION, false)
         set(value) = sharedPreferences.edit {
-            putInt(KEY_SESSIONS_COUNTER, value)
+            putBoolean(KEY_IS_LONG_COOLDOWN_SESSION, value)
         }
 
-    val sessionCounter: Int
-        get() = _sessionsCounter
-
-    var cachedTaskDescription: String
-        get() =
-            sharedPreferences
-                .getString(KEY_CACHED_TASK_DESCRIPTION, "Task Description is empty")
-                ?: "Task Description is empty"
+    var lastStartedTaskId: Long
+        get() = sharedPreferences.getLong(
+            KEY_LAST_STARTED_TASK_TIMER_ID, -1
+        )
         set(value) = sharedPreferences.edit {
-            putString(KEY_CACHED_TASK_DESCRIPTION, value)
+            putLong(KEY_LAST_STARTED_TASK_TIMER_ID, value)
         }
-
-    fun incrementSessionCounter() {
-        _sessionsCounter++
-    }
-
-    private val isLongCooldownSession: Boolean
-        get() = _sessionsCounter == LONG_COOLDOWN_SESSION
-
-
 }

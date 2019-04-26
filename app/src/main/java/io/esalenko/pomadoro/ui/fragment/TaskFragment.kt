@@ -13,9 +13,12 @@ import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.util.getPriorityColor
 import io.esalenko.pomadoro.util.getPriorityIcon
+import io.esalenko.pomadoro.vm.SharedViewModel
+import io.esalenko.pomadoro.vm.SharedViewModel.TimerState
 import io.esalenko.pomadoro.vm.TimerViewModel
 import kotlinx.android.synthetic.main.activity_timer.*
 import kotlinx.android.synthetic.main.fragment_task.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TaskFragment : BaseFragment() {
@@ -26,6 +29,8 @@ class TaskFragment : BaseFragment() {
         get() = R.layout.fragment_task
 
     private val timerViewModel: TimerViewModel by viewModel()
+    private val sharedViewModel: SharedViewModel by sharedViewModel()
+    private var currentState: TimerState = TimerState.FINISHED
 
     companion object {
         const val TAG = "TaskFragment"
@@ -44,7 +49,35 @@ class TaskFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         itemId = arguments!![KEY_ITEM_ID] as Long
         timerViewModel.getTask(itemId)
+        timerHandler.setOnClickListener {
+            when (currentState) {
+                TimerState.WORKING -> {
+                    sharedViewModel.stopTimer()
+                }
+                TimerState.FINISHED, TimerState.STOPPED -> {
+                    timerViewModel.saveLastStartedTaskId(itemId)
+                    sharedViewModel.startTimer()
+                }
+            }
+        }
         subscribeUi()
+        updateView()
+    }
+
+    private fun updateView() {
+        timerHandler.setImageResource(
+            when (currentState) {
+                TimerState.WORKING -> {
+                    R.drawable.ic_round_stop_24px
+                }
+                TimerState.FINISHED -> {
+                    R.drawable.ic_round_play_circle_outline_24px
+                }
+                TimerState.STOPPED -> {
+                    R.drawable.ic_round_play_circle_outline_24px
+                }
+            }
+        )
     }
 
     private fun subscribeUi() {
@@ -84,6 +117,19 @@ class TaskFragment : BaseFragment() {
                             .show()
                     }
                 }
+            })
+        }
+        sharedViewModel.apply {
+            timerLiveData.observe(viewLifecycleOwner, Observer { formattedTime: String ->
+                if (timerViewModel.isLastStartedTask(itemId)) {
+                    countdown.text = formattedTime
+                } else {
+                    timerContent.visibility = View.GONE
+                }
+            })
+            timerStateLiveData.observe(viewLifecycleOwner, Observer { state: TimerState ->
+                currentState = state
+                updateView()
             })
         }
     }

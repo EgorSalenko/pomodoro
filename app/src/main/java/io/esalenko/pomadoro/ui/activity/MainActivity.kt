@@ -54,13 +54,12 @@ class MainActivity : BaseActivity() {
     private fun subscribeUi() {
         sharedViewModel.apply {
             mainScreenLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
-                if (!event.hasBeenHandled) {
-                    val newTaskFragment: Fragment? = supportFragmentManager.findFragmentByTag(NewTaskFragment.TAG)
-                    if (newTaskFragment?.isAdded!!) {
-                        newTaskFragment.remove()
-                    }
-                    ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
+                val newTaskFragment: Fragment? = supportFragmentManager.findFragmentByTag(NewTaskFragment.TAG)
+                if (newTaskFragment?.isAdded!!) {
+                    newTaskFragment.remove()
                 }
+                ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
+
             })
             errorLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
                 Snackbar.make(coordinatorLayout, event.getContentIfNotHandled().toString(), Snackbar.LENGTH_INDEFINITE)

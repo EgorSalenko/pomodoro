@@ -11,10 +11,12 @@ import androidx.lifecycle.Observer
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.fragment.TaskFragment
+import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.TimerViewModel
@@ -26,6 +28,18 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
+
+    override fun onTaskInProgress(inProgress: Boolean) {
+        timerViewModel.setTaskInProgress(itemId, inProgress)
+    }
+
+    override fun onTaskIsPaused(isPaused: Boolean) {
+        timerViewModel.setTaskOnPause(itemId, isPaused)
+    }
+
+    override fun onTaskSessionUpdate() {
+        timerViewModel.increaseSession(itemId)
+    }
 
     private var isRunning: Boolean = false
     override val layoutRes: Int
@@ -40,10 +54,12 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
     private var countdownService: CountdownService? = null
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            timerViewModel.getTask(itemId)
             val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
             countdownService = countdownBinder.countdownService
             countdownService?.setCountdownCommunicationCallback(this@TimerActivity)
+            if (timerViewModel.isLastStartedTask(itemId)) {
+                timerViewModel.getTask(itemId)
+            }
             isBound = true
         }
 
@@ -93,6 +109,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
             timerViewModel.completeTask(itemId)
             finish()
         }
+
         subscribeUi()
     }
 
@@ -115,15 +132,18 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                                 .show()
                         }
                     }
-                })
+                }
+            )
         }
         timerViewModel.apply {
-            taskLiveData.observe(this@TimerActivity, Observer { result ->
+            taskLiveData.observe(this@TimerActivity, Observer { result: RxResult<Task> ->
                 when (result.status) {
                     RxStatus.SUCCESS -> {
-                        if (isBound && timerViewModel.isLastStartedTask(itemId)) {
-                            countdownService?.task = result.data
-                        }
+
+                        val task: Task = result.data ?: return@Observer
+
+                        countdownService?.isPause = task.isPaused
+                        countdownService?.isRunning = task.isInProgress
                     }
                     RxStatus.ERROR -> {
 
@@ -138,24 +158,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            android.R.id.home -> {
-                if (isRunning) {
-                    MaterialDialog(this).show {
-                        title(R.string.dialog_title_task_cancel)
-                        message(R.string.dialog_message_task_cancel)
-                        positiveButton {
-                            sharedViewModel.stopTimer()
-                            finish()
-                            it.dismiss()
-                        }
-                        negativeButton {
-                            it.dismiss()
-                        }
-                    }
-                } else {
-                    finish()
-                }
-            }
+            android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -198,8 +201,8 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
         sharedViewModel.updateState(if (isTimerProcessing) SharedViewModel.TimerState.WORKING else SharedViewModel.TimerState.STOPPED)
     }
 
-    override fun onCountdownFinished() {
-        if (timerViewModel.isLastStartedTask(itemId)) {
+    override fun onCountdownFinished(isPause: Boolean) {
+        if (timerViewModel.isLastStartedTask(itemId) && !isPause) {
             timerViewModel.increaseSession(itemId)
         }
         sharedViewModel.updateState(SharedViewModel.TimerState.FINISHED)

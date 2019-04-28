@@ -74,9 +74,57 @@ class TimerViewModel(
     fun increaseSession(itemId: Long) {
         taskRepository
             .get(itemId)
+            .map { task: Task ->
+                task.pomidors += 1
+                task
+            }
+            .subscribe(
+                { task: Task ->
+                    taskRepository.add(task)
+                    // TODO :: Update pomidors counter
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun setTaskInProgress(taskId: Long, inProgress: Boolean) {
+        taskRepository
+            .get(taskId)
+            .toObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .map { task ->
+                task.isInProgress = inProgress
+                task
+            }
             .subscribe(
                 { task ->
-                    task.pomidors += 1
+                    taskRepository.add(task)
+                    // TODO :: Update 'Task in progress' view
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun setTaskOnPause(taskId: Long, isPause: Boolean) {
+        taskRepository
+            .get(taskId)
+            .toObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .map { task ->
+                task.isPaused = isPause
+                task
+            }
+            .subscribe(
+                { task ->
+                    taskRepository.add(task)
                 },
                 { error ->
                     error { error }

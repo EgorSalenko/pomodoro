@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.manager
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import io.esalenko.pomadoro.BuildConfig
 import java.util.concurrent.TimeUnit
 
 
@@ -18,10 +19,13 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
 
         const val LONG_COOLDOWN_SESSION = 4
 
-        var DEFAULT_TIMER_TIMESTAMP = TimeUnit.MINUTES.toMillis(25)
+        var DEFAULT_TIMER_TIMESTAMP =
+            if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(25)
 
-        var DEFAULT_SHORT_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(5)
-        var DEFAULT_LONG_COOLDOWN_TIMESTAMP = TimeUnit.MINUTES.toMillis(15)
+        var DEFAULT_SHORT_COOLDOWN_TIMESTAMP =
+            if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(10) else TimeUnit.MINUTES.toMillis(5)
+        var DEFAULT_LONG_COOLDOWN_TIMESTAMP =
+            if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(20) else TimeUnit.MINUTES.toMillis(15)
     }
 
     var timerDuration: Long

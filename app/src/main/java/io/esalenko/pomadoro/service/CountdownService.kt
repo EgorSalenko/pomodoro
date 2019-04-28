@@ -10,11 +10,9 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.Task
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
-import io.esalenko.pomadoro.repository.TaskRxRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,20 +27,20 @@ import java.util.concurrent.TimeUnit
 
 class CountdownService : Service(), KoinComponent, AnkoLogger {
 
+    // TODO :: Make variables declaration more robust
+    var isRunning: Boolean = false
+    var isPause: Boolean = false
+    private var timerResult: Long = 0
+
     private val sharedPreferenceManager: SharedPreferenceManager by inject()
     private val localNotificationManager: LocalNotificationManager by inject()
-    private val repository: TaskRxRepository by inject()
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
     private lateinit var callback: CountdownCommunicationCallback
 
-    var task: Task? = null
-
     private val binder = CountdownBinder()
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-
-    private var timerResult: Long = 0
 
     inner class CountdownBinder : Binder() {
         val countdownService: CountdownService
@@ -71,11 +69,8 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
 
     @SuppressLint("CheckResult")
     fun startTimer() {
-        if (task == null) return
 
-        task?.isInProgress = true
-        updateTask(task!!)
-        val isPause: Boolean = task?.isPaused!!
+        callback.onTaskInProgress(true)
 
         val timerDuration: Long = if (isPause) {
             sharedPreferenceManager.cooldownDuration
@@ -105,39 +100,42 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
                 timer * 1000 == timerDuration
             }
             .doOnComplete {
+
                 callback.onTimerProcessingListener(false)
-                task?.isPaused = true
-                task?.isInProgress = false
-                task?.pomidors = task?.pomidors?.plus(1)!!
-                updateTask(task!!)
-                callback.onCountdownFinished()
+
+                callback.onTaskIsPaused(!isPause)
+                callback.onTaskInProgress(false)
+
+                callback.onCountdownFinished(isPause)
+
                 LocalAlarmManager.startAlarm(this)
                 stopForeground(true)
                 stopSelf()
             }
             .switchMap {
-                return@switchMap Observable.create<Long> { emitter ->
-                    emitter.onNext(timerResult)
-                }
+                Single.just<Long>(timerResult).toObservable()
             }
-            .subscribe({ tick: Long ->
+            .subscribe(
+                { tick: Long ->
 
-                val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(tick)
-                val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(tick) % 60
+                    val minutes: Long = TimeUnit.MILLISECONDS.toMinutes(tick)
+                    val seconds: Long = TimeUnit.MILLISECONDS.toSeconds(tick) % 60
 
-                val time: String = String.format("%02d:%02d", minutes, seconds)
+                    val time: String = String.format("%02d:%02d", minutes, seconds)
 
-                callback.provideTimer(time)
+                    callback.provideTimer(time)
 
-                notificationBuilder
-                    .setSound(null)
-                    .setContentText(getString(R.string.timer_remaining, time))
+                    notificationBuilder
+                        .setSound(null)
+                        .setContentText(getString(R.string.timer_remaining, time))
 
-                notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+                    notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
-            }, { throwable: Throwable ->
-                throwable.printStackTrace()
-            })
+                },
+                { error ->
+                    error { error }
+                }
+            )
         )
 
     }
@@ -148,30 +146,15 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
 
     fun stopTimer() {
         notificationManager.cancel(NOTIFICATION_ID)
-        task?.isPaused = false
-        task?.isInProgress = false
-        updateTask(task!!)
+
+        callback.onTaskIsPaused(false)
+        callback.onTaskInProgress(false)
+
         callback.onTimerProcessingListener(false)
         compositeDisposable.clear()
         stopSelf()
     }
 
-    private fun updateTask(task: Task) {
-        addDisposable(
-            Single
-                .just(task)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe(
-                    {
-                        repository.add(it)
-                    },
-                    { error ->
-                        error { error }
-                    }
-                )
-        )
-    }
 
     fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback) {
         this.callback = callback
@@ -182,6 +165,12 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
 
         fun onTimerProcessingListener(isTimerProcessing: Boolean)
 
-        fun onCountdownFinished()
+        fun onCountdownFinished(isPause: Boolean)
+
+        fun onTaskInProgress(inProgress: Boolean)
+
+        fun onTaskIsPaused(isPaused: Boolean)
+
+        fun onTaskSessionUpdate()
     }
 }

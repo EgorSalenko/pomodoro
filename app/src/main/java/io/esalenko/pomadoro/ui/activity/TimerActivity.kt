@@ -7,59 +7,45 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
+import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.domain.model.TimerState
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.common.BaseActivity
-import io.esalenko.pomadoro.ui.fragment.TaskFragment
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
-import io.esalenko.pomadoro.vm.SharedViewModel
+import io.esalenko.pomadoro.util.getPriorityColor
+import io.esalenko.pomadoro.util.getPriorityIcon
 import io.esalenko.pomadoro.vm.TimerViewModel
-import io.esalenko.pomadoro.vm.common.Event
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_timer.*
-import kotlinx.android.synthetic.main.activity_timer.bottomAppBar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-    override fun onTaskInProgress(inProgress: Boolean) {
-        timerViewModel.setTaskInProgress(itemId, inProgress)
-    }
-
-    override fun onTaskIsPaused(isPaused: Boolean) {
-        timerViewModel.setTaskOnPause(itemId, isPaused)
-    }
-
-    override fun onTaskSessionUpdate() {
-        timerViewModel.increaseSession(itemId)
-    }
-
-    private var isRunning: Boolean = false
     override val layoutRes: Int
         get() = R.layout.activity_timer
 
-    private var itemId: Long = -1L
-    private var isBound: Boolean = false
-
-    private val sharedViewModel: SharedViewModel by viewModel()
     private val timerViewModel: TimerViewModel by viewModel()
 
+    private var taskId: Long = -1L
+    private var isPause = false
+    private var isBound: Boolean = false
+    private var currentState: TimerState = TimerState.FINISHED
+
     private var countdownService: CountdownService? = null
+
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
             countdownService = countdownBinder.countdownService
             countdownService?.setCountdownCommunicationCallback(this@TimerActivity)
-            if (timerViewModel.isLastStartedTask(itemId)) {
-                timerViewModel.getTask(itemId)
-            }
             isBound = true
         }
 
@@ -86,19 +72,17 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         requireNotNull(intent)
-        itemId = intent.extras[KEY_ITEM_ID] as Long
-        if (itemId == -1L) throw IllegalStateException("ItemId can't be -1")
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        taskId = intent?.extras!![KEY_ITEM_ID] as Long
 
-        if (savedInstanceState == null) {
-            TaskFragment
-                .newInstance(itemId)
-                .replace(R.id.fragmentContainer, TaskFragment.TAG)
-        }
+        if (taskId == -1L) throw IllegalStateException("ItemId can't be -1")
+
+        timerViewModel.getTask(taskId)
+
+        setupToolbar()
+
         bottomAppBar.apply {
             replaceMenu(R.menu.bottom_app_bar_menu_task)
             setOnMenuItemClickListener { menuItem: MenuItem ->
@@ -106,52 +90,83 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
             }
         }
         completeTask.setOnClickListener {
-            timerViewModel.completeTask(itemId)
+            timerViewModel.completeTask(taskId)
             finish()
         }
-
+        timerHandler.setOnClickListener {
+            when (currentState) {
+                TimerState.WORKING -> {
+                    stopCountdown()
+                }
+                TimerState.FINISHED, TimerState.STOPPED -> {
+                    timerViewModel.saveLastStartedTaskId(taskId)
+                    timerViewModel.setTaskInProgress(taskId)
+                    startCountdown()
+                }
+            }
+        }
         subscribeUi()
     }
 
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+    }
+
     private fun subscribeUi() {
-        sharedViewModel.apply {
-            timerEventLiveData.observe(
-                this@TimerActivity,
-                Observer { event: Event<SharedViewModel.CountdownEvent> ->
-                    when (event.getContentIfNotHandled()) {
-                        SharedViewModel.CountdownEvent.START -> {
-                            startCountdown()
-                        }
-                        SharedViewModel.CountdownEvent.STOP -> {
-                            stopCountdown()
-                        }
-                        null -> {
-                            Snackbar
-                                .make(coordinatorLayout, "Error occurred while start timer", Snackbar.LENGTH_INDEFINITE)
-                                .setAnchorView(completeTask)
-                                .show()
-                        }
-                    }
-                }
-            )
-        }
         timerViewModel.apply {
-            taskLiveData.observe(this@TimerActivity, Observer { result: RxResult<Task> ->
-                when (result.status) {
-                    RxStatus.SUCCESS -> {
+            taskLiveData
+                .observe(
+                    this@TimerActivity,
+                    Observer { result: RxResult<Task> ->
+                        when (result.status) {
+                            RxStatus.LOADING -> {
+                                loading.visibility = View.VISIBLE
+                            }
+                            RxStatus.SUCCESS -> {
+                                loading.visibility = View.GONE
 
-                        val task: Task = result.data ?: return@Observer
+                                val task = result.data ?: return@Observer
+                                isPause = task.isCooldown
 
-                        countdownService?.isPause = task.isPaused
-                        countdownService?.isRunning = task.isInProgress
-                    }
-                    RxStatus.ERROR -> {
+                                pomodidorCount.text = task.pomidors.toString()
+                                taskCategory.text = task.category.categoryName
 
-                    }
-                    RxStatus.LOADING -> {
+                                taskCategory.setCompoundDrawablesWithIntrinsicBounds(
+                                    task.priority.getPriorityIcon(),
+                                    0,
+                                    0,
+                                    0
+                                )
 
-                    }
-                }
+                                taskCategory.setTextColor(
+                                    ContextCompat.getColor(
+                                        this@TimerActivity,
+                                        task.priority.getPriorityColor()
+                                    )
+                                )
+
+                                taskText.text = task.description
+                                updateView()
+                            }
+                            RxStatus.ERROR -> {
+                                loading.visibility = View.GONE
+
+                                Snackbar
+                                    .make(parentTimer, " 0", Snackbar.LENGTH_LONG)
+                                    .setAction(R.string.snackbar_action_retry) {
+                                        timerViewModel.getTask(taskId)
+                                    }
+                                    .show()
+                            }
+                        }
+            })
+            getSession(taskId).observe(this@TimerActivity, Observer { session ->
+                pomodidorCount.text = session.toString()
+            })
+            getTaskCooldown(taskId).observe(this@TimerActivity, Observer { isCooldown ->
+                isPause = isCooldown
             })
         }
     }
@@ -174,7 +189,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                         it.dismiss()
                     }
                     positiveButton {
-                        timerViewModel.removeTask(itemId)
+                        timerViewModel.removeTask(taskId)
                         it.dismiss()
                         finish()
                     }
@@ -185,32 +200,42 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
     }
 
     private fun startCountdown() {
-        countdownService?.startTimer()
+        countdownService?.startTimer(taskId, isPause)
     }
 
     private fun stopCountdown() {
         countdownService?.stopTimer()
     }
 
-    override fun provideTimer(timer: String) {
-        sharedViewModel.setTime(timer)
+    override fun onTimerResult(timer: String) {
+        countdown.text = timer
     }
 
-    override fun onTimerProcessingListener(isTimerProcessing: Boolean) {
-        isRunning = isTimerProcessing
-        sharedViewModel.updateState(if (isTimerProcessing) SharedViewModel.TimerState.WORKING else SharedViewModel.TimerState.STOPPED)
-    }
-
-    override fun onCountdownFinished(isPause: Boolean) {
-        if (timerViewModel.isLastStartedTask(itemId) && !isPause) {
-            timerViewModel.increaseSession(itemId)
-        }
-        sharedViewModel.updateState(SharedViewModel.TimerState.FINISHED)
+    override fun onTimerStateChangeListener(timerState: TimerState) {
+        currentState = timerState
+        updateView()
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(serviceConnection)
+        if (timerViewModel.isLastStartedTask(taskId)) {
+            unbindService(serviceConnection)
+        }
     }
 
+    private fun updateView() {
+        timerHandler.setImageResource(
+            when (currentState) {
+                TimerState.WORKING -> {
+                    R.drawable.ic_round_stop_24px
+                }
+                TimerState.FINISHED -> {
+                    R.drawable.ic_round_play_circle_outline_24px
+                }
+                TimerState.STOPPED -> {
+                    R.drawable.ic_round_play_circle_outline_24px
+                }
+            }
+        )
+    }
 }

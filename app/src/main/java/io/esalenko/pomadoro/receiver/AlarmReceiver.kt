@@ -12,13 +12,13 @@ import org.koin.core.get
 
 class AlarmReceiver : BroadcastReceiver(), KoinComponent {
 
-
     companion object {
         private const val REQUEST_CODE = 6003
         private const val NOTIFICATION_ID = 7001
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
+
         val localNotificationManager: LocalNotificationManager = get()
         val notification: Notification? = localNotificationManager.createNotification(
             context,
@@ -32,5 +32,4 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
 
         notificationManager?.notify(NOTIFICATION_ID, notification)
     }
-
 }

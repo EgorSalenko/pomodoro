@@ -19,19 +19,19 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
 
         const val LONG_COOLDOWN_SESSION = 4
 
-        var DEFAULT_TIMER_TIMESTAMP =
+        var DEFAULT_TIMER_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(25)
 
-        var DEFAULT_SHORT_COOLDOWN_TIMESTAMP =
+        var DEFAULT_SHORT_COOLDOWN_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(10) else TimeUnit.MINUTES.toMillis(5)
-        var DEFAULT_LONG_COOLDOWN_TIMESTAMP =
+        var DEFAULT_LONG_COOLDOWN_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(20) else TimeUnit.MINUTES.toMillis(15)
     }
 
     var timerDuration: Long
         get() = sharedPreferences.getLong(
             KEY_TIMER_DURATION,
-            DEFAULT_TIMER_TIMESTAMP
+            DEFAULT_TIMER_DURATION
         )
         set(value) = sharedPreferences.edit {
             putLong(KEY_TIMER_DURATION, value)
@@ -43,7 +43,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
     private var shortCooldownDuration: Long
         get() = sharedPreferences.getLong(
             KEY_SHORT_COOLDOWN_TIMESTAMP,
-            DEFAULT_SHORT_COOLDOWN_TIMESTAMP
+            DEFAULT_SHORT_COOLDOWN_DURATION
         )
         set(value) = sharedPreferences.edit {
             putLong(KEY_SHORT_COOLDOWN_TIMESTAMP, value)
@@ -52,7 +52,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
     private var longCooldownDuration: Long
         get() = sharedPreferences.getLong(
             KEY_LONG_COOLDOWN_TIMESTAMP,
-            DEFAULT_LONG_COOLDOWN_TIMESTAMP
+            DEFAULT_LONG_COOLDOWN_DURATION
         )
         set(value) = sharedPreferences.edit {
             putLong(KEY_LONG_COOLDOWN_TIMESTAMP, value)

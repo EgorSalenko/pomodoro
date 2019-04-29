@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/parentTimer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,24 +21,106 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
-            android:layout_marginTop="?attr/actionBarSize"
-            android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize">
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                    android:id="@+id/timerContent"
+                    android:visibility="visible"
+                    tools:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/margin_large">
+
+                    <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:id="@+id/countdown"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:text="00:00"/>
+
+                    <TextView
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:id="@+id/pomodidorCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:drawablePadding="@dimen/margin_small"
+                            android:drawableStart="@drawable/ic_tomato"
+                            tools:text="x 3"/>
+
+                    <ImageView
+                            android:id="@+id/timerHandler"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            tools:src="@drawable/ic_round_play_circle_outline_24px"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <ProgressBar
+                    android:id="@+id/loading"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
+
+
+            <TextView
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:id="@+id/taskCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_small"
+                    tools:drawableStart="@drawable/ic_priority_mid"
+                    android:drawablePadding="@dimen/margin_small"
+                    tools:text="Category"/>
+
+            <TextView
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:id="@+id/taskText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/margin_large"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_small"
+                    tools:text="@string/lorem_ipsum"/>
+        </LinearLayout>
+    </FrameLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
-            app:fabAlignmentMode="end"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            app:hideOnScroll="false"
-            android:layout_height="wrap_content"/>
+            app:fabAlignmentMode="end"
+            app:hideOnScroll="false"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/completeTask"
-            app:layout_anchor="@id/bottomAppBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_anchor="@id/bottomAppBar"
             app:fabSize="normal"
             android:src="@drawable/ic_round_done_24px"/>
 

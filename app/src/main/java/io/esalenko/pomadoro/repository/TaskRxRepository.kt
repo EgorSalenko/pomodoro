@@ -1,6 +1,7 @@
 package io.esalenko.pomadoro.repository
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.LiveData
 import io.esalenko.pomadoro.domain.dao.TaskDao
 import io.esalenko.pomadoro.domain.model.Task
 import io.reactivex.Maybe
@@ -21,6 +22,10 @@ class TaskRxRepository(private val taskDao: TaskDao) : RxRepository<Task> {
         return taskDao.get(id)
             .subscribeOn(Schedulers.io())
             .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun getSessions(id: Long): LiveData<Int> {
+        return taskDao.getSessions(id)
     }
 
     override fun get(item: Task): Single<Task> {
@@ -70,5 +75,9 @@ class TaskRxRepository(private val taskDao: TaskDao) : RxRepository<Task> {
         return taskDao.getAllArchived()
             .subscribeOn(Schedulers.io())
             .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
+        return taskDao.getTaskCooldown(taskId)
     }
 }

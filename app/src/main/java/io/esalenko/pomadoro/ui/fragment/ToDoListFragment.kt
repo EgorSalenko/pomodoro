@@ -112,7 +112,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                             task.category.categoryName,
                                             task.priority,
                                             task.pomidors,
-                                            task.isInProgress
+                                            task.isRunning
                                         )
                                     )
                                     info { task }

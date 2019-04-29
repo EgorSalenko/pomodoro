@@ -21,6 +21,10 @@ class TimerViewModel(
     val taskLiveData: LiveData<RxResult<Task>>
         get() = _taskLiveData
 
+    private val _sessionsLiveData = MutableLiveData<Int>()
+    val sessionsLiveData: LiveData<Int>
+        get() = _sessionsLiveData
+
     fun getTask(itemId: Long) {
         _taskLiveData.postValue(RxResult.loading(null))
         taskRepository
@@ -71,69 +75,38 @@ class TimerViewModel(
         sharedPreferenceManager.lastStartedTaskId = itemId
     }
 
-    fun increaseSession(itemId: Long) {
-        taskRepository
-            .get(itemId)
-            .map { task: Task ->
-                task.pomidors += 1
-                task
-            }
-            .subscribe(
-                { task: Task ->
-                    taskRepository.add(task)
-                    // TODO :: Update pomidors counter
-                },
-                { error ->
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
+    fun getSession(itemId: Long): LiveData<Int> {
+        return taskRepository
+            .getSessions(itemId)
     }
 
-    fun setTaskInProgress(taskId: Long, inProgress: Boolean) {
-        taskRepository
-            .get(taskId)
-            .toObservable()
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .map { task ->
-                task.isInProgress = inProgress
-                task
-            }
-            .subscribe(
-                { task ->
-                    taskRepository.add(task)
-                    // TODO :: Update 'Task in progress' view
-                },
-                { error ->
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
-    }
-
-    fun setTaskOnPause(taskId: Long, isPause: Boolean) {
-        taskRepository
-            .get(taskId)
-            .toObservable()
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .map { task ->
-                task.isPaused = isPause
-                task
-            }
-            .subscribe(
-                { task ->
-                    taskRepository.add(task)
-                },
-                { error ->
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
+    fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
+        return taskRepository
+            .getTaskCooldown(taskId)
     }
 
     fun isLastStartedTask(itemId: Long) =
-        itemId == sharedPreferenceManager.lastStartedTaskId && sharedPreferenceManager.lastStartedTaskId != -1L
+        itemId == sharedPreferenceManager.lastStartedTaskId || sharedPreferenceManager.lastStartedTaskId == -1L
+
+    fun setTaskInProgress(taskId: Long) {
+        taskRepository
+            .get(taskId)
+            .map {
+                it.apply {
+                    isRunning = true
+                }
+            }
+            .subscribe(
+                { id ->
+                    taskRepository.add(id)
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+
+    }
+
 
 }

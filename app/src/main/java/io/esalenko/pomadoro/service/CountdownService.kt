@@ -10,7 +10,7 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.TimerState
+import io.esalenko.pomadoro.db.model.TimerState
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
@@ -31,6 +31,8 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     private var timerDuration: Long = SharedPreferenceManager.DEFAULT_TIMER_DURATION
 
     private val localNotificationManager: LocalNotificationManager by inject()
+    private val sharedPreferenceManager: SharedPreferenceManager by inject()
+    private val localAlarmManager: LocalAlarmManager by inject()
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -78,10 +80,9 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
         startForeground(NOTIFICATION_ID, notification)
 
         timerDuration = if (isCooldown) {
-            // TODO :: Add SPM call
-            SharedPreferenceManager.DEFAULT_SHORT_COOLDOWN_DURATION
+            sharedPreferenceManager.cooldownDuration
         } else {
-            SharedPreferenceManager.DEFAULT_TIMER_DURATION
+            sharedPreferenceManager.timerDuration
         }
 
 
@@ -98,7 +99,8 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             }
             .doOnComplete {
                 callback?.onTimerStateChangeListener(TimerState.FINISHED)
-                LocalAlarmManager.startAlarm(this, taskId, isCooldown)
+                localAlarmManager.startAlarm(this, taskId, isCooldown)
+                resetLastTaskId()
                 stopForeground(true)
                 stopSelf()
             }
@@ -131,13 +133,19 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             .addDisposable()
     }
 
+    private fun resetLastTaskId() {
+        sharedPreferenceManager.lastStartedTaskId = -1
+    }
+
     private fun Disposable.addDisposable() {
         compositeDisposable.add(this)
     }
 
-    fun stopTimer() {
+    fun stopTimer(taskId: Long) {
         notificationManager.cancel(NOTIFICATION_ID)
         compositeDisposable.clear()
+        resetLastTaskId()
+        localAlarmManager.stopAlarm(taskId)
         callback?.onTimerStateChangeListener(TimerState.STOPPED)
         stopForeground(true)
         stopSelf()

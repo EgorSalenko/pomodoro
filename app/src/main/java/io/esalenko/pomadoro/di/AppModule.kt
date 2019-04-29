@@ -1,6 +1,7 @@
 package io.esalenko.pomadoro.di
 
 import android.content.Context
+import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import org.koin.android.ext.koin.androidContext
@@ -15,4 +16,5 @@ val appModule = module {
         )
     }
     single { LocalNotificationManager(androidContext()) }
+    single { LocalAlarmManager(get()) }
 }

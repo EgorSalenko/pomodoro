@@ -1,4 +1,4 @@
-package io.esalenko.pomadoro.domain.model
+package io.esalenko.pomadoro.db.model.task
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

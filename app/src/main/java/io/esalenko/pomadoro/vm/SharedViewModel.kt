@@ -2,7 +2,7 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.esalenko.pomadoro.domain.model.FilterType
+import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.vm.common.BaseViewModel
 import io.esalenko.pomadoro.vm.common.Event
 

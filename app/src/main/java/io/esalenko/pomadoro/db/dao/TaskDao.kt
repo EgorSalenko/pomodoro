@@ -1,11 +1,11 @@
-package io.esalenko.pomadoro.domain.dao
+package io.esalenko.pomadoro.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.db.model.task.Task
 import io.reactivex.Maybe
 import io.reactivex.Single
 
@@ -38,4 +38,7 @@ interface TaskDao {
 
     @Query("select isCooldown from task_table where id =:id")
     fun getTaskCooldown(id: Long): LiveData<Boolean>
+
+    @Query("select * from task_table where isArchived == 0 order by date DESC")
+    fun getAllLiveData(): LiveData<List<Task>>
 }

@@ -2,7 +2,7 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.repository.TaskRxRepository
 import io.esalenko.pomadoro.util.RxResult
@@ -20,10 +20,6 @@ class TimerViewModel(
     private val _taskLiveData = MutableLiveData<RxResult<Task>>()
     val taskLiveData: LiveData<RxResult<Task>>
         get() = _taskLiveData
-
-    private val _sessionsLiveData = MutableLiveData<Int>()
-    val sessionsLiveData: LiveData<Int>
-        get() = _sessionsLiveData
 
     fun getTask(itemId: Long) {
         _taskLiveData.postValue(RxResult.loading(null))

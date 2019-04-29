@@ -3,7 +3,7 @@ package io.esalenko.pomadoro.util
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.TaskPriority
+import io.esalenko.pomadoro.db.model.task.TaskPriority
 
 @ColorRes
 fun TaskPriority.getPriorityColor(): Int = when (this) {

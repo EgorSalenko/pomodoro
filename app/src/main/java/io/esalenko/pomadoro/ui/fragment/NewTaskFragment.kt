@@ -6,9 +6,9 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioGroup
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.TaskCategory
-import io.esalenko.pomadoro.domain.model.TaskPriority
-import io.esalenko.pomadoro.domain.model.TaskPriority.*
+import io.esalenko.pomadoro.db.model.task.TaskCategory
+import io.esalenko.pomadoro.db.model.task.TaskPriority
+import io.esalenko.pomadoro.db.model.task.TaskPriority.*
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.ToDoListVIewModel

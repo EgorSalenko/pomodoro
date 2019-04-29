@@ -13,8 +13,8 @@ import androidx.lifecycle.Observer
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.Task
-import io.esalenko.pomadoro.domain.model.TimerState
+import io.esalenko.pomadoro.db.model.TimerState
+import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.common.BaseActivity
@@ -66,8 +66,10 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
 
     override fun onStart() {
         super.onStart()
-        startService(createCountdownServiceIntent())
-        bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
+        if (timerViewModel.isLastStartedTask(taskId)) {
+            startService(createCountdownServiceIntent())
+            bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +84,8 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
         timerViewModel.getTask(taskId)
 
         setupToolbar()
+
+        updateTimerView()
 
         bottomAppBar.apply {
             replaceMenu(R.menu.bottom_app_bar_menu_task)
@@ -108,6 +112,16 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
         subscribeUi()
     }
 
+    private fun updateTimerView() {
+        if (timerViewModel.isLastStartedTask(taskId)) {
+            timerContent.visibility = View.VISIBLE
+            taskMsg.visibility = View.GONE
+        } else {
+            timerContent.visibility = View.GONE
+            taskMsg.visibility = View.VISIBLE
+        }
+    }
+
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -130,7 +144,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                                 val task = result.data ?: return@Observer
                                 isPause = task.isCooldown
 
-                                pomodidorCount.text = task.pomidors.toString()
+                                pomodidorCount.text = "x ${task.pomidors}"
                                 taskCategory.text = task.category.categoryName
 
                                 taskCategory.setCompoundDrawablesWithIntrinsicBounds(
@@ -162,11 +176,11 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                             }
                         }
             })
-            getSession(taskId).observe(this@TimerActivity, Observer { session ->
-                pomodidorCount.text = session.toString()
+            getSession(taskId).observe(this@TimerActivity, Observer { session: Int? ->
+                pomodidorCount.text = "x $session" ?: return@Observer
             })
-            getTaskCooldown(taskId).observe(this@TimerActivity, Observer { isCooldown ->
-                isPause = isCooldown
+            getTaskCooldown(taskId).observe(this@TimerActivity, Observer { isCooldown: Boolean? ->
+                isPause = isCooldown ?: return@Observer
             })
         }
     }
@@ -189,6 +203,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                         it.dismiss()
                     }
                     positiveButton {
+                        countdownService?.stopTimer(taskId)
                         timerViewModel.removeTask(taskId)
                         it.dismiss()
                         finish()
@@ -204,7 +219,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
     }
 
     private fun stopCountdown() {
-        countdownService?.stopTimer()
+        countdownService?.stopTimer(taskId)
     }
 
     override fun onTimerResult(timer: String) {

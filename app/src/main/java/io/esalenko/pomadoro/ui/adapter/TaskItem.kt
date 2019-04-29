@@ -13,7 +13,7 @@ import com.mikepenz.fastadapter.IItem
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.TaskPriority
+import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.util.formatDate
 import io.esalenko.pomadoro.util.getPriorityColor
 import io.esalenko.pomadoro.util.getPriorityIcon

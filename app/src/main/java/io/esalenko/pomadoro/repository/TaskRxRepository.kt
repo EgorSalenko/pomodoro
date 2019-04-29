@@ -2,14 +2,18 @@ package io.esalenko.pomadoro.repository
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
-import io.esalenko.pomadoro.domain.dao.TaskDao
-import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.db.dao.TaskDao
+import io.esalenko.pomadoro.db.model.task.Task
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class TaskRxRepository(private val taskDao: TaskDao) : RxRepository<Task> {
+
+    fun observeList(): LiveData<List<Task>> {
+        return taskDao.getAllLiveData()
+    }
 
     override fun getAll(): Maybe<List<Task>> {
         return taskDao

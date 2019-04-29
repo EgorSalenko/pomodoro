@@ -12,8 +12,8 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.FilterType
-import io.esalenko.pomadoro.domain.model.Task
+import io.esalenko.pomadoro.db.model.FilterType
+import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.ui.activity.TimerActivity.Companion.createTimerActivityIntent
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
@@ -47,14 +47,10 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     private lateinit var touchCallback: SimpleSwipeCallback
     private lateinit var touchHelper: ItemTouchHelper
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchToDoList()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
+        viewModel.fetchToDoList()
         subscribeUi()
     }
 
@@ -132,7 +128,25 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 }
 
             })
-
+            observeToDoList().observe(viewLifecycleOwner, Observer { taskList: List<Task> ->
+                val items = ArrayList<TaskItem>()
+                taskList
+                    .forEach { task: Task ->
+                        items.add(
+                            TaskItem(
+                                task.id,
+                                task.description,
+                                task.date,
+                                task.category.categoryName,
+                                task.priority,
+                                task.pomidors,
+                                task.isRunning
+                            )
+                        )
+                        info { task }
+                    }
+                FastAdapterDiffUtil.set(itemAdapter, items)
+            })
         }
 
         sharedViewModel.apply {

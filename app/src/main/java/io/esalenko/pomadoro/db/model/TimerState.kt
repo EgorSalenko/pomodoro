@@ -1,4 +1,4 @@
-package io.esalenko.pomadoro.domain.model
+package io.esalenko.pomadoro.db.model
 
 
 enum class TimerState {

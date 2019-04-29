@@ -1,7 +1,7 @@
 package io.esalenko.pomadoro.di
 
-import io.esalenko.pomadoro.domain.LocalRoomDatabase
-import io.esalenko.pomadoro.domain.dao.TaskDao
+import io.esalenko.pomadoro.db.LocalRoomDatabase
+import io.esalenko.pomadoro.db.dao.TaskDao
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

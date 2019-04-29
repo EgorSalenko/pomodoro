@@ -30,7 +30,6 @@
                       android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                    android:id="@+id/timerContent"
                     android:visibility="visible"
                     tools:visibility="visible"
                     android:layout_width="match_parent"
@@ -39,6 +38,7 @@
                     app:cardCornerRadius="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/timerContent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="@dimen/margin_large">
@@ -73,6 +73,14 @@
                             tools:src="@drawable/ic_round_play_circle_outline_24px"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:id="@+id/taskMsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/other_task_is_currently_started"/>
 
             </androidx.cardview.widget.CardView>
 

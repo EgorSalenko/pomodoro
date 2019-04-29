@@ -1,15 +1,15 @@
-package io.esalenko.pomadoro.domain
+package io.esalenko.pomadoro.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import io.esalenko.pomadoro.domain.dao.TaskDao
-import io.esalenko.pomadoro.domain.model.Task
-import io.esalenko.pomadoro.domain.model.converter.CategoryConverter
-import io.esalenko.pomadoro.domain.model.converter.DateConverter
-import io.esalenko.pomadoro.domain.model.converter.PriorityConverter
+import io.esalenko.pomadoro.db.dao.TaskDao
+import io.esalenko.pomadoro.db.model.converter.CategoryConverter
+import io.esalenko.pomadoro.db.model.converter.DateConverter
+import io.esalenko.pomadoro.db.model.converter.PriorityConverter
+import io.esalenko.pomadoro.db.model.task.Task
 
 @Database(entities = [Task::class], version = 1)
 @TypeConverters(CategoryConverter::class, PriorityConverter::class, DateConverter::class)

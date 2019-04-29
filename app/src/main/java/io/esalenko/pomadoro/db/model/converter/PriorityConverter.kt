@@ -1,7 +1,7 @@
-package io.esalenko.pomadoro.domain.model.converter
+package io.esalenko.pomadoro.db.model.converter
 
 import androidx.room.TypeConverter
-import io.esalenko.pomadoro.domain.model.TaskPriority
+import io.esalenko.pomadoro.db.model.task.TaskPriority
 
 
 class PriorityConverter {

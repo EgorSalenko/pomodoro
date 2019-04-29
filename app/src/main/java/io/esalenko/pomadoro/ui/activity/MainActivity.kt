@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.domain.model.FilterType
+import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.fragment.NewTaskFragment
 import io.esalenko.pomadoro.ui.fragment.ToDoListFragment

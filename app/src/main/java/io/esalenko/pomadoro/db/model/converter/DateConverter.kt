@@ -1,4 +1,4 @@
-package io.esalenko.pomadoro.domain.model.converter
+package io.esalenko.pomadoro.db.model.converter
 
 import androidx.room.TypeConverter
 import java.util.*

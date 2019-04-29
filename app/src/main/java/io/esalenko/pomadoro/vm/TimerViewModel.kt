@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
-import io.esalenko.pomadoro.repository.TaskRxRepository
+import io.esalenko.pomadoro.repository.TaskRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
 import io.reactivex.Single
@@ -13,7 +13,7 @@ import org.jetbrains.anko.error
 
 
 class TimerViewModel(
-    private val taskRepository: TaskRxRepository,
+    private val taskRepository: TaskRepository,
     private val sharedPreferenceManager: SharedPreferenceManager
 ) : BaseViewModel() {
 

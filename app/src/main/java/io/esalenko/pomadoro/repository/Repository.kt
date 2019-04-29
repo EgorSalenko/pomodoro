@@ -4,7 +4,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 
-interface RxRepository<Item> {
+interface Repository<Item> {
 
     fun getAll(): Maybe<List<Item>>
 

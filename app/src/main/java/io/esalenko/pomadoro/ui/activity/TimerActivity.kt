@@ -141,9 +141,9 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                             RxStatus.SUCCESS -> {
                                 loading.visibility = View.GONE
 
-                                val task = result.data ?: return@Observer
+                                val task: Task = result.data ?: return@Observer
                                 isPause = task.isCooldown
-
+                                // TODO :: Add transition alpha animation
                                 pomodidorCount.text = "x ${task.pomidors}"
                                 taskCategory.text = task.category.categoryName
 

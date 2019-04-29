@@ -84,15 +84,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <ProgressBar
-                    android:id="@+id/loading"
-                    android:visibility="gone"
-                    tools:visibility="visible"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
-
-
             <TextView
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:id="@+id/taskCategory"
@@ -114,6 +105,15 @@
                     android:layout_marginTop="@dimen/margin_small"
                     tools:text="@string/lorem_ipsum"/>
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/loading"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
     </FrameLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar

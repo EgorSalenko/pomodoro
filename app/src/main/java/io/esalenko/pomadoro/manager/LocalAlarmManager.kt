@@ -7,11 +7,11 @@ import android.content.Context
 import android.content.Intent
 import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.receiver.AlarmReceiver
-import io.esalenko.pomadoro.repository.TaskRxRepository
+import io.esalenko.pomadoro.repository.TaskRepository
 import org.koin.core.KoinComponent
 
 
-class LocalAlarmManager(private val taskRxRepository: TaskRxRepository) : KoinComponent {
+class LocalAlarmManager(private val taskRxRepository: TaskRepository) : KoinComponent {
 
     private var alarmMgr: AlarmManager? = null
     private lateinit var alarmIntent: PendingIntent

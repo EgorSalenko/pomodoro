@@ -9,7 +9,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class TaskRxRepository(private val taskDao: TaskDao) : RxRepository<Task> {
+class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
 
     fun observeList(): LiveData<List<Task>> {
         return taskDao.getAllLiveData()

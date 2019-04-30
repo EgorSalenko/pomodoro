@@ -15,6 +15,6 @@ val appModule = module {
             Context.MODE_PRIVATE
         )
     }
-    single { LocalNotificationManager(androidContext()) }
+    single { LocalNotificationManager() }
     single { LocalAlarmManager(get()) }
 }

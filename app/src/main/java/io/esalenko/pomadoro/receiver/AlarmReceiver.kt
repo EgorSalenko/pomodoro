@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.esalenko.pomadoro.manager.LocalNotificationManager
+import io.esalenko.pomadoro.ui.activity.MainActivity
 import org.koin.core.KoinComponent
 import org.koin.core.get
 
@@ -25,7 +26,8 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
             "Session has been finished",
             "Your session has been finished",
             REQUEST_CODE,
-            isAlarm = true
+            isVibrate = true,
+            clazz = MainActivity::class.java
         )
 
         val notificationManager = context?.getSystemService(NotificationManager::class.java)

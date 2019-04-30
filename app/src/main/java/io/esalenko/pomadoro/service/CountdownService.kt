@@ -8,12 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.TimerState
 import io.esalenko.pomadoro.manager.LocalAlarmManager
 import io.esalenko.pomadoro.manager.LocalNotificationManager
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
+import io.esalenko.pomadoro.ui.activity.MainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -35,7 +35,6 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     private val localAlarmManager: LocalAlarmManager by inject()
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var notificationBuilder: NotificationCompat.Builder
     private var callback: CountdownCommunicationCallback? = null
 
     private val binder = CountdownBinder()
@@ -59,7 +58,6 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(NotificationManager::class.java)
-        this.notificationBuilder = localNotificationManager.notificationBuilder
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -72,9 +70,10 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
         val notification: Notification? =
             localNotificationManager.createNotification(
                 this,
-                getString(R.string.session_in_progress),
-                getString(R.string.working_session),
-                REQUEST_CODE
+                title = getString(R.string.session_in_progress),
+                content = getString(R.string.working_session),
+                requestCode = REQUEST_CODE,
+                clazz = MainActivity::class.java
             )
 
         startForeground(NOTIFICATION_ID, notification)
@@ -84,7 +83,6 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
         } else {
             sharedPreferenceManager.timerDuration
         }
-
 
         Observable
             .interval(1000, TimeUnit.MILLISECONDS)
@@ -119,11 +117,18 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
 
                     callback?.onTimerResult(time)
 
-                    notificationBuilder
-                        .setSound(null)
-                        .setContentText(getString(R.string.timer_remaining, time))
-
-                    notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+                    notificationManager
+                        .notify(
+                            NOTIFICATION_ID,
+                            localNotificationManager
+                                .createNotification(
+                                    this,
+                                    getString(R.string.session_in_progress),
+                                    getString(R.string.timer_remaining, time),
+                                    REQUEST_CODE,
+                                    clazz = MainActivity::class.java
+                                )
+                        )
 
                 },
                 { error ->

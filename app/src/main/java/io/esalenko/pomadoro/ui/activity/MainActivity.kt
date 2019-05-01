@@ -112,14 +112,15 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        val newTaskFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.overlayFragmentContainer)
-        if (newTaskFragment is NewTaskFragment) {
-            animationOpenNewTask()
-            newTaskFragment.remove()
-        } else {
-            super.onBackPressed()
+        when (val lastFragment = getLastFragment() ?: super.onBackPressed()) {
+            is NewTaskFragment -> {
+                animationOpenNewTask()
+                lastFragment.remove()
+            }
+            else -> super.onBackPressed()
         }
     }
+
 
     private fun animationOpenNewTask() {
         if (!isNewTaskOpened) {

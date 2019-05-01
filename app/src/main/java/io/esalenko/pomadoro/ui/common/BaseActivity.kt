@@ -29,17 +29,10 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
             .commit()
     }
 
-    protected fun Fragment.add(@IdRes containerId: Int, tag: String?, addToBackStack: Boolean = false) {
+    protected fun Fragment.add(@IdRes containerId: Int, tag: String?) {
         supportFragmentManager
             .beginTransaction()
-//            .setCustomAnimations(
-//                android.R.animator.fade_in,
-//                android.R.animator.fade_out,
-//                android.R.animator.fade_in,
-//                android.R.animator.fade_out
-//            )
             .add(containerId, this@add, tag)
-            .addToBackStack(if (addToBackStack) tag else null)
             .commit()
     }
 
@@ -55,6 +48,8 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
             .remove(this@remove ?: throw Exception("Fragment not found"))
             .commit()
     }
+
+    protected fun getLastFragment(): Fragment? = supportFragmentManager.fragments.lastOrNull()
 
     @get:LayoutRes
     protected abstract val layoutRes : Int

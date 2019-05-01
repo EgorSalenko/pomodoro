@@ -106,8 +106,7 @@ class TimerViewModel(
     }
 
     fun isLastStartedTask(itemId: Long) =
-        itemId == sharedPreferenceManager.lastStartedTaskId
-                || sharedPreferenceManager.lastStartedTaskId == -1L
+        itemId == sharedPreferenceManager.lastStartedTaskId || sharedPreferenceManager.lastStartedTaskId == -1L
 
     fun setTaskInProgress(taskId: Long) {
         taskRepository

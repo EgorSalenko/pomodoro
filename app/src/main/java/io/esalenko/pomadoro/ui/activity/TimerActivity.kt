@@ -86,8 +86,6 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
 
         setupToolbar()
 
-        updateTimerView()
-
         bottomAppBar.apply {
             replaceMenu(R.menu.bottom_app_bar_menu_task)
             setOnMenuItemClickListener { menuItem: MenuItem ->
@@ -119,17 +117,9 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
             }
         }
         subscribeUi()
+        updateTimerView()
     }
 
-    private fun updateTimerView() {
-        if (timerViewModel.isLastStartedTask(taskId)) {
-            timerContent.visibility = View.VISIBLE
-            taskMsg.visibility = View.GONE
-        } else {
-            timerContent.visibility = View.GONE
-            taskMsg.visibility = View.VISIBLE
-        }
-    }
 
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
@@ -152,6 +142,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                                 val task: Task = result.data ?: return@Observer
                                 setupTask(task)
                                 updateView()
+                                updateTimerView()
                             }
                             RxStatus.ERROR -> {
                                 loading.visibility = View.GONE
@@ -163,6 +154,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                                     }
                                     .show()
                                 updateView()
+                                updateTimerView()
                             }
                         }
             })
@@ -249,6 +241,16 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
         super.onStop()
         if (timerViewModel.isLastStartedTask(taskId)) {
             unbindService(serviceConnection)
+        }
+    }
+
+    private fun updateTimerView() {
+        if (timerViewModel.isLastStartedTask(taskId)) {
+            timerContent.visibility = View.VISIBLE
+            taskMsg.visibility = View.GONE
+        } else {
+            timerContent.visibility = View.GONE
+            taskMsg.visibility = View.VISIBLE
         }
     }
 

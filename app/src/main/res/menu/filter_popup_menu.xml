@@ -16,4 +16,9 @@
           android:icon="@drawable/ic_round_unarchive_24px"
           app:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/filter_by_completed"
+          android:title="@string/text_popup_completed"
+          android:icon="@drawable/ic_round_done_24px"
+          app:showAsAction="ifRoom"/>
+
 </menu>

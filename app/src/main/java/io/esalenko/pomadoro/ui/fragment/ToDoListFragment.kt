@@ -164,6 +164,9 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                     FilterType.BY_ARCHIVED -> {
                         viewModel.getToDoListArchived()
                     }
+                    FilterType.BY_COMPLETED -> {
+                        viewModel.getToDoListCompleted()
+                    }
                 }
             })
 

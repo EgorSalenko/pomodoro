@@ -90,18 +90,19 @@ class MainActivity : BaseActivity() {
             when (menuItem.itemId) {
                 R.id.filter_by_priority -> {
                     sharedViewModel.setFilter(FilterType.BY_PRIORITY)
-                    true
                 }
                 R.id.filter_by_date -> {
                     sharedViewModel.setFilter(FilterType.BY_DATE)
-                    true
                 }
                 R.id.filter_by_archived -> {
                     sharedViewModel.setFilter(FilterType.BY_ARCHIVED)
-                    true
                 }
-                else -> true
+                R.id.filter_by_completed -> {
+                    sharedViewModel.setFilter(FilterType.BY_COMPLETED)
+
+                }
             }
+            true
         }
         popupMenu.show()
     }

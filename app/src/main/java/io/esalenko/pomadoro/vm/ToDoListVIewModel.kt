@@ -73,6 +73,21 @@ class ToDoListVIewModel(private val taskRepository: TaskRepository) : BaseViewMo
             .addToCompositeDisposable()
     }
 
+    fun getToDoListCompleted() {
+        _toDoListLiveData.postValue(RxResult.loading(null))
+        taskRepository
+            .getAllCompleted()
+            .subscribe(
+                { completedList: List<Task> ->
+                    _toDoListLiveData.postValue(RxResult.success(completedList))
+                },
+                { error ->
+                    _toDoListLiveData.postValue(RxResult.error("", null))
+                    error { error }
+                }
+            ).addToCompositeDisposable()
+    }
+
     fun addTask(category: TaskCategory, taskDescription: String, priority: TaskPriority) {
         Single
             .just(

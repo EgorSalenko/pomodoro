@@ -81,6 +81,12 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(AndroidSchedulers.mainThread())
     }
 
+    fun getAllCompleted(): Maybe<List<Task>> {
+        return taskDao.getAllCompleted()
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
     fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
         return taskDao.getTaskCooldown(taskId)
     }

@@ -123,6 +123,20 @@
                     android:text="@string/task_in_progress"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:id="@+id/completedStatus"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/margin_large_x"
+                android:textColor="@color/md_white_1000"
+                android:gravity="center"
+                android:background="#984CAF50"
+                android:text="Task Completed"/>
+
     </FrameLayout>
 
 </androidx.cardview.widget.CardView>

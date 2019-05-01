@@ -36,6 +36,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
 
     private var taskId: Long = -1L
     private var isPause = false
+    private var isCompleted = false
     private var isBound: Boolean = false
     private var currentState: TimerState = TimerState.FINISHED
 
@@ -94,8 +95,16 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
             }
         }
         completeTask.setOnClickListener {
-            timerViewModel.completeTask(taskId)
-            finish()
+            if (isCompleted) {
+                timerViewModel.restoreCompletedTask(taskId)
+                finish()
+            } else {
+                timerViewModel.completeTask(taskId)
+                if (currentState == TimerState.WORKING) {
+                    countdownService?.stopTimer(taskId)
+                }
+                finish()
+            }
         }
         timerHandler.setOnClickListener {
             when (currentState) {
@@ -140,28 +149,8 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                             }
                             RxStatus.SUCCESS -> {
                                 loading.visibility = View.GONE
-
                                 val task: Task = result.data ?: return@Observer
-                                isPause = task.isCooldown
-                                // TODO :: Add transition alpha animation
-                                pomodidorCount.text = "x ${task.pomidors}"
-                                taskCategory.text = task.category.categoryName
-
-                                taskCategory.setCompoundDrawablesWithIntrinsicBounds(
-                                    task.priority.getPriorityIcon(),
-                                    0,
-                                    0,
-                                    0
-                                )
-
-                                taskCategory.setTextColor(
-                                    ContextCompat.getColor(
-                                        this@TimerActivity,
-                                        task.priority.getPriorityColor()
-                                    )
-                                )
-
-                                taskText.text = task.description
+                                setupTask(task)
                                 updateView()
                             }
                             RxStatus.ERROR -> {
@@ -173,6 +162,7 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                                         timerViewModel.getTask(taskId)
                                     }
                                     .show()
+                                updateView()
                             }
                         }
             })
@@ -190,6 +180,30 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setupTask(task: Task) {
+        isPause = task.isCooldown
+        // TODO :: Add transition alpha animation
+        pomodidorCount.text = "x ${task.pomidors}"
+        taskCategory.text = task.category.categoryName
+
+        taskCategory.setCompoundDrawablesWithIntrinsicBounds(
+            task.priority.getPriorityIcon(),
+            0,
+            0,
+            0
+        )
+
+        taskCategory.setTextColor(
+            ContextCompat.getColor(
+                this@TimerActivity,
+                task.priority.getPriorityColor()
+            )
+        )
+
+        taskText.text = task.description
+        isCompleted = task.isCompleted
     }
 
     private fun onMenuItemClick(menuItem: MenuItem): Boolean {
@@ -252,5 +266,17 @@ class TimerActivity : BaseActivity(), CountdownService.CountdownCommunicationCal
                 }
             }
         )
+        completeTask.setImageResource(
+            if (isCompleted) R.drawable.ic_round_undo_24px else R.drawable.ic_round_done_24px
+        )
+
+        if (isCompleted) {
+            timerContent.visibility = View.GONE
+            taskMsg.visibility = View.VISIBLE
+            taskMsg.text = "Task completed"
+        } else {
+            timerContent.visibility = View.VISIBLE
+            taskMsg.visibility = View.GONE
+        }
     }
 }

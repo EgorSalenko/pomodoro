@@ -29,7 +29,8 @@ class TaskItem(
     val taskType: String,
     val taskPriority: TaskPriority,
     val pomidors: Int,
-    val isInProgress: Boolean
+    val isInProgress: Boolean,
+    val isCompleted: Boolean
 ) :
     AbstractItem<TaskItem, TaskItem.TaskItemViewHolder>(),
     ISwipeable<TaskItem, IItem<*, *>> {
@@ -59,6 +60,7 @@ class TaskItem(
             it.date.text = date?.formatDate()
             it.pomidorsCounter.text = "x $pomidors"
             it.taskStatus.visibility = if (isInProgress) View.VISIBLE else View.GONE
+            it.completeStatus.visibility = if (isCompleted) View.VISIBLE else View.GONE
         }
         val priorityColor = taskPriority.getPriorityColor()
         val priorityDrawableRes = taskPriority.getPriorityIcon()
@@ -80,6 +82,7 @@ class TaskItem(
         if (swipedDirection != 0) {
             swipedAction = viewHolder.itemView.context.getString(R.string.action_undo)
             swipedText = if (swipedDirection == ItemTouchHelper.LEFT) "Removed" else "Archived"
+            viewHolder.completeStatus.visibility = View.GONE
             viewHolder.swipeResultContent.setBackgroundColor(
                 ContextCompat.getColor(
                     viewHolder.itemView.context,
@@ -117,6 +120,7 @@ class TaskItem(
         val swipedText = view.find<TextView>(R.id.swiped_text)
         val swipeResultContent = view.find<LinearLayout>(R.id.swipe_result_content)
         val itemContent = view.find<ConstraintLayout>(R.id.item_content)
+        val completeStatus = view.find<TextView>(R.id.completedStatus)
 
         var swipedActionRunnable: Runnable? = null
 

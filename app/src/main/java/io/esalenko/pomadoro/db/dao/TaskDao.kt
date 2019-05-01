@@ -41,4 +41,7 @@ interface TaskDao {
 
     @Query("select * from task_table where isArchived == 0 order by date DESC")
     fun getAllLiveData(): LiveData<List<Task>>
+
+    @Query("select * from task_table where id =:id")
+    fun getTaskLiveData(id: Long): LiveData<Task>
 }

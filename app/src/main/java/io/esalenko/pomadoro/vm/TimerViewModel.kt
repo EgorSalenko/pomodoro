@@ -21,10 +21,10 @@ class TimerViewModel(
     val taskLiveData: LiveData<RxResult<Task>>
         get() = _taskLiveData
 
-    fun getTask(itemId: Long) {
+    fun getTask(taskId: Long) {
         _taskLiveData.postValue(RxResult.loading(null))
         taskRepository
-            .get(itemId)
+            .get(taskId)
             .subscribe(
                 { task: Task ->
                     _taskLiveData.postValue(RxResult.success(task))
@@ -37,12 +37,17 @@ class TimerViewModel(
             .addToCompositeDisposable()
     }
 
-    fun completeTask(itemId: Long) {
+    fun completeTask(taskId: Long) {
         taskRepository
-            .get(itemId)
+            .get(taskId)
+            .map { task ->
+                task.apply {
+                    isCompleted = true
+                }
+            }
             .subscribe(
                 { task ->
-                    task.isCompleted = true
+                    taskRepository.add(task)
                 },
                 { error ->
                     error { error }
@@ -51,9 +56,28 @@ class TimerViewModel(
             .addToCompositeDisposable()
     }
 
-    fun removeTask(itemId: Long) {
+    fun restoreCompletedTask(taskId: Long) {
+        taskRepository
+            .get(taskId)
+            .map { task ->
+                task.apply {
+                    isCompleted = false
+                }
+            }
+            .subscribe(
+                { task ->
+                    taskRepository.add(task)
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
+    }
+
+    fun removeTask(taskId: Long) {
         Single
-            .just(itemId)
+            .just(taskId)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(
@@ -82,19 +106,20 @@ class TimerViewModel(
     }
 
     fun isLastStartedTask(itemId: Long) =
-        itemId == sharedPreferenceManager.lastStartedTaskId || sharedPreferenceManager.lastStartedTaskId == -1L
+        itemId == sharedPreferenceManager.lastStartedTaskId
+                || sharedPreferenceManager.lastStartedTaskId == -1L
 
     fun setTaskInProgress(taskId: Long) {
         taskRepository
             .get(taskId)
-            .map {
-                it.apply {
+            .map { task ->
+                task.apply {
                     isRunning = true
                 }
             }
             .subscribe(
-                { id ->
-                    taskRepository.add(id)
+                { task ->
+                    taskRepository.add(task)
                 },
                 { error ->
                     error { error }

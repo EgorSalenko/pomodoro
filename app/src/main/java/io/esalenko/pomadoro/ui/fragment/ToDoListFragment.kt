@@ -108,7 +108,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                             task.category.categoryName,
                                             task.priority,
                                             task.pomidors,
-                                            task.isRunning
+                                            task.isRunning,
+                                            task.isCompleted
                                         )
                                     )
                                     info { task }
@@ -140,7 +141,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                 task.category.categoryName,
                                 task.priority,
                                 task.pomidors,
-                                task.isRunning
+                                task.isRunning,
+                                task.isCompleted
                             )
                         )
                         info { task }

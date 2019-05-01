@@ -84,4 +84,8 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
     fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
         return taskDao.getTaskCooldown(taskId)
     }
+
+    fun getTaskLiveData(taskId: Long): LiveData<Task> {
+        return taskDao.getTaskLiveData(taskId)
+    }
 }

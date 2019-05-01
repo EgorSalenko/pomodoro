@@ -68,6 +68,7 @@ dependencies {
     implementation "com.mikepenz:fastadapter-commons:$fast_adapter"
     implementation "com.mikepenz:fastadapter-extensions-expandable:$fast_adapter"
     implementation "com.mikepenz:fastadapter-extensions:$fast_adapter"
+    implementation "com.mikepenz:itemanimators:1.1.0"
 
     implementation "com.andkulikov:transitionseverywhere:2.0.0-beta01"
 

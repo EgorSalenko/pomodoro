@@ -32,18 +32,18 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
     protected fun Fragment.add(@IdRes containerId: Int, tag: String?, addToBackStack: Boolean = false) {
         supportFragmentManager
             .beginTransaction()
-            .setCustomAnimations(
-                android.R.animator.fade_in,
-                android.R.animator.fade_out,
-                android.R.animator.fade_in,
-                android.R.animator.fade_out
-            )
+//            .setCustomAnimations(
+//                android.R.animator.fade_in,
+//                android.R.animator.fade_out,
+//                android.R.animator.fade_in,
+//                android.R.animator.fade_out
+//            )
             .add(containerId, this@add, tag)
             .addToBackStack(if (addToBackStack) tag else null)
             .commit()
     }
 
-    protected fun Fragment.remove() {
+    protected fun Fragment?.remove() {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(
@@ -52,7 +52,7 @@ abstract class BaseActivity : AppCompatActivity(), KoinComponent, AnkoLogger {
                 android.R.animator.fade_in,
                 android.R.animator.fade_out
             )
-            .remove(this@remove)
+            .remove(this@remove ?: throw Exception("Fragment not found"))
             .commit()
     }
 

@@ -11,6 +11,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
+import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.db.model.task.Task
@@ -49,6 +50,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        retainInstance = true
         initAdapter()
         viewModel.fetchToDoList()
         subscribeUi()
@@ -59,6 +61,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         fastAdapter = FastAdapter.with(itemAdapter)
         toDoList.layoutManager = LinearLayoutManager(context)
         toDoList.adapter = fastAdapter
+        toDoList.itemAnimator = SlideDownAlphaAnimator()
 
         val leaveBehindDrawableLeft = context?.getDrawable(R.drawable.ic_round_delete_sweep_24px)
 

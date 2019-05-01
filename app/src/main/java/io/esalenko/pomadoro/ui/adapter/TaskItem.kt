@@ -39,6 +39,8 @@ class TaskItem(
     var swipedAction: Runnable? = null
     var swipeable: Boolean = true
 
+    override fun getIdentifier(): Long = id
+
     override fun withIsSwipeable(swipeable: Boolean): TaskItem {
         this.swipeable = swipeable
         return this
@@ -105,6 +107,45 @@ class TaskItem(
                 "taskType: String =$taskType, " +
                 "taskPriority: TaskPriority = ${taskPriority.name}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as TaskItem
+
+        if (id != other.id) return false
+        if (text != other.text) return false
+        if (date != other.date) return false
+        if (taskType != other.taskType) return false
+        if (taskPriority != other.taskPriority) return false
+        if (pomidors != other.pomidors) return false
+        if (isInProgress != other.isInProgress) return false
+        if (isCompleted != other.isCompleted) return false
+        if (swipedDirection != other.swipedDirection) return false
+        if (swipedAction != other.swipedAction) return false
+        if (swipeable != other.swipeable) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + id.hashCode()
+        result = 31 * result + text.hashCode()
+        result = 31 * result + (date?.hashCode() ?: 0)
+        result = 31 * result + taskType.hashCode()
+        result = 31 * result + taskPriority.hashCode()
+        result = 31 * result + pomidors
+        result = 31 * result + isInProgress.hashCode()
+        result = 31 * result + isCompleted.hashCode()
+        result = 31 * result + swipedDirection
+        result = 31 * result + (swipedAction?.hashCode() ?: 0)
+        result = 31 * result + swipeable.hashCode()
+        return result
+    }
+
 
     @SuppressLint("CheckResult", "ClickableViewAccessibility")
     inner class TaskItemViewHolder(view: View) : RecyclerView.ViewHolder(view), AnkoLogger {

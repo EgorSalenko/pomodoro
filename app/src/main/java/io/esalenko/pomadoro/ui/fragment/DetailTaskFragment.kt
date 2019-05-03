@@ -177,6 +177,7 @@ class DetailTaskFragment : BaseFragment() {
                         }
                         TransitionManager.endTransitions(timerCardView)
                     } else {
+                        countdown.text = "00:00"
                         TransitionManager.beginDelayedTransition(timerCardView)
                         timerContent.visibility = View.VISIBLE
                         startTimer.visibility = View.VISIBLE

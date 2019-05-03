@@ -12,9 +12,9 @@
                       android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
+                    android:id="@+id/timerCardView"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:id="@+id/timerCardView"
                     app:cardUseCompatPadding="true"
                     app:cardCornerRadius="8dp">
 
@@ -50,8 +50,8 @@
                             android:id="@+id/startTimer"
                             android:visibility="gone"
                             tools:visibility="visible"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -62,8 +62,8 @@
                             android:id="@+id/stopTimer"
                             android:visibility="gone"
                             tools:visibility="visible"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"

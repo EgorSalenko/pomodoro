@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/secondaryLightColor</item>
     </style>
 
+    <style name="Toolbar" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorControlNormal">@color/md_white_1000</item>
+    </style>
+
+
 </resources>

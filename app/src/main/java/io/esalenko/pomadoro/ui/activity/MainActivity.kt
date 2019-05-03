@@ -28,6 +28,7 @@ import io.esalenko.pomadoro.ui.common.animation.AnimatorListenerAdapter
 import io.esalenko.pomadoro.ui.fragment.DetailTaskFragment
 import io.esalenko.pomadoro.ui.fragment.NewTaskFragment
 import io.esalenko.pomadoro.ui.fragment.ToDoListFragment
+import io.esalenko.pomadoro.util.avoidDoubleClick
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.TimerViewModel
 import io.esalenko.pomadoro.vm.TimerViewModel.TimerAction
@@ -89,19 +90,21 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         }
 
         fab.setOnClickListener {
-            when (fragmentPage) {
-                MAIN, NEW_TASK, null -> {
-                    openNewTaskFragment()
-                }
-                DETAILED -> {
-                    if (isCompletedTask == true) {
-                        timerViewModel.saveLastStartedTaskId(-1)
-                        timerViewModel.restoreCompletedTask(taskId)
-                        onBackPressed()
-                    } else {
-                        timerViewModel.completeTask(taskId)
-                        countdownService?.stopTimer(taskId)
-                        onBackPressed()
+            avoidDoubleClick {
+                when (fragmentPage) {
+                    MAIN, NEW_TASK, null -> {
+                        openNewTaskFragment()
+                    }
+                    DETAILED -> {
+                        if (isCompletedTask == true) {
+                            timerViewModel.saveLastStartedTaskId(-1)
+                            timerViewModel.restoreCompletedTask(taskId)
+                            onBackPressed()
+                        } else {
+                            timerViewModel.completeTask(taskId)
+                            countdownService?.stopTimer(taskId)
+                            onBackPressed()
+                        }
                     }
                 }
             }
@@ -206,18 +209,20 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
             }
             R.id.delete_item -> {
-                MaterialDialog(this).show {
-                    title(R.string.delete_item)
-                    message(R.string.delete_item_msg)
-                    icon(R.drawable.ic_round_delete_forever_24px)
-                    negativeButton {
-                        it.dismiss()
-                    }
-                    positiveButton {
-                        it.dismiss()
-                        openToDoListFragment()
-                        countdownService?.stopTimer(taskId)
-                        timerViewModel.removeTask(taskId)
+                avoidDoubleClick {
+                    MaterialDialog(this).show {
+                        title(R.string.delete_item)
+                        message(R.string.delete_item_msg)
+                        icon(R.drawable.ic_round_delete_forever_24px)
+                        negativeButton {
+                            it.dismiss()
+                        }
+                        positiveButton {
+                            it.dismiss()
+                            openToDoListFragment()
+                            countdownService?.stopTimer(taskId)
+                            timerViewModel.removeTask(taskId)
+                        }
                     }
                 }
             }

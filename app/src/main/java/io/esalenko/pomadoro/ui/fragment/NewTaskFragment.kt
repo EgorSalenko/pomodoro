@@ -10,6 +10,7 @@ import io.esalenko.pomadoro.db.model.task.TaskCategory
 import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.db.model.task.TaskPriority.*
 import io.esalenko.pomadoro.ui.common.BaseFragment
+import io.esalenko.pomadoro.util.avoidDoubleClick
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.ToDoListVIewModel
 import kotlinx.android.synthetic.main.fragment_new_task.*
@@ -50,11 +51,15 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         btnCancelTask.setOnClickListener {
-            sharedViewModel.openMainScreen()
+            avoidDoubleClick {
+                sharedViewModel.openMainScreen()
+            }
         }
 
         btnSaveTask.setOnClickListener {
-            addTask()
+            avoidDoubleClick {
+                addTask()
+            }
         }
 
         radioGroupPriority.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
@@ -69,7 +74,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     private fun addTask() {
 
-        val text = inputNewTask.text.toString()
+        val text: String = inputNewTask.text.toString()
 
         if (text.isBlank() or text.isEmpty()) {
             inputNewTaskLayout.error = "Task can't be blank or empty"

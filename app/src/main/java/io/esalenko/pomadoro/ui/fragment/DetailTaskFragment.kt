@@ -12,10 +12,7 @@ import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.TimerState
 import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.ui.common.BaseFragment
-import io.esalenko.pomadoro.util.RxResult
-import io.esalenko.pomadoro.util.RxStatus
-import io.esalenko.pomadoro.util.getPriorityColor
-import io.esalenko.pomadoro.util.getPriorityIcon
+import io.esalenko.pomadoro.util.*
 import io.esalenko.pomadoro.vm.TimerViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_task.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -62,13 +59,16 @@ class DetailTaskFragment : BaseFragment() {
         timerViewModel.getTask(taskId)
 
         startTimer.setOnClickListener {
-            startCountdown()
+            avoidDoubleClick {
+                startCountdown()
+            }
         }
 
         stopTimer.setOnClickListener {
-            stopCountdown()
+            avoidDoubleClick {
+                stopCountdown()
+            }
         }
-
         subscribeUi()
     }
 

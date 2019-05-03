@@ -19,6 +19,7 @@ import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
+import io.esalenko.pomadoro.util.avoidDoubleClick
 import io.esalenko.pomadoro.vm.SharedViewModel
 import io.esalenko.pomadoro.vm.ToDoListVIewModel
 import io.esalenko.pomadoro.vm.common.Event
@@ -34,6 +35,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         const val TAG = "ToDoListFragment"
     }
 
+    private var mLastClickTime: Byte = 0
     override val layoutRes: Int
         get() = R.layout.fragment_to_do_list
 
@@ -79,7 +81,9 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             }
 
         fastAdapter.withOnClickListener { _, _, item: TaskItem, _ ->
-            sharedViewModel.openDetailTaskScreen(item.id, item.isCompleted)
+            avoidDoubleClick {
+                sharedViewModel.openDetailTaskScreen(item.id, item.isCompleted)
+            }
             true
         }
     }

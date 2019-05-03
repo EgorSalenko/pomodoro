@@ -25,6 +25,7 @@ import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownSe
 import io.esalenko.pomadoro.ui.activity.MainActivity.FragmentPage.*
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.common.animation.AnimatorListenerAdapter
+import io.esalenko.pomadoro.ui.fragment.DetailTaskFragment
 import io.esalenko.pomadoro.ui.fragment.NewTaskFragment
 import io.esalenko.pomadoro.ui.fragment.ToDoListFragment
 import io.esalenko.pomadoro.vm.SharedViewModel

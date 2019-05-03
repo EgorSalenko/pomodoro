@@ -1,4 +1,4 @@
-package io.esalenko.pomadoro.ui.activity
+package io.esalenko.pomadoro.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle

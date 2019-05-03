@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.TimerState
@@ -60,18 +61,15 @@ class DetailTaskFragment : BaseFragment() {
 
         timerViewModel.getTask(taskId)
 
-        timerHandler.setOnClickListener {
-            when (currentState) {
-                TimerState.WORKING -> {
-                    stopCountdown()
-                }
-                TimerState.IDLE -> {
-                    startCountdown()
-                }
-            }
+        startTimer.setOnClickListener {
+            startCountdown()
         }
+
+        stopTimer.setOnClickListener {
+            stopCountdown()
+        }
+
         subscribeUi()
-        updateTimerView()
     }
 
     @SuppressLint("SetTextI18n")
@@ -91,7 +89,6 @@ class DetailTaskFragment : BaseFragment() {
                                 timerViewModel.shareTaskInfo(task)
                                 setupTask(task)
                                 updateView()
-                                updateTimerView()
                             }
                             RxStatus.ERROR -> {
                                 loading.visibility = View.GONE
@@ -103,7 +100,6 @@ class DetailTaskFragment : BaseFragment() {
                                     }
                                     .show()
                                 updateView()
-                                updateTimerView()
                             }
                         }
             })
@@ -120,7 +116,7 @@ class DetailTaskFragment : BaseFragment() {
 
             timerStateLiveData.observe(viewLifecycleOwner, Observer { state: TimerState ->
                 currentState = state
-                // TODO :: update view according to state
+                updateView()
             })
         }
     }
@@ -159,37 +155,39 @@ class DetailTaskFragment : BaseFragment() {
         timerViewModel.setTimerAction(TimerViewModel.TimerAction.STOP)
     }
 
-    private fun updateTimerView() {
-        if (timerViewModel.isLastStartedTask(taskId)) {
-            timerContent.visibility = View.VISIBLE
-            taskMsg.visibility = View.GONE
-        } else {
-            timerContent.visibility = View.GONE
-            taskMsg.visibility = View.VISIBLE
-        }
-    }
-
     private fun updateView() {
-        timerHandler.setImageResource(
+        if (timerViewModel.isLastStartedTask(taskId)) {
             when (currentState) {
                 TimerState.WORKING -> {
-                    R.drawable.ic_round_stop_24px
+                    TransitionManager.beginDelayedTransition(timerCardView)
+                    startTimer.visibility = View.GONE
+                    stopTimer.visibility = View.VISIBLE
+                    timerContent.visibility = View.VISIBLE
+                    TransitionManager.endTransitions(timerCardView)
                 }
                 TimerState.IDLE -> {
-                    R.drawable.ic_round_play_circle_outline_24px
+                    if (isCompleted) {
+                        TransitionManager.beginDelayedTransition(timerCardView)
+                        startTimer.visibility = View.GONE
+                        stopTimer.visibility = View.GONE
+                        timerContent.visibility = View.GONE
+                        taskMsg.apply {
+                            text = "Task completed"
+                            visibility = View.VISIBLE
+                        }
+                        TransitionManager.endTransitions(timerCardView)
+                    } else {
+                        TransitionManager.beginDelayedTransition(timerCardView)
+                        timerContent.visibility = View.VISIBLE
+                        startTimer.visibility = View.VISIBLE
+                        stopTimer.visibility = View.GONE
+                        taskMsg.apply {
+                            visibility = View.GONE
+                        }
+                        TransitionManager.endTransitions(timerCardView)
+                    }
                 }
             }
-        )
-
-        if (isCompleted) {
-            timerContent.visibility = View.GONE
-            taskMsg.apply {
-                visibility = View.VISIBLE
-                text = "Task completed"
-            }
-        } else {
-            timerContent.visibility = View.VISIBLE
-            taskMsg.visibility = View.GONE
         }
     }
 }

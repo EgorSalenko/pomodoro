@@ -12,15 +12,16 @@
                       android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                    android:visibility="visible"
-                    tools:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
+                    android:id="@+id/timerCardView"
                     app:cardUseCompatPadding="true"
                     app:cardCornerRadius="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/timerContent"
+                        android:visibility="gone"
+                        tools:visibility="visible"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="@dimen/margin_large">
@@ -46,14 +47,28 @@
                             tools:text="x 3"/>
 
                     <ImageView
-                            android:id="@+id/timerHandler"
+                            android:id="@+id/startTimer"
+                            android:visibility="gone"
+                            tools:visibility="visible"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             tools:ignore="ContentDescription"
-                            tools:src="@drawable/ic_round_play_circle_outline_24px"/>
+                            android:src="@drawable/ic_round_play_circle_outline_24px"/>
+
+                    <ImageView
+                            android:id="@+id/stopTimer"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            tools:ignore="ContentDescription"
+                            android:src="@drawable/ic_round_stop_24px"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

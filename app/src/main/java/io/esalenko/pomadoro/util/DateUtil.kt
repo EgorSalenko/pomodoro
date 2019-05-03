@@ -1,25 +1,9 @@
 package io.esalenko.pomadoro.util
 
 import android.annotation.SuppressLint
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.Observable
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-
-@SuppressLint("SimpleDateFormat", "CheckResult")
-fun Date.observeFormatDateTime(): Flowable<String> {
-    return Flowable.timer(TimeUnit.SECONDS.toMillis(5), TimeUnit.MILLISECONDS)
-        .toObservable()
-        .switchMap {
-            Observable.create<String> { emitter ->
-                val result: String = this.formatDate()
-                emitter.onNext(result)
-            }
-        }
-        .toFlowable(BackpressureStrategy.DROP)
-}
 
 @SuppressLint("SimpleDateFormat")
 fun Date.formatDate(): String {

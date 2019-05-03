@@ -17,11 +17,8 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         const val KEY_LAST_STARTED_TASK_TIMER_ID = "key_last_task_timer_id"
         const val KEY_IS_LONG_COOLDOWN_SESSION = "key_is_long_cooldown_session"
 
-        const val LONG_COOLDOWN_SESSION = 4
-
         var DEFAULT_TIMER_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(25)
-
         var DEFAULT_SHORT_COOLDOWN_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(10) else TimeUnit.MINUTES.toMillis(5)
         var DEFAULT_LONG_COOLDOWN_DURATION =

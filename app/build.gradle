@@ -32,7 +32,7 @@ dependencies {
     def material_components_version = "1.1.0-alpha05"
     def ktx_version = "1.0.1"
     def lifecycle_version = "2.1.0-alpha04"
-    def room_version = "2.1.0-alpha06"
+    def room_version = "2.1.0-alpha07"
     def koin_version = '2.0.0-rc-2'
     def anko_version = "0.10.8"
     def fast_adapter = "3.3.1"

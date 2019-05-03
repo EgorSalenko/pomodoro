@@ -31,7 +31,7 @@
     <string name="dialog_title_task_cancel">Task cancel</string>
     <string name="dialog_message_task_cancel">You really want to cancel task? Yours current progress won\'t be saved
     </string>
-    <string name="task_in_progress">Task in progress...</string>
+    <string name="task_in_progress">Task in progress…</string>
     <string name="other_task_is_currently_started">Other task is currently started</string>
     <string name="text_popup_completed">Completed</string>
 

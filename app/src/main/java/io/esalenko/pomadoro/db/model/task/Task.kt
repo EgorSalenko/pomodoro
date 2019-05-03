@@ -16,6 +16,4 @@ data class Task(
     var isArchived: Boolean = false,
     var isCompleted: Boolean = false,
     var isCooldown: Boolean = false
-) {
-
-}
+)

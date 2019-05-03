@@ -35,7 +35,6 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         const val TAG = "ToDoListFragment"
     }
 
-    private var mLastClickTime: Byte = 0
     override val layoutRes: Int
         get() = R.layout.fragment_to_do_list
 

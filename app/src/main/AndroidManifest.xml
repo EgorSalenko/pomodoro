@@ -24,9 +24,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.TimerActivity"
-                  android:screenOrientation="portrait"/>
-
         <service android:name=".service.CountdownService"
                  android:exported="false"/>
 

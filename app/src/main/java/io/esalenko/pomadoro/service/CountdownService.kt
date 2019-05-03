@@ -30,6 +30,8 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
 
     private var timerDuration: Long = SharedPreferenceManager.DEFAULT_TIMER_DURATION
 
+    private var timerState: TimerState? = null
+
     private val localNotificationManager: LocalNotificationManager by inject()
     private val sharedPreferenceManager: SharedPreferenceManager by inject()
     private val localAlarmManager: LocalAlarmManager by inject()
@@ -89,6 +91,7 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { timer: Long ->
+                timerState = TimerState.WORKING
                 callback?.onTimerStateChangeListener(TimerState.WORKING)
                 timerResult = timerDuration - (timer * 1000)
             }
@@ -96,7 +99,8 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
                 timer * 1000 == timerDuration
             }
             .doOnComplete {
-                callback?.onTimerStateChangeListener(TimerState.FINISHED)
+                timerState = TimerState.IDLE
+                callback?.onTimerStateChangeListener(TimerState.IDLE)
                 localAlarmManager.startAlarm(this, taskId, isCooldown)
                 resetLastTaskId()
                 stopForeground(true)
@@ -147,13 +151,16 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     }
 
     fun stopTimer(taskId: Long) {
-        notificationManager.cancel(NOTIFICATION_ID)
-        compositeDisposable.clear()
-        resetLastTaskId()
-        localAlarmManager.stopAlarm(taskId)
-        callback?.onTimerStateChangeListener(TimerState.STOPPED)
-        stopForeground(true)
-        stopSelf()
+        if (timerState != null && timerState == TimerState.WORKING) {
+            notificationManager.cancel(NOTIFICATION_ID)
+            compositeDisposable.clear()
+            resetLastTaskId()
+            localAlarmManager.stopAlarm(taskId)
+            timerState = TimerState.IDLE
+            callback?.onTimerStateChangeListener(TimerState.IDLE)
+            stopForeground(true)
+            stopSelf()
+        }
     }
 
     fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback) {

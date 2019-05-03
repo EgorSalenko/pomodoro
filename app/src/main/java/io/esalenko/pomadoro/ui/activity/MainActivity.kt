@@ -1,7 +1,11 @@
 package io.esalenko.pomadoro.ui.activity
 
 import android.animation.Animator
+import android.content.ComponentName
+import android.content.Context
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -9,49 +13,113 @@ import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.lifecycle.Observer
+import androidx.transition.TransitionManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.FilterType
+import io.esalenko.pomadoro.db.model.TimerState
+import io.esalenko.pomadoro.service.CountdownService
+import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
+import io.esalenko.pomadoro.ui.activity.MainActivity.FragmentPage.*
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.common.animation.AnimatorListenerAdapter
 import io.esalenko.pomadoro.ui.fragment.NewTaskFragment
 import io.esalenko.pomadoro.ui.fragment.ToDoListFragment
 import io.esalenko.pomadoro.vm.SharedViewModel
+import io.esalenko.pomadoro.vm.TimerViewModel
+import io.esalenko.pomadoro.vm.TimerViewModel.TimerAction
 import io.esalenko.pomadoro.vm.common.Event
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.find
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
+
+    private var isCooldown: Boolean = false
     override val layoutRes: Int
         get() = R.layout.activity_main
 
     private val sharedViewModel: SharedViewModel by viewModel()
-
-    private lateinit var popupMenu: PopupMenu
+    private val timerViewModel: TimerViewModel by viewModel()
 
     private var isNewTaskOpened: Boolean = false
+    private var isBound: Boolean = false
+    private var isCompletedTask: Boolean? = null
+    private var taskId: Long = -1L
+
+    private var fragmentPage: FragmentPage? = null
+
+    private lateinit var popupMenu: PopupMenu
+    private var countdownService: CountdownService? = null
+
+    companion object {
+        private const val FAB_CRADLE_MARGIN = 12.0F
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
+            countdownService = countdownBinder.countdownService
+            countdownService?.setCountdownCommunicationCallback(this@MainActivity)
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBound = false
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startService(createCountdownServiceIntent())
+        bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         savedInstanceState.let {
             ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
+            fragmentPage = MAIN
+            setupBottomAppBar(MAIN)
         }
 
-        bottomAppBar.apply {
-            replaceMenu(R.menu.bottom_app_bar_menu)
-            setOnMenuItemClickListener { item: MenuItem ->
-                onMenuItemClicked(item)
+        fab.setOnClickListener {
+            when (fragmentPage) {
+                MAIN, NEW_TASK, null -> {
+                    openNewTaskFragment()
+                }
+                DETAILED -> {
+                    if (isCompletedTask == true) {
+                        timerViewModel.saveLastStartedTaskId(-1)
+                        timerViewModel.restoreCompletedTask(taskId)
+                        onBackPressed()
+                    } else {
+                        timerViewModel.completeTask(taskId)
+                        countdownService?.stopTimer(taskId)
+                        onBackPressed()
+                    }
+                }
             }
-        }
-        addTaskButton.setOnClickListener {
-            animationOpenNewTask()
-            NewTaskFragment().add(R.id.overlayFragmentContainer, NewTaskFragment.TAG)
         }
         setupPopUp()
         subscribeUi()
+    }
+
+    override fun onTimerResult(timer: String) {
+        timerViewModel.provideTimer(timer)
+    }
+
+    override fun onTimerStateChangeListener(timerState: TimerState) {
+        timerViewModel.provideState(timerState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unbindService(serviceConnection)
     }
 
     private fun setupPopUp() {
@@ -61,33 +129,127 @@ class MainActivity : BaseActivity() {
 
     private fun subscribeUi() {
         sharedViewModel.apply {
-            mainScreenLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
-                animationOpenNewTask()
-                val newTaskFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.overlayFragmentContainer)
-                newTaskFragment?.remove()
-            })
-            errorLiveData.observe(this@MainActivity, Observer { event: Event<String> ->
-                Snackbar.make(coordinatorLayout, event.getContentIfNotHandled().toString(), Snackbar.LENGTH_INDEFINITE)
-                    .setAnchorView(addTaskButton)
-                    .setAction(R.string.snackbar_action_retry) {
-                        sharedViewModel.onErrorRetry()
+            mainScreenLiveData
+                .observe(
+                    this@MainActivity,
+                    Observer { event: Event<String> ->
+                        animationOpenNewTask()
+                        val newTaskFragment: Fragment? =
+                            supportFragmentManager.findFragmentById(R.id.overlayFragmentContainer)
+                        newTaskFragment?.remove()
                     }
-                    .show()
+                )
+
+            errorLiveData
+                .observe(
+                    this@MainActivity,
+                    Observer { event: Event<String> ->
+                        Snackbar.make(
+                            coordinatorLayout,
+                            event.getContentIfNotHandled().toString(),
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                            .setAnchorView(fab)
+                            .setAction(R.string.snackbar_action_retry) {
+                                sharedViewModel.onErrorRetry()
+                            }
+                            .show()
+                    }
+                )
+
+            detailScreenEventLiveData
+                .observe(
+                    this@MainActivity,
+                    Observer { event: Event<Pair<Long, Boolean>> ->
+                        val pair = event.getContentIfNotHandled()
+                        val id: Long = pair?.first ?: return@Observer
+                        val isCompleted: Boolean = pair.second
+                        this@MainActivity.isCompletedTask = isCompleted
+                        openDetailTaskFragment(id)
             })
         }
+
+        timerViewModel.apply {
+
+            shareTaskLiveData.observe(this@MainActivity, Observer { task ->
+                taskId = task.id
+                isCooldown = task.isCooldown
+                isCompletedTask = task.isCompleted
+            })
+
+            timerActionLiveData.observe(this@MainActivity, Observer { event ->
+                when (event.getContentIfNotHandled()) {
+                    TimerAction.START -> countdownService?.startTimer(taskId, isCooldown)
+                    TimerAction.STOP -> countdownService?.stopTimer(taskId)
+                }
+            })
+        }
+
+    }
+
+    private fun setupToolbar() {
+        TransitionManager.beginDelayedTransition(mainLayout)
+        toolbar.visibility = View.VISIBLE
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+        TransitionManager.endTransitions(mainLayout)
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        when (item.itemId) {
             R.id.menu_filter -> {
                 openFilterPopUp()
-                true
             }
             R.id.menu_profile -> {
-                true
+
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.delete_item -> {
+                MaterialDialog(this).show {
+                    title(R.string.delete_item)
+                    message(R.string.delete_item_msg)
+                    icon(R.drawable.ic_round_delete_forever_24px)
+                    negativeButton {
+                        it.dismiss()
+                    }
+                    positiveButton {
+                        it.dismiss()
+                        openToDoListFragment()
+                        countdownService?.stopTimer(taskId)
+                        timerViewModel.removeTask(taskId)
+                    }
+                }
+            }
         }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun openToDoListFragment() {
+        toolbar.visibility = View.GONE
+        ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
+        fragmentPage = MAIN
+        setupBottomAppBar(MAIN)
+    }
+
+    private fun openNewTaskFragment() {
+        animationOpenNewTask()
+        NewTaskFragment().add(R.id.overlayFragmentContainer, NewTaskFragment.TAG)
+    }
+
+    private fun openDetailTaskFragment(id: Long) {
+        DetailTaskFragment
+            .newInstance(id)
+            .replace(R.id.fragmentContainer, DetailTaskFragment.TAG)
+        fragmentPage = DETAILED
+        setupBottomAppBar(DETAILED)
+        setupToolbar()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun openFilterPopUp() {
@@ -112,21 +274,56 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        when (val lastFragment = getLastFragment() ?: super.onBackPressed()) {
+        val lastFragment: Fragment? = getLastFragment()
+
+        if (lastFragment == null) {
+            super.onBackPressed()
+        }
+
+        when (lastFragment) {
             is NewTaskFragment -> {
                 animationOpenNewTask()
                 lastFragment.remove()
+            }
+            is DetailTaskFragment -> {
+                openToDoListFragment()
             }
             else -> super.onBackPressed()
         }
     }
 
+    private fun setupBottomAppBar(page: FragmentPage) {
+        when (page) {
+            MAIN, NEW_TASK -> {
+                fab.setImageResource(R.drawable.ic_round_add_24px)
+                bottomAppBar.apply {
+                    fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+                    fabCradleMargin = FAB_CRADLE_MARGIN
+                    replaceMenu(R.menu.bottom_app_bar_menu)
+                    setOnMenuItemClickListener { item: MenuItem ->
+                        onMenuItemClicked(item)
+                    }
+                }
+            }
+            DETAILED -> {
+                fab.setImageResource(if (isCompletedTask!!) R.drawable.ic_round_undo_24px else R.drawable.ic_round_done_24px)
+                bottomAppBar.apply {
+                    fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+                    fabCradleMargin = FAB_CRADLE_MARGIN
+                    replaceMenu(R.menu.bottom_app_bar_menu_task)
+                    setOnMenuItemClickListener { item: MenuItem ->
+                        onMenuItemClicked(item)
+                    }
+                }
+            }
+        }
+    }
 
     private fun animationOpenNewTask() {
         if (!isNewTaskOpened) {
 
-            val x = addTaskButton.x.toInt() + addTaskButton.width / 2
-            val y = addTaskButton.y.toInt() + addTaskButton.height / 2
+            val x = fab.x.toInt() + fab.width / 2
+            val y = fab.y.toInt() + fab.height / 2
 
             val startRadius = 0.0f
             val endRadius = (Math.hypot(
@@ -149,8 +346,8 @@ class MainActivity : BaseActivity() {
             isNewTaskOpened = true
         } else {
 
-            val x = addTaskButton.x.toInt() + addTaskButton.width / 2
-            val y = addTaskButton.y.toInt() + addTaskButton.height / 2
+            val x = fab.x.toInt() + fab.width / 2
+            val y = fab.y.toInt() + fab.height / 2
 
             val startRadius = (Math.hypot(
                 overlayFragmentContainer.width.toDouble(),
@@ -172,5 +369,11 @@ class MainActivity : BaseActivity() {
             anim.start()
             isNewTaskOpened = false
         }
+    }
+
+    enum class FragmentPage {
+        MAIN,
+        NEW_TASK,
+        DETAILED
     }
 }

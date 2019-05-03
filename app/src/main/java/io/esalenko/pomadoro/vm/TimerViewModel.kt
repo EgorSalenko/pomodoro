@@ -2,11 +2,13 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.esalenko.pomadoro.db.model.TimerState
 import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.repository.TaskRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
+import io.esalenko.pomadoro.vm.common.Event
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.error
@@ -20,6 +22,22 @@ class TimerViewModel(
     private val _taskLiveData = MutableLiveData<RxResult<Task>>()
     val taskLiveData: LiveData<RxResult<Task>>
         get() = _taskLiveData
+
+    private val _timerLiveData = MutableLiveData<String>()
+    val timerLiveData: LiveData<String>
+        get() = _timerLiveData
+
+    private val _timerStateLiveData = MutableLiveData<TimerState>()
+    val timerStateLiveData: LiveData<TimerState>
+        get() = _timerStateLiveData
+
+    private val _timerActionLiveData = MutableLiveData<Event<TimerAction>>()
+    val timerActionLiveData: LiveData<Event<TimerAction>>
+        get() = _timerActionLiveData
+
+    private val _shareTaskLiveData = MutableLiveData<Task>()
+    val shareTaskLiveData: LiveData<Task>
+        get() = _shareTaskLiveData
 
     fun getTask(taskId: Long) {
         _taskLiveData.postValue(RxResult.loading(null))
@@ -125,8 +143,26 @@ class TimerViewModel(
                 }
             )
             .addToCompositeDisposable()
-
     }
 
+    fun provideTimer(timer: String) {
+        _timerLiveData.value = timer
+    }
 
+    fun provideState(state: TimerState) {
+        _timerStateLiveData.value = state
+    }
+
+    fun setTimerAction(action: TimerAction) {
+        _timerActionLiveData.value = Event(action)
+    }
+
+    fun shareTaskInfo(task: Task) {
+        _shareTaskLiveData.value = task
+    }
+
+    enum class TimerAction {
+        START,
+        STOP
+    }
 }

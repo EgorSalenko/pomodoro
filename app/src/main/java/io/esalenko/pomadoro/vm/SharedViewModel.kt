@@ -25,6 +25,10 @@ class SharedViewModel : BaseViewModel() {
     val errorRetryLiveData: LiveData<Event<Any>>
         get() = _errorRetryLiveData
 
+    private val _detailScreenEventLiveData = MutableLiveData<Event<Pair<Long, Boolean>>>()
+    val detailScreenEventLiveData: LiveData<Event<Pair<Long, Boolean>>>
+        get() = _detailScreenEventLiveData
+
     fun openMainScreen() {
         _mainScreenLiveData.value = Event("Saved")
     }
@@ -39,5 +43,9 @@ class SharedViewModel : BaseViewModel() {
 
     fun onErrorRetry() {
         _errorRetryLiveData.value = Event(Any())
+    }
+
+    fun openDetailTaskScreen(id: Long, isCompleted: Boolean) {
+        _detailScreenEventLiveData.value = Event(Pair(id, isCompleted))
     }
 }

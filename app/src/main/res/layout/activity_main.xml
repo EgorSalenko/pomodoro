@@ -10,6 +10,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"/>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
         <FrameLayout
                 android:id="@+id/fragmentContainer"
                 android:layout_width="match_parent"
@@ -25,7 +37,7 @@
                 app:hideOnScroll="true"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addTaskButton"
+                android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fabSize="normal"

@@ -15,7 +15,6 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.ui.activity.TimerActivity.Companion.createTimerActivityIntent
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -44,13 +43,11 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     private lateinit var fastAdapter: FastAdapter<TaskItem>
     private lateinit var itemAdapter: ItemAdapter<TaskItem>
 
-    //drag & drop
     private lateinit var touchCallback: SimpleSwipeCallback
     private lateinit var touchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        retainInstance = true
         initAdapter()
         viewModel.fetchToDoList()
         subscribeUi()
@@ -81,8 +78,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 it.attachToRecyclerView(toDoList)
             }
 
-        fastAdapter.withOnClickListener { v, adapter, item: TaskItem, position ->
-            startActivity(createTimerActivityIntent(requireContext(), item.id))
+        fastAdapter.withOnClickListener { _, _, item: TaskItem, _ ->
+            sharedViewModel.openDetailTaskScreen(item.id, item.isCompleted)
             true
         }
     }
@@ -188,7 +185,6 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             item.swipedAction = null
             val _position: Int = itemAdapter.getAdapterPosition(item)
             if (_position != RecyclerView.NO_POSITION) {
-                //this sample uses a filter. If a filter is used we should use the methods provided by the filter (to make sure filter and normal state is updated)
                 itemAdapter.remove(_position)
 
                 ItemTouchHelper.ACTION_STATE_DRAG

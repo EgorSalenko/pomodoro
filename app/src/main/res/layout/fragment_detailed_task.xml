@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/parentTimer"
+        xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/parentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="top"/>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="?attr/actionBarSize">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize">
 
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="match_parent"
@@ -50,7 +32,7 @@
                             android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:text="00:00"/>
+                            tools:text="00:00"/>
 
                     <TextView
                             style="@style/TextAppearance.AppCompat.Subhead"
@@ -70,6 +52,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            tools:ignore="ContentDescription"
                             tools:src="@drawable/ic_round_play_circle_outline_24px"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -114,22 +97,4 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
 
-    </FrameLayout>
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:fabAlignmentMode="end"
-            app:hideOnScroll="false"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/completeTask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_anchor="@id/bottomAppBar"
-            app:fabSize="normal"
-            android:src="@drawable/ic_round_done_24px"/>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

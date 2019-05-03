@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
+import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
@@ -57,10 +58,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private lateinit var popupMenu: PopupMenu
     private var countdownService: CountdownService? = null
 
-    companion object {
-        private const val FAB_CRADLE_MARGIN = 12.0F
-    }
-
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
@@ -89,7 +86,9 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             setupBottomAppBar(MAIN)
         }
 
-        fab.setOnClickListener {
+        fab.apply {
+            setColorFilter(Color.WHITE)
+            setOnClickListener {
             avoidDoubleClick {
                 when (fragmentPage) {
                     MAIN, NEW_TASK, null -> {
@@ -107,6 +106,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
                         }
                     }
                 }
+            }
             }
         }
         setupPopUp()
@@ -301,21 +301,26 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private fun setupBottomAppBar(page: FragmentPage) {
         when (page) {
             MAIN, NEW_TASK -> {
-                fab.setImageResource(R.drawable.ic_round_add_24px)
+                fab.apply {
+                    setImageResource(R.drawable.ic_round_add_24px)
+                    setColorFilter(Color.WHITE)
+                }
                 bottomAppBar.apply {
                     fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-                    fabCradleMargin = FAB_CRADLE_MARGIN
                     replaceMenu(R.menu.bottom_app_bar_menu)
                     setOnMenuItemClickListener { item: MenuItem ->
                         onMenuItemClicked(item)
                     }
                 }
+                setupPopUp()
             }
             DETAILED -> {
-                fab.setImageResource(if (isCompletedTask!!) R.drawable.ic_round_undo_24px else R.drawable.ic_round_done_24px)
+                fab.apply {
+                    setImageResource(if (isCompletedTask!!) R.drawable.ic_round_undo_24px else R.drawable.ic_round_done_24px)
+                    setColorFilter(Color.WHITE)
+                }
                 bottomAppBar.apply {
                     fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
-                    fabCradleMargin = FAB_CRADLE_MARGIN
                     replaceMenu(R.menu.bottom_app_bar_menu_task)
                     setOnMenuItemClickListener { item: MenuItem ->
                         onMenuItemClicked(item)

@@ -88,10 +88,10 @@ class ToDoListViewModel(
             ).addToCompositeDisposable()
     }
 
-    fun getToDoListByPriority() {
+    fun getToDoListByPriority(priority: TaskPriority) {
         _toDoListLiveData.postValue(RxResult.loading(null))
         taskRepository
-            .getAllByPriority()
+            .getAllByPriority(priority)
             .subscribe(
                 { listByPriority: List<Task> ->
                     _toDoListLiveData.postValue(RxResult.success(listByPriority))

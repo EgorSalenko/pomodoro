@@ -266,17 +266,14 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private fun openFilterPopUp() {
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
-                R.id.filter_by_priority -> {
-                    sharedViewModel.setFilter(FilterType.BY_PRIORITY)
-                }
-                R.id.filter_by_date -> {
-                    sharedViewModel.setFilter(FilterType.BY_DATE)
+                R.id.filter_by_all -> {
+                    sharedViewModel.setFilter(FilterType.ALL)
                 }
                 R.id.filter_by_archived -> {
-                    sharedViewModel.setFilter(FilterType.BY_ARCHIVED)
+                    sharedViewModel.setFilter(FilterType.ARCHIVED)
                 }
                 R.id.filter_by_completed -> {
-                    sharedViewModel.setFilter(FilterType.BY_COMPLETED)
+                    sharedViewModel.setFilter(FilterType.COMPLETED)
                 }
             }
             true

@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.ui.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.RadioGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,6 +16,7 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.db.model.task.Task
+import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -49,8 +51,25 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        radioBtnAll.isChecked = true
         initAdapter()
         viewModel.fetchToDoList()
+        radioGroupPrioritySort.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
+            when (checkedId) {
+                R.id.radioBtnAll -> {
+                    viewModel.fetchToDoList()
+                }
+                R.id.radioBtnLow -> {
+                    viewModel.getToDoListByPriority(TaskPriority.LOW)
+                }
+                R.id.radioBtnMid -> {
+                    viewModel.getToDoListByPriority(TaskPriority.MID)
+                }
+                R.id.radioBtnHigh -> {
+                    viewModel.getToDoListByPriority(TaskPriority.HIGH)
+                }
+            }
+        }
         subscribeUi()
     }
 
@@ -97,9 +116,9 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                     RxStatus.SUCCESS -> {
                         itemAdapter.clear()
                         if (result.data?.isEmpty()!!) {
-                            warning_msg_empty_list.visibility = View.VISIBLE
+                            msgEmptyList.visibility = View.VISIBLE
                         } else {
-                            warning_msg_empty_list.visibility = View.GONE
+                            msgEmptyList.visibility = View.GONE
                             result
                                 .data
                                 .forEach { task: Task ->
@@ -123,11 +142,12 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                     }
                     RxStatus.ERROR -> {
                         loading.visibility = View.GONE
-                        warning_msg_empty_list.visibility = View.VISIBLE
+                        msgEmptyList.visibility = View.VISIBLE
                         sharedViewModel.showError(result.msg)
                     }
                     RxStatus.LOADING -> {
                         loading.visibility = View.VISIBLE
+                        msgEmptyList.visibility = View.GONE
                     }
                 }
 
@@ -158,16 +178,13 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
             filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<FilterType> ->
                 when (event.getContentIfNotHandled()) {
-                    FilterType.BY_PRIORITY -> {
-                        viewModel.getToDoListByPriority()
-                    }
-                    FilterType.BY_DATE -> {
+                    FilterType.ALL -> {
                         viewModel.fetchToDoList()
                     }
-                    FilterType.BY_ARCHIVED -> {
+                    FilterType.ARCHIVED -> {
                         viewModel.getToDoListArchived()
                     }
-                    FilterType.BY_COMPLETED -> {
+                    FilterType.COMPLETED -> {
                         viewModel.getToDoListCompleted()
                     }
                 }

@@ -103,6 +103,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                         val list = result.data
                         if (list != null && list.isNotEmpty()) {
                             spinnerTaskTypes.attachDataSource(list)
+                            taskCategory = spinnerTaskTypes.selectedItem as TaskCategory
                         }
                     }
                     RxStatus.ERROR -> {

@@ -4,7 +4,8 @@
     <string name="task_duration">Duration : %d m</string>
     <string name="task_date">Date : %s</string>
     <string name="session_in_progress">Session in progress</string>
-    <string name="working_session">Working session</string>
+    <string name="type_session_in_progress">%s session in progress</string>
+    <string name="working_session">%s session</string>
     <string name="timer_remaining">Timer remaining : %s</string>
     <string name="session">Session : %d</string>
     <string name="dialog_title">Timer session is finished</string>
@@ -37,6 +38,8 @@
     <string name="error_categories">Error while loading categories</string>
     <string name="dialog_title_new_category">Create new category</string>
     <string name="dialog_hint_new_category">Category Name</string>
+    <string name="session_pause">Pause</string>
+    <string name="session_work">Work</string>
 
 
     <string-array name="array_task_type">

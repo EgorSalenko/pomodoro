@@ -16,12 +16,23 @@ class LocalAlarmManager(private val taskRxRepository: TaskRepository) : KoinComp
     private var alarmMgr: AlarmManager? = null
     private lateinit var alarmIntent: PendingIntent
 
-    fun startAlarm(ctx: Context?, taskId: Long, isCooldown: Boolean) {
+    companion object {
+        const val KEY_FINISHED_TASK_IS_COMPLETED = "key_finished_task_is_completed"
+        const val KEY_FINISHED_TASK_ID = "key_finished_task_id"
+        const val KEY_FINISHED_TASK_MSG = "key_finished_task_msg"
+    }
+
+    fun startAlarm(ctx: Context?, taskId: Long, isCooldown: Boolean, msg: String? = null) {
         updateTask(taskId, isCooldown)
         alarmMgr = ctx?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmIntent = Intent(ctx, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(ctx, 0, intent, 0)
+        val intent = Intent(ctx, AlarmReceiver::class.java).apply {
+            putExtra(KEY_FINISHED_TASK_ID, taskId)
+            putExtra(KEY_FINISHED_TASK_IS_COMPLETED, false)
+            if (msg != null) {
+                putExtra(KEY_FINISHED_TASK_MSG, msg)
+            }
         }
+        alarmIntent = PendingIntent.getBroadcast(ctx, 0, intent, 0)
 
         alarmMgr?.set(
             AlarmManager.RTC_WAKEUP,

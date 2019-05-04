@@ -21,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.FilterType
 import io.esalenko.pomadoro.db.model.TimerState
+import io.esalenko.pomadoro.receiver.AlarmReceiver
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.activity.MainActivity.FragmentPage.*
@@ -50,7 +51,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     private var isNewTaskOpened: Boolean = false
     private var isBound: Boolean = false
-    private var isCompletedTask: Boolean? = null
+    private var isCompletedTask: Boolean? = false
     private var taskId: Long = -1L
 
     private var fragmentPage: FragmentPage? = null
@@ -80,10 +81,14 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        savedInstanceState.let {
-            ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
-            fragmentPage = MAIN
-            setupBottomAppBar(MAIN)
+        val extrasTaskId = intent?.extras?.get(AlarmReceiver.KEY_TASK_ID) as? Long ?: -1L
+        isCompletedTask = intent?.extras?.get(AlarmReceiver.KEY_TASK_IS_COMPLETED) as? Boolean ?: false
+        if (savedInstanceState == null) {
+            if (extrasTaskId != -1L) {
+                openDetailTaskFragment(extrasTaskId)
+            } else {
+                openToDoListFragment()
+            }
         }
 
         fab.apply {
@@ -109,7 +114,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             }
             }
         }
-        setupPopUp()
         subscribeUi()
     }
 
@@ -235,6 +239,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         ToDoListFragment().replace(R.id.fragmentContainer, ToDoListFragment.TAG)
         fragmentPage = MAIN
         setupBottomAppBar(MAIN)
+        setupPopUp()
     }
 
     private fun openNewTaskFragment() {
@@ -243,12 +248,12 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     }
 
     private fun openDetailTaskFragment(id: Long) {
-        DetailTaskFragment
-            .newInstance(id)
-            .replace(R.id.fragmentContainer, DetailTaskFragment.TAG)
         fragmentPage = DETAILED
         setupBottomAppBar(DETAILED)
         setupToolbar()
+        DetailTaskFragment
+            .newInstance(id)
+            .replace(R.id.fragmentContainer, DetailTaskFragment.TAG)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

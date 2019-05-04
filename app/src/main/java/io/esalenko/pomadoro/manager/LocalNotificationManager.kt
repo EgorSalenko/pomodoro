@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import io.esalenko.pomadoro.R
 
@@ -21,7 +22,8 @@ class LocalNotificationManager {
         content: String,
         requestCode: Int,
         isVibrate: Boolean = false,
-        clazz: Class<T>
+        clazz: Class<T>,
+        bundle: Bundle? = null
     ): Notification? {
 
         val notificationBuilder: NotificationCompat.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -52,11 +54,19 @@ class LocalNotificationManager {
             .setContentText(content)
             .setContentTitle(title)
             .setOnlyAlertOnce(true)
+            .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
                     ctx,
                     requestCode,
-                    Intent(ctx, clazz),
+                    bundle.let {
+                        Intent(ctx, clazz).apply {
+                            if (bundle != null) {
+                                putExtras(bundle)
+                            }
+                        }
+                    }
+                    ,
                     0
                 )
             )

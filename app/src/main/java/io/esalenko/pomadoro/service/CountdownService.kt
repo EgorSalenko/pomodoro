@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 class CountdownService : Service(), KoinComponent, AnkoLogger {
 
     private var timerResult: Long = 0
-
+    private var sessionType: String = ""
     private var timerDuration: Long = SharedPreferenceManager.DEFAULT_TIMER_DURATION
 
     private var timerState: TimerState? = null
@@ -69,22 +69,24 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     @SuppressLint("CheckResult")
     fun startTimer(taskId: Long, isCooldown: Boolean) {
 
+        if (isCooldown) {
+            sessionType = resources.getString(R.string.session_pause)
+            timerDuration = sharedPreferenceManager.cooldownDuration
+        } else {
+            sessionType = resources.getString(R.string.session_work)
+            timerDuration = sharedPreferenceManager.timerDuration
+        }
+
         val notification: Notification? =
             localNotificationManager.createNotification(
                 this,
                 title = getString(R.string.session_in_progress),
-                content = getString(R.string.working_session),
+                content = getString(R.string.working_session, sessionType),
                 requestCode = REQUEST_CODE,
                 clazz = MainActivity::class.java
             )
 
         startForeground(NOTIFICATION_ID, notification)
-
-        timerDuration = if (isCooldown) {
-            sharedPreferenceManager.cooldownDuration
-        } else {
-            sharedPreferenceManager.timerDuration
-        }
 
         Observable
             .interval(1000, TimeUnit.MILLISECONDS)
@@ -101,7 +103,7 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             .doOnComplete {
                 timerState = TimerState.IDLE
                 callback?.onTimerStateChangeListener(TimerState.IDLE)
-                localAlarmManager.startAlarm(this, taskId, isCooldown)
+                localAlarmManager.startAlarm(this, taskId, isCooldown, sessionType)
                 resetLastTaskId()
                 stopForeground(true)
                 stopSelf()
@@ -127,7 +129,7 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
                             localNotificationManager
                                 .createNotification(
                                     this,
-                                    getString(R.string.session_in_progress),
+                                    getString(R.string.type_session_in_progress, sessionType),
                                     getString(R.string.timer_remaining, time),
                                     REQUEST_CODE,
                                     clazz = MainActivity::class.java

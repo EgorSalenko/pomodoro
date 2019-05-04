@@ -34,8 +34,14 @@ interface TaskDao {
     @Query("select * from task_table where isArchived == 1 order by date DESC")
     fun getAllArchived(): Maybe<List<Task>>
 
+    @Query("select * from task_table where isArchived == 1 and priority =:priority order by date DESC")
+    fun getAllArchivedByPriority(priority: Priority): Maybe<List<Task>>
+
     @Query("select * from task_table where isCompleted == 1 order by date DESC")
     fun getAllCompleted(): Maybe<List<Task>>
+
+    @Query("select * from task_table where isCompleted == 1 and priority =:priority order by date DESC")
+    fun getAllCompletedByPriority(priority: Priority): Maybe<List<Task>>
 
     @Query("select pomidors from task_table where id =:id")
     fun getSessions(id: Long): LiveData<Int>

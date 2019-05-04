@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.esalenko.pomadoro.db.model.Filter
 import io.esalenko.pomadoro.db.model.task.Category
 import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.db.model.task.Task
@@ -10,11 +11,11 @@ import io.esalenko.pomadoro.repository.CategoryRepository
 import io.esalenko.pomadoro.repository.TaskRepository
 import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.vm.common.BaseViewModel
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.error
-import org.jetbrains.anko.info
 import java.util.*
 
 
@@ -53,24 +54,48 @@ class ToDoListViewModel(
         }
     }
 
-    fun fetchToDoList() {
-        _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository
-            .getAll()
-            .subscribe(
-                { taskList: List<Task> ->
-                    _toDoListLiveData.postValue(RxResult.success(taskList))
-                    info { taskList }
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                    error { error }
-                })
-            .addToCompositeDisposable()
-    }
+    val toDoList: LiveData<List<Task>> = taskRepository.observeList()
 
-    fun observeToDoList(): LiveData<List<Task>> {
-        return taskRepository.observeList()
+    fun getToDoListBy(priority: Priority? = null, filter: Filter? = null) {
+        _toDoListLiveData.postValue(RxResult.loading(null))
+
+        val observable: Maybe<List<Task>> = if (priority == null) {
+            when (filter) {
+                Filter.ALL -> {
+                    taskRepository.getAll()
+                }
+                Filter.ARCHIVED -> {
+                    taskRepository.getAllArchived()
+                }
+                Filter.COMPLETED -> {
+                    taskRepository.getAllCompleted()
+                }
+                else -> taskRepository.getAll()
+            }
+        } else {
+            when (filter) {
+                Filter.ALL -> {
+                    taskRepository.getAllByPriority(priority)
+                }
+                Filter.ARCHIVED -> {
+                    taskRepository.getAllArchivedByPriority(priority)
+                }
+                Filter.COMPLETED -> {
+                    taskRepository.getAllCompletedByPriority(priority)
+                }
+                else -> taskRepository.getAll()
+            }
+        }
+
+        observable.subscribe(
+            { taskList: List<Task> ->
+                _toDoListLiveData.postValue(RxResult.success(taskList))
+            }, { error ->
+                _toDoListLiveData.postValue(RxResult.error("", null))
+                error { error }
+            }
+        ).addToCompositeDisposable()
+
     }
 
     fun getCategories() {
@@ -83,53 +108,6 @@ class ToDoListViewModel(
                 },
                 { error ->
                     _categoryLiveData.postValue(RxResult.error(error.message!!, null))
-                    error { error }
-                }
-            ).addToCompositeDisposable()
-    }
-
-    fun getToDoListByPriority(priority: Priority) {
-        _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository
-            .getAllByPriority(priority)
-            .subscribe(
-                { listByPriority: List<Task> ->
-                    _toDoListLiveData.postValue(RxResult.success(listByPriority))
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
-    }
-
-    fun getToDoListArchived() {
-        _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository
-            .getAllArchived()
-            .subscribe(
-                { archivedList: List<Task> ->
-                    _toDoListLiveData.postValue(RxResult.success(archivedList))
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("Something went wrong", null))
-                    error { error }
-                }
-            )
-            .addToCompositeDisposable()
-    }
-
-    fun getToDoListCompleted() {
-        _toDoListLiveData.postValue(RxResult.loading(null))
-        taskRepository
-            .getAllCompleted()
-            .subscribe(
-                { completedList: List<Task> ->
-                    _toDoListLiveData.postValue(RxResult.success(completedList))
-                },
-                { error ->
-                    _toDoListLiveData.postValue(RxResult.error("", null))
                     error { error }
                 }
             ).addToCompositeDisposable()
@@ -157,7 +135,7 @@ class ToDoListViewModel(
             .addToCompositeDisposable()
     }
 
-    fun remove(id: Long) {
+    fun deleteTask(id: Long) {
         Single
             .just(id)
             .subscribeOn(Schedulers.io())
@@ -173,7 +151,7 @@ class ToDoListViewModel(
             .addToCompositeDisposable()
     }
 
-    fun archive(id: Long) {
+    fun archiveTask(id: Long) {
         Single
             .just(id)
             .subscribeOn(Schedulers.io())

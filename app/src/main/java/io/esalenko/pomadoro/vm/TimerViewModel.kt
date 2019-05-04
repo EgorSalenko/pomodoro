@@ -80,6 +80,7 @@ class TimerViewModel(
             .map { task ->
                 task.apply {
                     isCompleted = false
+                    isArchived = false
                 }
             }
             .subscribe(
@@ -113,15 +114,9 @@ class TimerViewModel(
         sharedPreferenceManager.lastStartedTaskId = itemId
     }
 
-    fun getSession(itemId: Long): LiveData<Int> {
-        return taskRepository
-            .getSessions(itemId)
-    }
+    fun getSession(itemId: Long): LiveData<Int> = taskRepository.getSessions(itemId)
 
-    fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
-        return taskRepository
-            .getTaskCooldown(taskId)
-    }
+    fun getTaskCooldown(taskId: Long): LiveData<Boolean> = taskRepository.getTaskCooldown(taskId)
 
     fun isLastStartedTask(itemId: Long) =
         itemId == sharedPreferenceManager.lastStartedTaskId || sharedPreferenceManager.lastStartedTaskId == -1L

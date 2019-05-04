@@ -152,9 +152,10 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
                 .observe(
                     this@MainActivity,
                     Observer { event: Event<String> ->
+                        val message = event.getContentIfNotHandled().toString()
                         Snackbar.make(
                             coordinatorLayout,
-                            event.getContentIfNotHandled().toString(),
+                            message,
                             Snackbar.LENGTH_INDEFINITE
                         )
                             .setAnchorView(fab)

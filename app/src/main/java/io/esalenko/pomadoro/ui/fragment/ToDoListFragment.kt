@@ -49,27 +49,27 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     private lateinit var touchCallback: SimpleSwipeCallback
     private lateinit var touchHelper: ItemTouchHelper
 
+    private var cachedPriority: Priority? = null
+    private var cachedFilter: Filter = Filter.ALL
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         radioBtnAll.isChecked = true
+
         initAdapter()
-        viewModel.fetchToDoList()
+        viewModel.getToDoListBy()
+
         radioGroupPrioritySort.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
-            when (checkedId) {
-                R.id.radioBtnAll -> {
-                    viewModel.fetchToDoList()
-                }
-                R.id.radioBtnLow -> {
-                    viewModel.getToDoListByPriority(Priority.LOW)
-                }
-                R.id.radioBtnMid -> {
-                    viewModel.getToDoListByPriority(Priority.MID)
-                }
-                R.id.radioBtnHigh -> {
-                    viewModel.getToDoListByPriority(Priority.HIGH)
-                }
+            cachedPriority = when (checkedId) {
+                R.id.radioBtnAll -> null
+                R.id.radioBtnLow -> Priority.LOW
+                R.id.radioBtnMid -> Priority.MID
+                R.id.radioBtnHigh -> Priority.HIGH
+                else -> null
             }
+            viewModel.getToDoListBy(cachedPriority, cachedFilter)
         }
+
         subscribeUi()
     }
 
@@ -88,9 +88,9 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             this,
             leaveBehindDrawableLeft,
             ItemTouchHelper.LEFT,
-            ContextCompat.getColor(context!!, R.color.md_red_900)
+            ContextCompat.getColor(requireContext(), R.color.md_red_900)
         )
-            .withBackgroundSwipeRight(ContextCompat.getColor(context!!, R.color.md_blue_900))
+            .withBackgroundSwipeRight(ContextCompat.getColor(requireContext(), R.color.md_blue_900))
             .withLeaveBehindSwipeRight(leaveBehindDrawableRight)
 
         touchHelper =
@@ -111,7 +111,6 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         viewModel.apply {
 
             toDoListLiveData.observe(viewLifecycleOwner, Observer { result: RxResult<List<Task>> ->
-                val items = ArrayList<TaskItem>()
                 when (result.status) {
                     RxStatus.SUCCESS -> {
                         itemAdapter.clear()
@@ -119,24 +118,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                             msgEmptyList.visibility = View.VISIBLE
                         } else {
                             msgEmptyList.visibility = View.GONE
-                            result
-                                .data
-                                .forEach { task: Task ->
-                                    items.add(
-                                        TaskItem(
-                                            task.id,
-                                            task.description,
-                                            task.date,
-                                            task.category?.categoryName!!,
-                                            task.priority,
-                                            task.pomidors,
-                                            task.isRunning,
-                                            task.isCompleted
-                                        )
-                                    )
-                                    info { task }
-                                }
-                            FastAdapterDiffUtil.set(itemAdapter, items)
+                            updateFastAdapterTaskData(result.data)
                         }
                         loading.visibility = View.GONE
                     }
@@ -152,48 +134,47 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 }
 
             })
-            observeToDoList().observe(viewLifecycleOwner, Observer { taskList: List<Task> ->
-                val items = ArrayList<TaskItem>()
-                taskList
-                    .forEach { task: Task ->
-                        items.add(
-                            TaskItem(
-                                task.id,
-                                task.description,
-                                task.date,
-                                task.category?.categoryName!!,
-                                task.priority,
-                                task.pomidors,
-                                task.isRunning,
-                                task.isCompleted
-                            )
-                        )
-                        info { task }
-                    }
-                FastAdapterDiffUtil.set(itemAdapter, items)
+
+            toDoList.observe(viewLifecycleOwner, Observer { taskList: List<Task> ->
+                updateFastAdapterTaskData(taskList)
             })
         }
 
         sharedViewModel.apply {
 
             filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<Filter> ->
-                when (event.getContentIfNotHandled()) {
-                    Filter.ALL -> {
-                        viewModel.fetchToDoList()
-                    }
-                    Filter.ARCHIVED -> {
-                        viewModel.getToDoListArchived()
-                    }
-                    Filter.COMPLETED -> {
-                        viewModel.getToDoListCompleted()
-                    }
+                val filter = event.getContentIfNotHandled()
+                if (filter != null) {
+                    cachedFilter = filter
                 }
+                viewModel.getToDoListBy(cachedPriority, cachedFilter)
             })
 
             errorRetryLiveData.observe(viewLifecycleOwner, Observer {
-                viewModel.fetchToDoList()
+                viewModel.getToDoListBy()
             })
         }
+    }
+
+    private fun updateFastAdapterTaskData(taskList: List<Task>) {
+        val items = ArrayList<TaskItem>()
+        taskList
+            .forEach { task: Task ->
+                items.add(
+                    TaskItem(
+                        task.id,
+                        task.description,
+                        task.date,
+                        task.category?.categoryName!!,
+                        task.priority,
+                        task.pomidors,
+                        task.isRunning,
+                        task.isCompleted
+                    )
+                )
+                info { task }
+            }
+        FastAdapterDiffUtil.set(itemAdapter, items)
     }
 
     override fun itemSwiped(position: Int, direction: Int) {
@@ -209,8 +190,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
                 ItemTouchHelper.ACTION_STATE_DRAG
                 when (item.swipedDirection) {
-                    ItemTouchHelper.LEFT -> viewModel.remove(item.id)
-                    ItemTouchHelper.RIGHT -> viewModel.archive(item.id)
+                    ItemTouchHelper.LEFT -> viewModel.deleteTask(item.id)
+                    ItemTouchHelper.RIGHT -> viewModel.archiveTask(item.id)
                 }
             }
         }

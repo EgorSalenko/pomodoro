@@ -82,8 +82,20 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             .subscribeOn(AndroidSchedulers.mainThread())
     }
 
+    fun getAllArchivedByPriority(priority: Priority): Maybe<List<Task>> {
+        return taskDao.getAllArchivedByPriority(priority)
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
     fun getAllCompleted(): Maybe<List<Task>> {
         return taskDao.getAllCompleted()
+            .subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun getAllCompletedByPriority(priority: Priority): Maybe<List<Task>> {
+        return taskDao.getAllCompletedByPriority(priority)
             .subscribeOn(Schedulers.io())
             .subscribeOn(AndroidSchedulers.mainThread())
     }

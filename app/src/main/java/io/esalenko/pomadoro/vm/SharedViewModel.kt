@@ -2,7 +2,7 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.esalenko.pomadoro.db.model.FilterType
+import io.esalenko.pomadoro.db.model.Filter
 import io.esalenko.pomadoro.vm.common.BaseViewModel
 import io.esalenko.pomadoro.vm.common.Event
 
@@ -13,8 +13,8 @@ class SharedViewModel : BaseViewModel() {
     val mainScreenLiveData: LiveData<Event<String>>
         get() = _mainScreenLiveData
 
-    private val _filterLiveData = MutableLiveData<Event<FilterType>>()
-    val filterLiveData: LiveData<Event<FilterType>>
+    private val _filterLiveData = MutableLiveData<Event<Filter>>()
+    val filterLiveData: LiveData<Event<Filter>>
         get() = _filterLiveData
 
     private val _errorLiveData = MutableLiveData<Event<String>>()
@@ -33,8 +33,8 @@ class SharedViewModel : BaseViewModel() {
         _mainScreenLiveData.value = Event("Saved")
     }
 
-    fun setFilter(filterType: FilterType) {
-        _filterLiveData.value = Event(filterType)
+    fun setFilter(filter: Filter) {
+        _filterLiveData.value = Event(filter)
     }
 
     fun showError(msg: String? = null) {

@@ -19,7 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.snackbar.Snackbar
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.db.model.FilterType
+import io.esalenko.pomadoro.db.model.Filter
 import io.esalenko.pomadoro.db.model.TimerState
 import io.esalenko.pomadoro.receiver.AlarmReceiver
 import io.esalenko.pomadoro.service.CountdownService
@@ -267,13 +267,13 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.filter_by_all -> {
-                    sharedViewModel.setFilter(FilterType.ALL)
+                    sharedViewModel.setFilter(Filter.ALL)
                 }
                 R.id.filter_by_archived -> {
-                    sharedViewModel.setFilter(FilterType.ARCHIVED)
+                    sharedViewModel.setFilter(Filter.ARCHIVED)
                 }
                 R.id.filter_by_completed -> {
-                    sharedViewModel.setFilter(FilterType.COMPLETED)
+                    sharedViewModel.setFilter(Filter.COMPLETED)
                 }
             }
             true

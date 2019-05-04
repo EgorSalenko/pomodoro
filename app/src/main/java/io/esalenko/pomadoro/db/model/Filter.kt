@@ -1,7 +1,7 @@
 package io.esalenko.pomadoro.db.model
 
 
-enum class FilterType {
+enum class Filter {
     ALL,
     ARCHIVED,
     COMPLETED

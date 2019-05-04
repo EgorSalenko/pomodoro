@@ -14,7 +14,7 @@ import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
 import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.db.model.FilterType
+import io.esalenko.pomadoro.db.model.Filter
 import io.esalenko.pomadoro.db.model.task.Task
 import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.ui.adapter.TaskItem
@@ -176,15 +176,15 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
         sharedViewModel.apply {
 
-            filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<FilterType> ->
+            filterLiveData.observe(viewLifecycleOwner, Observer { event: Event<Filter> ->
                 when (event.getContentIfNotHandled()) {
-                    FilterType.ALL -> {
+                    Filter.ALL -> {
                         viewModel.fetchToDoList()
                     }
-                    FilterType.ARCHIVED -> {
+                    Filter.ARCHIVED -> {
                         viewModel.getToDoListArchived()
                     }
-                    FilterType.COMPLETED -> {
+                    Filter.COMPLETED -> {
                         viewModel.getToDoListCompleted()
                     }
                 }

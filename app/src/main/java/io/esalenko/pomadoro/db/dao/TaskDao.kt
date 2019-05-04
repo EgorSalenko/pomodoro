@@ -5,8 +5,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.reactivex.Maybe
 import io.reactivex.Single
 
@@ -29,7 +29,7 @@ interface TaskDao {
     fun deleteAll()
 
     @Query("select * from task_table where priority =:priority order by date DESC")
-    fun getAllByPriority(priority: TaskPriority): Maybe<List<Task>>
+    fun getAllByPriority(priority: Priority): Maybe<List<Task>>
 
     @Query("select * from task_table where isArchived == 1 order by date DESC")
     fun getAllArchived(): Maybe<List<Task>>

@@ -2,9 +2,9 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.esalenko.pomadoro.db.model.task.Category
+import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.db.model.task.TaskCategory
-import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.repository.CategoryRepository
 import io.esalenko.pomadoro.repository.TaskRepository
@@ -25,8 +25,8 @@ class ToDoListViewModel(
 ) :
     BaseViewModel() {
 
-    private val _categoryLiveData = MutableLiveData<RxResult<List<TaskCategory>>>()
-    val categoryLiveData: LiveData<RxResult<List<TaskCategory>>>
+    private val _categoryLiveData = MutableLiveData<RxResult<List<Category>>>()
+    val categoryLiveData: LiveData<RxResult<List<Category>>>
         get() = _categoryLiveData
 
     private var _toDoListLiveData = MutableLiveData<RxResult<List<Task>>>()
@@ -46,7 +46,7 @@ class ToDoListViewModel(
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe { categoryName: String ->
-                    categoryRepository.add(TaskCategory(categoryName))
+                    categoryRepository.add(Category(categoryName))
                 }
                 .addToCompositeDisposable()
             sharedPreferenceManager.firstInit = 1
@@ -88,7 +88,7 @@ class ToDoListViewModel(
             ).addToCompositeDisposable()
     }
 
-    fun getToDoListByPriority(priority: TaskPriority) {
+    fun getToDoListByPriority(priority: Priority) {
         _toDoListLiveData.postValue(RxResult.loading(null))
         taskRepository
             .getAllByPriority(priority)
@@ -135,7 +135,7 @@ class ToDoListViewModel(
             ).addToCompositeDisposable()
     }
 
-    fun addTask(category: TaskCategory, taskDescription: String, priority: TaskPriority) {
+    fun addTask(category: Category, taskDescription: String, priority: Priority) {
         Single
             .just(
                 Task(
@@ -194,7 +194,7 @@ class ToDoListViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe { categoryName, err ->
-                categoryRepository.add(TaskCategory(categoryName.toString()))
+                categoryRepository.add(Category(categoryName.toString()))
                 error { err }
             }
             .addToCompositeDisposable()

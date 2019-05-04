@@ -15,8 +15,8 @@ import com.mikepenz.fastadapter_extensions.swipe.SimpleSwipeCallback
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.Filter
+import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.ui.adapter.TaskItem
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxResult
@@ -60,13 +60,13 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                     viewModel.fetchToDoList()
                 }
                 R.id.radioBtnLow -> {
-                    viewModel.getToDoListByPriority(TaskPriority.LOW)
+                    viewModel.getToDoListByPriority(Priority.LOW)
                 }
                 R.id.radioBtnMid -> {
-                    viewModel.getToDoListByPriority(TaskPriority.MID)
+                    viewModel.getToDoListByPriority(Priority.MID)
                 }
                 R.id.radioBtnHigh -> {
-                    viewModel.getToDoListByPriority(TaskPriority.HIGH)
+                    viewModel.getToDoListByPriority(Priority.HIGH)
                 }
             }
         }

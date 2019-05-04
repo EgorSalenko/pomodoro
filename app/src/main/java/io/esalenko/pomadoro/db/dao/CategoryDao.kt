@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.esalenko.pomadoro.db.model.task.TaskCategory
+import io.esalenko.pomadoro.db.model.task.Category
 import io.reactivex.Maybe
 import io.reactivex.Single
 
@@ -12,13 +12,13 @@ import io.reactivex.Single
 interface CategoryDao {
 
     @Query("select * from task_category")
-    fun getCategories(): Maybe<List<TaskCategory>>
+    fun getCategories(): Maybe<List<Category>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(category: TaskCategory)
+    fun insert(category: Category)
 
     @Query("select * from task_category where category_name=:name")
-    fun get(name: String): Single<TaskCategory>
+    fun get(name: String): Single<Category>
 
     @Query("delete from task_category where category_name=:name")
     fun delete(name: String)

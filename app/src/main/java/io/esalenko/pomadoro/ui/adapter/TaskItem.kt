@@ -13,7 +13,7 @@ import com.mikepenz.fastadapter.IItem
 import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter_extensions.swipe.ISwipeable
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.db.model.task.TaskPriority
+import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.util.formatDate
 import io.esalenko.pomadoro.util.getPriorityColor
 import io.esalenko.pomadoro.util.getPriorityIcon
@@ -27,7 +27,7 @@ class TaskItem(
     val text: String,
     val date: Date?,
     val taskType: String,
-    val taskPriority: TaskPriority,
+    val priority: Priority,
     val pomidors: Int,
     val isInProgress: Boolean,
     val isCompleted: Boolean
@@ -64,8 +64,8 @@ class TaskItem(
             it.taskStatus.visibility = if (isInProgress) View.VISIBLE else View.GONE
             it.completeStatus.visibility = if (isCompleted) View.VISIBLE else View.GONE
         }
-        val priorityColor = taskPriority.getPriorityColor()
-        val priorityDrawableRes = taskPriority.getPriorityIcon()
+        val priorityColor = priority.getPriorityColor()
+        val priorityDrawableRes = priority.getPriorityIcon()
 
         val priorityDrawable = ContextCompat.getDrawable(viewHolder.ctx, priorityDrawableRes)
 
@@ -105,7 +105,7 @@ class TaskItem(
                 "text: String =$text, " +
                 "date: Date? = ${date.toString()}, " +
                 "taskType: String =$taskType, " +
-                "taskPriority: TaskPriority = ${taskPriority.name}"
+                "priority: Priority = ${priority.name}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -119,7 +119,7 @@ class TaskItem(
         if (text != other.text) return false
         if (date != other.date) return false
         if (taskType != other.taskType) return false
-        if (taskPriority != other.taskPriority) return false
+        if (priority != other.priority) return false
         if (pomidors != other.pomidors) return false
         if (isInProgress != other.isInProgress) return false
         if (isCompleted != other.isCompleted) return false
@@ -136,7 +136,7 @@ class TaskItem(
         result = 31 * result + text.hashCode()
         result = 31 * result + (date?.hashCode() ?: 0)
         result = 31 * result + taskType.hashCode()
-        result = 31 * result + taskPriority.hashCode()
+        result = 31 * result + priority.hashCode()
         result = 31 * result + pomidors
         result = 31 * result + isInProgress.hashCode()
         result = 31 * result + isCompleted.hashCode()

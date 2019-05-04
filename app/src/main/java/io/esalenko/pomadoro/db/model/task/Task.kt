@@ -10,9 +10,9 @@ import java.util.*
 )
 data class Task(
     @PrimaryKey(autoGenerate = true) var id: Long = 0L,
-    @Embedded var category: TaskCategory?,
+    @Embedded var category: Category?,
     var description: String,
-    var priority: TaskPriority,
+    var priority: Priority,
     var date: Date?,
     var pomidors: Int = 0,
     var isRunning: Boolean = false,

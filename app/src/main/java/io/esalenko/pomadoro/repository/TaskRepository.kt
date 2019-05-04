@@ -3,8 +3,8 @@ package io.esalenko.pomadoro.repository
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import io.esalenko.pomadoro.db.dao.TaskDao
+import io.esalenko.pomadoro.db.model.task.Priority
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,7 +69,7 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
             )
     }
 
-    fun getAllByPriority(priority: TaskPriority): Maybe<List<Task>> {
+    fun getAllByPriority(priority: Priority): Maybe<List<Task>> {
         return taskDao
             .getAllByPriority(priority)
             .subscribeOn(Schedulers.io())

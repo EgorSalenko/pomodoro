@@ -8,9 +8,9 @@ import androidx.lifecycle.Observer
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.db.model.task.TaskCategory
-import io.esalenko.pomadoro.db.model.task.TaskPriority
-import io.esalenko.pomadoro.db.model.task.TaskPriority.*
+import io.esalenko.pomadoro.db.model.task.Category
+import io.esalenko.pomadoro.db.model.task.Priority
+import io.esalenko.pomadoro.db.model.task.Priority.*
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.util.avoidDoubleClick
@@ -34,8 +34,8 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     private val sharedViewModel: SharedViewModel by sharedViewModel()
 
     // Default to Low
-    private var taskPriority: TaskPriority = LOW
-    private var taskCategory: TaskCategory? = null
+    private var priority: Priority = LOW
+    private var category: Category? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,7 +57,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         radioGroupPriority.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
-            taskPriority = when (checkedId) {
+            priority = when (checkedId) {
                 R.id.radioBtnLow -> LOW
                 R.id.radioBtnMid -> MID
                 R.id.radioBtnHigh -> HIGH
@@ -103,7 +103,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                         val list = result.data
                         if (list != null && list.isNotEmpty()) {
                             spinnerTaskTypes.attachDataSource(list)
-                            taskCategory = spinnerTaskTypes.selectedItem as TaskCategory
+                            category = spinnerTaskTypes.selectedItem as Category
                         }
                     }
                     RxStatus.ERROR -> {
@@ -126,7 +126,7 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        taskCategory = parent?.adapter?.getItem(position) as TaskCategory
+        category = parent?.adapter?.getItem(position) as Category
     }
 
     private fun addTask() {
@@ -135,11 +135,11 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
         if (validateInput(text)) return
 
-        taskCategory?.let {
+        category?.let {
             toDoListViewModel.addTask(
                 category = it,
                 taskDescription = text,
-                priority = taskPriority
+                priority = priority
             )
         }
         sharedViewModel.openMainScreen()

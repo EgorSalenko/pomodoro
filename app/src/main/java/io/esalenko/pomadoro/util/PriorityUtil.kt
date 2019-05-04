@@ -3,30 +3,30 @@ package io.esalenko.pomadoro.util
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import io.esalenko.pomadoro.R
-import io.esalenko.pomadoro.db.model.task.TaskPriority
+import io.esalenko.pomadoro.db.model.task.Priority
 
 @ColorRes
-fun TaskPriority.getPriorityColor(): Int = when (this) {
-    TaskPriority.LOW -> {
+fun Priority.getPriorityColor(): Int = when (this) {
+    Priority.LOW -> {
         R.color.priority_low
     }
-    TaskPriority.MID -> {
+    Priority.MID -> {
         R.color.priority_mid
     }
-    TaskPriority.HIGH -> {
+    Priority.HIGH -> {
         R.color.priority_high
     }
 }
 
 @DrawableRes
-fun TaskPriority.getPriorityIcon(): Int = when (this) {
-    TaskPriority.LOW -> {
+fun Priority.getPriorityIcon(): Int = when (this) {
+    Priority.LOW -> {
         R.drawable.ic_priority_low
     }
-    TaskPriority.MID -> {
+    Priority.MID -> {
         R.drawable.ic_priority_mid
     }
-    TaskPriority.HIGH -> {
+    Priority.HIGH -> {
         R.drawable.ic_priority_high
     }
 }

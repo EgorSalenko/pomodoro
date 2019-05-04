@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "task_category")
-data class TaskCategory(
+data class Category(
     @PrimaryKey @ColumnInfo(name = "category_name")
     val categoryName: String
 ) {

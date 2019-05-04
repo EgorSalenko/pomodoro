@@ -9,10 +9,10 @@ import io.esalenko.pomadoro.db.dao.CategoryDao
 import io.esalenko.pomadoro.db.dao.TaskDao
 import io.esalenko.pomadoro.db.model.converter.DateConverter
 import io.esalenko.pomadoro.db.model.converter.PriorityConverter
+import io.esalenko.pomadoro.db.model.task.Category
 import io.esalenko.pomadoro.db.model.task.Task
-import io.esalenko.pomadoro.db.model.task.TaskCategory
 
-@Database(entities = [Task::class, TaskCategory::class], version = 1)
+@Database(entities = [Task::class, Category::class], version = 1)
 @TypeConverters(PriorityConverter::class, DateConverter::class)
 abstract class LocalRoomDatabase : RoomDatabase() {
 

@@ -2,6 +2,7 @@ package io.esalenko.pomadoro.vm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import io.esalenko.pomadoro.db.model.Filter
 import io.esalenko.pomadoro.db.model.task.Category
 import io.esalenko.pomadoro.db.model.task.Priority
@@ -34,6 +35,23 @@ class ToDoListViewModel(
     val toDoListLiveData: LiveData<RxResult<List<Task>>>
         get() = _toDoListLiveData
 
+    private var cachedPriority = MutableLiveData<Priority?>()
+    private var cachedFilter = MutableLiveData<Filter>()
+
+    val cachedPriorityTransformations = Transformations.switchMap(cachedPriority) { priority ->
+        getToDoListBy()
+        _toDoListLiveData
+    }
+
+    val cachedFilterTransformations = Transformations.switchMap(cachedFilter) { filter ->
+        return@switchMap if (filter == null) {
+            null
+        } else {
+            getToDoListBy()
+            _toDoListLiveData
+        }
+    }
+
     init {
         if (sharedPreferenceManager.isFirstInit) {
             Observable.fromIterable(
@@ -56,7 +74,22 @@ class ToDoListViewModel(
 
     val toDoList: LiveData<List<Task>> = taskRepository.observeList()
 
-    fun getToDoListBy(priority: Priority? = null, filter: Filter? = null) {
+    val totalCount = taskRepository.getTotalCount()
+    val completedCount = taskRepository.getCompletedCount()
+    val archivedCount = taskRepository.getArchivedCount()
+
+    fun setPriority(priority: Priority?) {
+        cachedPriority.value = priority
+    }
+
+    fun setFilter(filter: Filter) {
+        cachedFilter.value = filter
+    }
+
+    fun getToDoListBy() {
+        val priority: Priority? = cachedPriority.value
+        val filter: Filter? = cachedFilter.value
+
         _toDoListLiveData.postValue(RxResult.loading(null))
 
         val observable: Maybe<List<Task>> = if (priority == null) {
@@ -83,7 +116,7 @@ class ToDoListViewModel(
                 Filter.COMPLETED -> {
                     taskRepository.getAllCompletedByPriority(priority)
                 }
-                else -> taskRepository.getAll()
+                else -> taskRepository.getAllByPriority(priority)
             }
         }
 

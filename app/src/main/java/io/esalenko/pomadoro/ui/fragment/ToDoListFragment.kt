@@ -35,6 +35,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
     companion object {
         const val TAG = "ToDoListFragment"
+        private const val SIS_PRIORITY = "sis_priority"
+        private const val SIS_FILTER = "sis_filter"
     }
 
     override val layoutRes: Int
@@ -54,23 +56,32 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        savedInstanceState?.apply {
+            cachedFilter = Filter.valueOf(get(SIS_FILTER) as String)
+            cachedPriority = Priority.valueOf(get(SIS_PRIORITY) as String)
+        }
         radioBtnAll.isChecked = true
-
         initAdapter()
         viewModel.getToDoListBy()
 
         radioGroupPrioritySort.setOnCheckedChangeListener { _: RadioGroup, checkedId: Int ->
-            cachedPriority = when (checkedId) {
+            val cachedPriority = when (checkedId) {
                 R.id.radioBtnAll -> null
                 R.id.radioBtnLow -> Priority.LOW
                 R.id.radioBtnMid -> Priority.MID
                 R.id.radioBtnHigh -> Priority.HIGH
                 else -> null
             }
-            viewModel.getToDoListBy(cachedPriority, cachedFilter)
+            viewModel.setPriority(cachedPriority)
         }
 
         subscribeUi()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SIS_PRIORITY, cachedPriority?.name)
+        outState.putString(SIS_FILTER, cachedFilter.name)
     }
 
     private fun initAdapter() {
@@ -134,10 +145,20 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 }
 
             })
-
             toDoList.observe(viewLifecycleOwner, Observer { taskList: List<Task> ->
                 updateFastAdapterTaskData(taskList)
             })
+            totalCount.observe(viewLifecycleOwner, Observer { count ->
+                total.text = resources.getString(R.string.text_total, count)
+            })
+            completedCount.observe(viewLifecycleOwner, Observer { count ->
+                completed.text = resources.getString(R.string.text_completed, count)
+            })
+            archivedCount.observe(viewLifecycleOwner, Observer { count ->
+                archived.text = resources.getString(R.string.text_archived, count)
+            })
+            cachedFilterTransformations.observe(viewLifecycleOwner, Observer { })
+            cachedPriorityTransformations.observe(viewLifecycleOwner, Observer { })
         }
 
         sharedViewModel.apply {
@@ -146,8 +167,8 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                 val filter = event.getContentIfNotHandled()
                 if (filter != null) {
                     cachedFilter = filter
+                    viewModel.setFilter(filter)
                 }
-                viewModel.getToDoListBy(cachedPriority, cachedFilter)
             })
 
             errorRetryLiveData.observe(viewLifecycleOwner, Observer {

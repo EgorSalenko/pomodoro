@@ -45,11 +45,11 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private var isCooldown: Boolean = false
     override val layoutRes: Int
         get() = R.layout.activity_main
-
     private val sharedViewModel: SharedViewModel by viewModel()
-    private val timerViewModel: TimerViewModel by viewModel()
 
+    private val timerViewModel: TimerViewModel by viewModel()
     private var isNewTaskOpened: Boolean = false
+
     private var isBound: Boolean = false
     private var isCompletedTask: Boolean? = false
     private var taskId: Long = -1L
@@ -140,7 +140,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             mainScreenLiveData
                 .observe(
                     this@MainActivity,
-                    Observer { event: Event<String> ->
+                    Observer {
                         animationOpenNewTask()
                         val newTaskFragment: Fragment? =
                             supportFragmentManager.findFragmentById(R.id.overlayFragmentContainer)

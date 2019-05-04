@@ -41,6 +41,9 @@
     <string name="session_pause">Pause</string>
     <string name="session_work">Work</string>
     <string name="text_all">All</string>
+    <string name="text_total">Total: %d</string>
+    <string name="text_completed">Completed: %d</string>
+    <string name="text_archived">Archived: %d</string>
 
 
     <string-array name="array_task_type">

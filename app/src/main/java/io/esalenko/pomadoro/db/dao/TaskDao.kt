@@ -28,7 +28,7 @@ interface TaskDao {
     @Query("delete from task_table")
     fun deleteAll()
 
-    @Query("select * from task_table where priority =:priority order by date DESC")
+    @Query("select * from task_table where priority =:priority and isArchived == 0 order by date DESC")
     fun getAllByPriority(priority: Priority): Maybe<List<Task>>
 
     @Query("select * from task_table where isArchived == 1 order by date DESC")
@@ -37,10 +37,10 @@ interface TaskDao {
     @Query("select * from task_table where isArchived == 1 and priority =:priority order by date DESC")
     fun getAllArchivedByPriority(priority: Priority): Maybe<List<Task>>
 
-    @Query("select * from task_table where isCompleted == 1 order by date DESC")
+    @Query("select * from task_table where isCompleted == 1 and isArchived == 0 order by date DESC")
     fun getAllCompleted(): Maybe<List<Task>>
 
-    @Query("select * from task_table where isCompleted == 1 and priority =:priority order by date DESC")
+    @Query("select * from task_table where isCompleted == 1 and priority =:priority and isArchived == 0 order by date DESC")
     fun getAllCompletedByPriority(priority: Priority): Maybe<List<Task>>
 
     @Query("select pomidors from task_table where id =:id")
@@ -54,4 +54,13 @@ interface TaskDao {
 
     @Query("select * from task_table where id =:id")
     fun getTaskLiveData(id: Long): LiveData<Task>
+
+    @Query("select count(*) from task_table where isCompleted == 1")
+    fun getCompletedCount(): LiveData<Long>
+
+    @Query("select count(*) from task_table where isArchived == 1")
+    fun getArchivedCount(): LiveData<Long>
+
+    @Query("select count(*) from task_table")
+    fun getTotalCount(): LiveData<Long>
 }

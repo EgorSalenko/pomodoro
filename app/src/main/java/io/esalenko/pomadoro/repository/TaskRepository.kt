@@ -103,4 +103,10 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
     fun getTaskCooldown(taskId: Long): LiveData<Boolean> {
         return taskDao.getTaskCooldown(taskId)
     }
+
+    fun getCompletedCount(): LiveData<Long> = taskDao.getCompletedCount()
+
+    fun getArchivedCount(): LiveData<Long> = taskDao.getArchivedCount()
+
+    fun getTotalCount(): LiveData<Long> = taskDao.getTotalCount()
 }

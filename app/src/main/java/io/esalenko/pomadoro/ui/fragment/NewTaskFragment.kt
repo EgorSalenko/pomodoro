@@ -3,16 +3,19 @@ package io.esalenko.pomadoro.ui.fragment
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.RadioGroup
+import androidx.lifecycle.Observer
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.db.model.task.TaskCategory
 import io.esalenko.pomadoro.db.model.task.TaskPriority
 import io.esalenko.pomadoro.db.model.task.TaskPriority.*
 import io.esalenko.pomadoro.ui.common.BaseFragment
+import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.util.avoidDoubleClick
 import io.esalenko.pomadoro.vm.SharedViewModel
-import io.esalenko.pomadoro.vm.ToDoListVIewModel
+import io.esalenko.pomadoro.vm.ToDoListViewModel
 import kotlinx.android.synthetic.main.fragment_new_task.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,28 +30,19 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     override val layoutRes: Int
         get() = R.layout.fragment_new_task
 
-    private val toDoListVIewModel: ToDoListVIewModel by viewModel()
+    private val toDoListViewModel: ToDoListViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by sharedViewModel()
 
     // Default to Low
     private var taskPriority: TaskPriority = LOW
-    private var taskCategory: TaskCategory = TaskCategory.NONE
+    private var taskCategory: TaskCategory? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spinnerTaskTypes.onItemSelectedListener = this
+        spinnerTaskTypes.setOnItemSelectedListener(this)
         radioBtnLow.isChecked = true
 
-        ArrayAdapter(
-            context!!,
-            android.R.layout.simple_spinner_item,
-            TaskCategory.values().filter {
-                it != TaskCategory.NONE
-            }
-        ).also { adapter: ArrayAdapter<TaskCategory> ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinnerTaskTypes.adapter = adapter
-        }
+        toDoListViewModel.getCategories()
 
         btnCancelTask.setOnClickListener {
             avoidDoubleClick {
@@ -70,28 +64,60 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                 else -> LOW
             }
         }
+        addCategory.setOnClickListener {
+            showNewCategoryDialog()
+        }
+        subscribeUi()
     }
 
-    private fun addTask() {
+    private fun showNewCategoryDialog() {
+        MaterialDialog(requireContext()).show {
+            title(R.string.dialog_title_new_category)
+            input(
+                hintRes = R.string.dialog_hint_new_category,
+                allowEmpty = false,
+                maxLength = 64
+            ) { dialogpog, text ->
 
-        val text: String = inputNewTask.text.toString()
+                val name = text
+                    .toString()
+                    .trim()
+                    .capitalize()
 
-        if (text.isBlank() or text.isEmpty()) {
-            inputNewTaskLayout.error = "Task can't be blank or empty"
-            return
+                toDoListViewModel.addCategory(name)
+                toDoListViewModel.getCategories()
+            }
+            positiveButton(android.R.string.ok)
+            negativeButton(android.R.string.cancel)
         }
+    }
 
-        if (text.length < 2) {
-            inputNewTaskLayout.error = "Task is too short"
-            return
+    private fun subscribeUi() {
+        toDoListViewModel.apply {
+            categoryLiveData.observe(viewLifecycleOwner, Observer { result ->
+                when (result.status) {
+                    RxStatus.SUCCESS -> {
+                        categoryLayout.visibility = View.VISIBLE
+                        loading.visibility = View.GONE
+                        errorMsg.visibility = View.GONE
+                        val list = result.data
+                        if (list != null && list.isNotEmpty()) {
+                            spinnerTaskTypes.attachDataSource(list)
+                        }
+                    }
+                    RxStatus.ERROR -> {
+                        errorMsg.visibility = View.VISIBLE
+                        categoryLayout.visibility = View.GONE
+                        loading.visibility = View.GONE
+                    }
+                    RxStatus.LOADING -> {
+                        loading.visibility = View.VISIBLE
+                        errorMsg.visibility = View.GONE
+                        categoryLayout.visibility = View.GONE
+                    }
+                }
+            })
         }
-
-        toDoListVIewModel.addTask(
-            category = taskCategory,
-            taskDescription = text,
-            priority = taskPriority
-        )
-        sharedViewModel.openMainScreen()
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -99,6 +125,35 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        taskCategory = parent?.getItemAtPosition(position) as TaskCategory
+        taskCategory = parent?.adapter?.getItem(position) as TaskCategory
+    }
+
+    private fun addTask() {
+
+        val text: String = inputNewTask.text.toString()
+
+        if (validateInput(text)) return
+
+        taskCategory?.let {
+            toDoListViewModel.addTask(
+                category = it,
+                taskDescription = text,
+                priority = taskPriority
+            )
+        }
+        sharedViewModel.openMainScreen()
+    }
+
+    private fun validateInput(text: String): Boolean {
+        if (text.isBlank() or text.isEmpty()) {
+            inputNewTaskLayout.error = "Task can't be blank or empty"
+            return true
+        }
+
+        if (text.length < 2) {
+            inputNewTaskLayout.error = "Task is too short"
+            return true
+        }
+        return false
     }
 }

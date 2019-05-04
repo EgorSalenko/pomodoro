@@ -125,7 +125,7 @@ class DetailTaskFragment : BaseFragment() {
     private fun setupTask(task: Task) {
         isCooldown = task.isCooldown
         pomodidorCount.text = "x ${task.pomidors}"
-        taskCategory.text = task.category.categoryName
+        taskCategory.text = task.category?.categoryName
 
         taskCategory.setCompoundDrawablesWithIntrinsicBounds(
             task.priority.getPriorityIcon(),

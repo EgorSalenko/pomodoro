@@ -21,7 +21,7 @@ import io.esalenko.pomadoro.util.RxResult
 import io.esalenko.pomadoro.util.RxStatus
 import io.esalenko.pomadoro.util.avoidDoubleClick
 import io.esalenko.pomadoro.vm.SharedViewModel
-import io.esalenko.pomadoro.vm.ToDoListVIewModel
+import io.esalenko.pomadoro.vm.ToDoListViewModel
 import io.esalenko.pomadoro.vm.common.Event
 import kotlinx.android.synthetic.main.fragment_to_do_list.*
 import org.jetbrains.anko.info
@@ -38,7 +38,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
     override val layoutRes: Int
         get() = R.layout.fragment_to_do_list
 
-    private val viewModel: ToDoListVIewModel by viewModel()
+    private val viewModel: ToDoListViewModel by viewModel()
     private val sharedViewModel: SharedViewModel by sharedViewModel()
 
     private lateinit var fastAdapter: FastAdapter<TaskItem>
@@ -108,7 +108,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                             task.id,
                                             task.description,
                                             task.date,
-                                            task.category.categoryName,
+                                            task.category?.categoryName!!,
                                             task.priority,
                                             task.pomidors,
                                             task.isRunning,
@@ -141,7 +141,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
                                 task.id,
                                 task.description,
                                 task.date,
-                                task.category.categoryName,
+                                task.category?.categoryName!!,
                                 task.priority,
                                 task.pomidors,
                                 task.isRunning,

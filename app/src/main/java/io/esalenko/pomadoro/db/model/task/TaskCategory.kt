@@ -1,15 +1,16 @@
 package io.esalenko.pomadoro.db.model.task
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-enum class TaskCategory(val categoryName: String) {
-    NONE(""),
-    WORK("Work"),
-    SELF_IMPROVEMENT("Self Improvement"),
-    READING("Reading"),
-    EDUCATION("Education");
-
+@Entity(tableName = "task_category")
+data class TaskCategory(
+    @PrimaryKey @ColumnInfo(name = "category_name")
+    val categoryName: String
+) {
     override fun toString(): String {
-        return this.categoryName
+        return categoryName
     }
 }
 

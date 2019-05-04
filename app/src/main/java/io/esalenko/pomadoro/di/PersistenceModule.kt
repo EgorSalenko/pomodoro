@@ -10,4 +10,5 @@ val persistenceModule = module {
     single { LocalRoomDatabase.getInstance(androidContext()) }
     single { SharedPreferenceManager(get()) }
     single { LocalRoomDatabase.getInstance(androidContext()).taskDao }
+    single { LocalRoomDatabase.getInstance(androidContext()).categoryDao }
 }

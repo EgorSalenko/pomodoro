@@ -5,14 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import io.esalenko.pomadoro.db.dao.CategoryDao
 import io.esalenko.pomadoro.db.dao.TaskDao
-import io.esalenko.pomadoro.db.model.converter.CategoryConverter
 import io.esalenko.pomadoro.db.model.converter.DateConverter
 import io.esalenko.pomadoro.db.model.converter.PriorityConverter
 import io.esalenko.pomadoro.db.model.task.Task
+import io.esalenko.pomadoro.db.model.task.TaskCategory
 
-@Database(entities = [Task::class], version = 1)
-@TypeConverters(CategoryConverter::class, PriorityConverter::class, DateConverter::class)
+@Database(entities = [Task::class, TaskCategory::class], version = 1)
+@TypeConverters(PriorityConverter::class, DateConverter::class)
 abstract class LocalRoomDatabase : RoomDatabase() {
 
     companion object {
@@ -38,4 +39,5 @@ abstract class LocalRoomDatabase : RoomDatabase() {
 
     abstract val taskDao: TaskDao
 
+    abstract val categoryDao: CategoryDao
 }

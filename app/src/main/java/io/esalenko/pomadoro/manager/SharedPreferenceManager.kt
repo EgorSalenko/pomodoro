@@ -12,6 +12,7 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         const val SHARED_PREFERENCE_NAME = "local_shared_preference"
 
         const val KEY_TIMER_DURATION = "key_timer_duration"
+        const val KEY_IS_FIRST_INIT = "key_is_first_init"
         const val KEY_SHORT_COOLDOWN_TIMESTAMP = "key_short_cooldown_timestamp"
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
         const val KEY_LAST_STARTED_TASK_TIMER_ID = "key_last_task_timer_id"
@@ -24,6 +25,16 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         var DEFAULT_LONG_COOLDOWN_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(20) else TimeUnit.MINUTES.toMillis(15)
     }
+
+
+    val isFirstInit: Boolean
+        get() = firstInit == -1
+
+    var firstInit: Int
+        get() = sharedPreferences.getInt(KEY_IS_FIRST_INIT, -1)
+        set(value) = sharedPreferences.edit {
+            putInt(KEY_IS_FIRST_INIT, value)
+        }
 
     var timerDuration: Long
         get() = sharedPreferences.getLong(

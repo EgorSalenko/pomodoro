@@ -62,6 +62,7 @@ dependencies {
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
     implementation 'com.afollestad.material-dialogs:core:2.7.0'
+    implementation 'com.afollestad.material-dialogs:input:2.8.1'
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
 
     implementation "com.mikepenz:fastadapter:$fast_adapter"
@@ -69,6 +70,7 @@ dependencies {
     implementation "com.mikepenz:fastadapter-extensions-expandable:$fast_adapter"
     implementation "com.mikepenz:fastadapter-extensions:$fast_adapter"
     implementation "com.mikepenz:itemanimators:1.1.0"
+    implementation 'com.github.arcadefire:nice-spinner:1.4'
 
     implementation "com.andkulikov:transitionseverywhere:2.0.0-beta01"
 

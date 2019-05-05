@@ -3,6 +3,7 @@ package io.esalenko.pomadoro.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.lifecycle.Observer
 import io.esalenko.pomadoro.R
 import io.esalenko.pomadoro.ui.common.BaseActivity
@@ -49,6 +50,13 @@ class SettingsActivity : BaseActivity() {
                 CategoriesFragment().replace(R.id.fragmentContainer, CategoriesFragment.TAG)
             })
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed() {

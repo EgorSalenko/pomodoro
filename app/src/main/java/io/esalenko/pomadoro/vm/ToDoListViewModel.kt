@@ -23,7 +23,7 @@ import java.util.*
 class ToDoListViewModel(
     private val taskRepository: TaskRepository,
     private val categoryRepository: CategoryRepository,
-    sharedPreferenceManager: SharedPreferenceManager
+    private val sharedPreferenceManager: SharedPreferenceManager
 ) :
     BaseViewModel() {
 
@@ -35,24 +35,52 @@ class ToDoListViewModel(
     val toDoListLiveData: LiveData<RxResult<List<Task>>>
         get() = _toDoListLiveData
 
+    private val _priorityLiveData = MutableLiveData<Priority>()
+    val priorityLiveData: LiveData<Priority>
+        get() = _priorityLiveData
+
+    private val _filterLiveData = MutableLiveData<Filter>()
+    val filterLiveData: LiveData<Filter>
+        get() = _filterLiveData
+
+
+
     private var cachedPriority = MutableLiveData<Priority?>()
     private var cachedFilter = MutableLiveData<Filter>()
 
     val cachedPriorityTransformations = Transformations.switchMap(cachedPriority) { priority ->
+        if (priority != null) {
+            sharedPreferenceManager.cachedPriorityOrdinal = priority.ordinal
+            _priorityLiveData.value = priority
+        } else {
+            sharedPreferenceManager.cachedPriorityOrdinal = -1
+            _priorityLiveData.value = null
+        }
         getToDoListBy()
         _toDoListLiveData
     }
 
     val cachedFilterTransformations = Transformations.switchMap(cachedFilter) { filter ->
-        return@switchMap if (filter == null) {
-            null
-        } else {
-            getToDoListBy()
-            _toDoListLiveData
+        if (filter != null) {
+            sharedPreferenceManager.cachedFilterOrdinal = filter.ordinal
+            _filterLiveData.value = filter
         }
+        getToDoListBy()
+        _toDoListLiveData
     }
 
     init {
+
+        if (sharedPreferenceManager.cachedFilterOrdinal != -1) {
+            val position = sharedPreferenceManager.cachedFilterOrdinal
+            cachedFilter.value = Filter.values()[position]
+        }
+
+        if (sharedPreferenceManager.cachedPriorityOrdinal != -1) {
+            val position = sharedPreferenceManager.cachedPriorityOrdinal
+            cachedPriority.value = Priority.values()[position]
+        }
+
         if (sharedPreferenceManager.isFirstInit) {
             Observable.fromIterable(
                 arrayListOf(
@@ -209,5 +237,10 @@ class ToDoListViewModel(
                 error { err }
             }
             .addToCompositeDisposable()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+//        sharedPreferenceManager.clearFilterSortState()
     }
 }

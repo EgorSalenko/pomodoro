@@ -159,6 +159,26 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
             })
             cachedFilterTransformations.observe(viewLifecycleOwner, Observer { })
             cachedPriorityTransformations.observe(viewLifecycleOwner, Observer { })
+            filterLiveData.observe(viewLifecycleOwner, Observer { filter ->
+                cachedFilter = filter
+            })
+            priorityLiveData.observe(viewLifecycleOwner, Observer { priority ->
+                cachedPriority = priority
+                when (priority) {
+                    Priority.HIGH -> {
+                        radioBtnHigh.isChecked = true
+                    }
+                    Priority.MID -> {
+                        radioBtnMid.isChecked = true
+                    }
+                    Priority.LOW -> {
+                        radioBtnLow.isChecked = true
+                    }
+                    null -> {
+                        radioBtnAll.isChecked = true
+                    }
+                }
+            })
         }
 
         sharedViewModel.apply {

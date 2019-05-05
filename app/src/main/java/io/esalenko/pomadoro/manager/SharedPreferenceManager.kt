@@ -17,6 +17,8 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         const val KEY_LONG_COOLDOWN_TIMESTAMP = "key_long_cooldown_timestamp"
         const val KEY_LAST_STARTED_TASK_TIMER_ID = "key_last_task_timer_id"
         const val KEY_IS_LONG_COOLDOWN_SESSION = "key_is_long_cooldown_session"
+        const val KEY_CACHED_FILTER = "key_cached_filter"
+        const val KEY_CACHED_PRIORITY = "key_cached_priority"
 
         var DEFAULT_TIMER_DURATION =
             if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(25)
@@ -79,4 +81,20 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         set(value) = sharedPreferences.edit {
             putLong(KEY_LAST_STARTED_TASK_TIMER_ID, value)
         }
+
+    var cachedFilterOrdinal: Int
+        get() = sharedPreferences.getInt(KEY_CACHED_FILTER, -1)
+        set(value) = sharedPreferences.edit {
+            putInt(KEY_CACHED_FILTER, value)
+        }
+    var cachedPriorityOrdinal: Int
+        get() = sharedPreferences.getInt(KEY_CACHED_PRIORITY, -1)
+        set(value) = sharedPreferences.edit {
+            putInt(KEY_CACHED_PRIORITY, value)
+        }
+
+    fun clearFilterSortState() {
+        cachedFilterOrdinal = -1
+        cachedPriorityOrdinal = -1
+    }
 }

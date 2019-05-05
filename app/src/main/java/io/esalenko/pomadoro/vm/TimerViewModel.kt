@@ -156,6 +156,11 @@ class TimerViewModel(
         _shareTaskLiveData.value = task
     }
 
+    fun resetAllFilters() {
+        sharedPreferenceManager.cachedFilterOrdinal = -1
+        sharedPreferenceManager.cachedPriorityOrdinal = -1
+    }
+
     enum class TimerAction {
         START,
         STOP

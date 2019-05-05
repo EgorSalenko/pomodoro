@@ -41,7 +41,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-
     private var isCooldown: Boolean = false
     override val layoutRes: Int
         get() = R.layout.activity_main
@@ -203,6 +202,11 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
         TransitionManager.endTransitions(mainLayout)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timerViewModel.resetAllFilters()
     }
 
     private fun onMenuItemClicked(item: MenuItem): Boolean {

@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_settings.*
 import org.jetbrains.anko.info
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.concurrent.TimeUnit
 
 
 class SettingsFragment : BaseFragment() {
@@ -39,7 +40,9 @@ class SettingsFragment : BaseFragment() {
         seekbarTimerWork.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
+                if (fromUser) {
+                    settingsViewModel.setWorkTimerDuration(TimeUnit.MINUTES.toMillis(progress.toLong()))
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -53,7 +56,9 @@ class SettingsFragment : BaseFragment() {
         seekbarTimerPause.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
+                if (fromUser) {
+                    settingsViewModel.setPauseTimerDuration(TimeUnit.MINUTES.toMillis(progress.toLong()))
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -69,10 +74,16 @@ class SettingsFragment : BaseFragment() {
     private fun subscribeUi() {
         settingsViewModel.apply {
             workTimerLiveData.observe(viewLifecycleOwner, Observer { workTimerDuration ->
-
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(workTimerDuration)
+                seekbarTimerWork.progress = minutes.toInt()
+                textTimerWork.text =
+                    getString(R.string.text_work_timer, minutes)
             })
             pauseTimerLiveData.observe(viewLifecycleOwner, Observer { pauseTimerDuration ->
-
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(pauseTimerDuration)
+                seekbarTimerPause.progress = minutes.toInt()
+                textTimerPause.text =
+                    getString(R.string.text_pause_timer, minutes)
             })
         }
     }

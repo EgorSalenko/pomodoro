@@ -44,6 +44,13 @@
     <string name="text_total">Total: %d</string>
     <string name="text_completed">Completed: %d</string>
     <string name="text_archived">Archived: %d</string>
+    <string name="btn_text_clear_all_data">clear all data</string>
+    <string name="text_categories">Categories</string>
+    <string name="text_work_timer">Work Timer: %d minutes</string>
+    <string name="text_pause_timer">Pause Timer: %d minutes</string>
+    <string name="msg_empty_list_categories">Categories has not been found</string>
+    <string name="menu_filter">Filter</string>
+    <string name="menu_settings">Settings</string>
 
 
     <string-array name="array_task_type">

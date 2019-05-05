@@ -2,12 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_filter"
-          android:title="Filter"
+          android:title="@string/menu_filter"
           app:showAsAction="ifRoom"
           android:icon="@drawable/ic_round_filter_list_24px"/>
 
-    <item android:id="@+id/menu_profile"
-          android:title="Profile"
-          app:showAsAction="never"/>
+    <item android:id="@+id/menu_settings"
+          android:title="@string/menu_settings"
+          android:icon="@drawable/ic_round_settings_24px"
+          app:showAsAction="ifRoom"/>
 
 </menu>

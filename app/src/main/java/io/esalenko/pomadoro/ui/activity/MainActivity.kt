@@ -25,6 +25,7 @@ import io.esalenko.pomadoro.receiver.AlarmReceiver
 import io.esalenko.pomadoro.service.CountdownService
 import io.esalenko.pomadoro.service.CountdownService.Companion.createCountdownServiceIntent
 import io.esalenko.pomadoro.ui.activity.MainActivity.FragmentPage.*
+import io.esalenko.pomadoro.ui.activity.SettingsActivity.Companion.createSettingsActivityIntent
 import io.esalenko.pomadoro.ui.common.BaseActivity
 import io.esalenko.pomadoro.ui.common.animation.AnimatorListenerAdapter
 import io.esalenko.pomadoro.ui.fragment.DetailTaskFragment
@@ -214,8 +215,8 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             R.id.menu_filter -> {
                 openFilterPopUp()
             }
-            R.id.menu_profile -> {
-
+            R.id.menu_settings -> {
+                openSettingsActivity()
             }
             R.id.delete_item -> {
                 avoidDoubleClick {
@@ -237,6 +238,10 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun openSettingsActivity() {
+        startActivity(createSettingsActivityIntent())
     }
 
     private fun openToDoListFragment() {

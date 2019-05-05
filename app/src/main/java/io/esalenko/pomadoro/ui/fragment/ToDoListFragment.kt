@@ -58,7 +58,7 @@ class ToDoListFragment : BaseFragment(), SimpleSwipeCallback.ItemSwipeCallback {
         super.onViewCreated(view, savedInstanceState)
         savedInstanceState?.apply {
             cachedFilter = Filter.valueOf(get(SIS_FILTER) as String)
-            cachedPriority = Priority.valueOf(get(SIS_PRIORITY) as String)
+            cachedPriority = Priority.valueOf(get(SIS_PRIORITY) as String) as? Priority
         }
         radioBtnAll.isChecked = true
         initAdapter()

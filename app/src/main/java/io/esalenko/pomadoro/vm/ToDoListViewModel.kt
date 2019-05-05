@@ -239,8 +239,19 @@ class ToDoListViewModel(
             .addToCompositeDisposable()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-//        sharedPreferenceManager.clearFilterSortState()
+    fun deleteCategory(item: Category) {
+        Single
+            .just(item)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(
+                { category: Category ->
+                    categoryRepository.delete(category)
+                },
+                { error ->
+                    error { error }
+                }
+            )
+            .addToCompositeDisposable()
     }
 }

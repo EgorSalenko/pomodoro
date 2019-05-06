@@ -53,7 +53,6 @@ class LocalNotificationManager {
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentText(content)
             .setContentTitle(title)
-            .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
@@ -77,7 +76,6 @@ class LocalNotificationManager {
         } else {
             notificationBuilder.setVibrate(longArrayOf(-1L))
         }
-
         return notificationBuilder.build()
     }
 }

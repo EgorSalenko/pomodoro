@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.MaterialDialog
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
@@ -47,7 +48,6 @@ class CategoriesFragment : BaseFragment() {
 
     private fun subscribeUi() {
         toDoListViewModel.apply {
-            // TODO :: Migrate to pure live data model
             categoryLiveData.observe(viewLifecycleOwner, Observer { result: RxResult<List<Category>> ->
                 when (result.status) {
                     RxStatus.SUCCESS -> {
@@ -78,6 +78,15 @@ class CategoriesFragment : BaseFragment() {
                     }
                 }
             })
+            categoryRxLiveData.observe(viewLifecycleOwner, Observer { categories ->
+                if (categories == null) return@Observer
+                val items = ArrayList<CategoryItem>()
+                categories
+                    .forEach { category ->
+                        items.add(CategoryItem(category))
+                    }
+                FastAdapterDiffUtil.set(itemAdapter, items)
+            })
         }
     }
 
@@ -98,11 +107,19 @@ class CategoriesFragment : BaseFragment() {
             }
 
             override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<CategoryItem>, item: CategoryItem) {
-                toDoListViewModel.apply {
-                    deleteCategory(item.category)
-                    getCategories()
-                }
+                showConfirmationDialog(item.category)
             }
         })
+    }
+
+    private fun showConfirmationDialog(category: Category) {
+        MaterialDialog(requireContext()).show {
+            title(R.string.dialog_title_delete_category)
+            message(R.string.dialog_message_delete_category, category.categoryName)
+            positiveButton {
+                toDoListViewModel.deleteCategory(category)
+            }
+            negativeButton()
+        }
     }
 }

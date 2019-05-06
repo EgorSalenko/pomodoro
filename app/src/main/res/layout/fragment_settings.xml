@@ -41,7 +41,15 @@
             android:layout_height="?attr/actionBarSize"
             android:text="@string/text_categories"/>
 
+    <TextView
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:id="@+id/btnLicenses"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:text="@string/text_licenses"/>
+
     <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClearAllData"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

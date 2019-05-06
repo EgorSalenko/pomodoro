@@ -1,5 +1,6 @@
 package io.esalenko.pomadoro.repository
 
+import androidx.lifecycle.LiveData
 import io.esalenko.pomadoro.db.dao.CategoryDao
 import io.esalenko.pomadoro.db.model.task.Category
 import io.reactivex.Maybe
@@ -18,6 +19,10 @@ class CategoryRepository(private val categoryDao: CategoryDao) : Repository<Cate
         return categoryDao.getCategories()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun getAllLiveData(): LiveData<List<Category>> {
+        return categoryDao.getAllLiveData()
     }
 
     override fun get(item: Category): Single<Category> {

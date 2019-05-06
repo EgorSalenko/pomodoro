@@ -61,6 +61,7 @@ class TimerViewModel(
             .map { task ->
                 task.apply {
                     isCompleted = true
+                    isRunning = false
                 }
             }
             .subscribe(

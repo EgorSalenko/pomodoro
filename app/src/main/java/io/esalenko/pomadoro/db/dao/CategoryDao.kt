@@ -1,5 +1,6 @@
 package io.esalenko.pomadoro.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -25,5 +26,8 @@ interface CategoryDao {
 
     @Query("delete from task_category")
     fun deleteAll()
+
+    @Query("select * from task_category")
+    fun getAllLiveData(): LiveData<List<Category>>
 
 }

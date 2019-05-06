@@ -1,15 +1,18 @@
 package io.esalenko.pomadoro.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
 import androidx.lifecycle.Observer
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import io.esalenko.pomadoro.R
+import io.esalenko.pomadoro.manager.SharedPreferenceManager
 import io.esalenko.pomadoro.ui.common.BaseFragment
 import io.esalenko.pomadoro.vm.SettingsViewModel
 import io.esalenko.pomadoro.vm.SharedSettingsViewModel
 import kotlinx.android.synthetic.main.fragment_settings.*
-import org.jetbrains.anko.info
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
@@ -33,40 +36,62 @@ class SettingsFragment : BaseFragment() {
         btnCategories.setOnClickListener {
             sharedSettingsViewModel.openCategories()
         }
+        btnLicenses.setOnClickListener {
+            OssLicensesMenuActivity.setActivityTitle(getString(R.string.text_licenses))
+            startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
+        }
+        btnClearAllData.setOnClickListener {
+            showClearAllDataDialog()
+        }
         subscribeUi()
+    }
+
+    private fun showClearAllDataDialog() {
+        MaterialDialog(requireContext()).show {
+            title(R.string.dialog_title_clear_data)
+            message(R.string.dialog_message_clear_data)
+            negativeButton()
+            positiveButton {
+
+            }
+        }
     }
 
     private fun setOnChangeListeners() {
         seekbarTimerWork.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    settingsViewModel.setWorkTimerDuration(TimeUnit.MINUTES.toMillis(progress.toLong()))
-                }
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                info { "${seekBar?.progress}" }
+
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                info { "${seekBar?.progress}" }
+                settingsViewModel.setWorkTimerDuration(
+                    TimeUnit.MINUTES.toMillis(
+                        seekBar?.progress?.toLong() ?: SharedPreferenceManager.TIMER_DURATION_IN_MINUTES
+                    )
+                )
             }
         })
         seekbarTimerPause.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    settingsViewModel.setPauseTimerDuration(TimeUnit.MINUTES.toMillis(progress.toLong()))
-                }
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                info { "${seekBar?.progress}" }
+
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                info { "${seekBar?.progress}" }
+                settingsViewModel.setPauseTimerDuration(
+                    TimeUnit.MINUTES.toMillis(
+                        seekBar?.progress?.toLong() ?: SharedPreferenceManager.COOLDOWN_DURATION_IN_MINUTES
+                    )
+                )
             }
         })
     }

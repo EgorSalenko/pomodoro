@@ -16,20 +16,31 @@
 
         <activity android:name=".ui.activity.MainActivity"
                   android:screenOrientation="portrait"
-                  android:theme="@style/AppTheme">
+                  android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.SettingsActivity"/>
+
+        <activity android:name=".ui.activity.SettingsActivity"
+                  android:theme="@style/AppTheme.NoActionBar"
+                  android:screenOrientation="portrait"/>
+
+        <activity
+                android:theme="@style/AppTheme.Licenses"
+                android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+                android:label="@string/oss_license_title"/>
+        <activity
+                android:theme="@style/AppTheme.Licenses"
+                android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"/>
 
         <service android:name=".service.CountdownService"
                  android:exported="false"/>
 
         <receiver android:name=".receiver.AlarmReceiver"
                   android:exported="false"/>
+
     </application>
 
 </manifest>

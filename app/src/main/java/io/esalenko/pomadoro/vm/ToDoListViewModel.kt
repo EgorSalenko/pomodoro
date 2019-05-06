@@ -31,6 +31,8 @@ class ToDoListViewModel(
     val categoryLiveData: LiveData<RxResult<List<Category>>>
         get() = _categoryLiveData
 
+    val categoryRxLiveData = categoryRepository.getAllLiveData()
+
     private var _toDoListLiveData = MutableLiveData<RxResult<List<Task>>>()
     val toDoListLiveData: LiveData<RxResult<List<Task>>>
         get() = _toDoListLiveData
@@ -42,7 +44,6 @@ class ToDoListViewModel(
     private val _filterLiveData = MutableLiveData<Filter>()
     val filterLiveData: LiveData<Filter>
         get() = _filterLiveData
-
 
 
     private var cachedPriority = MutableLiveData<Priority?>()

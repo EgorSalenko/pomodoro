@@ -18,10 +18,15 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
         const val KEY_CACHED_FILTER = "key_cached_filter"
         const val KEY_CACHED_PRIORITY = "key_cached_priority"
 
+        var TIMER_DURATION_IN_MINUTES = 25L
+        var COOLDOWN_DURATION_IN_MINUTES = 5L
+
         var DEFAULT_TIMER_DURATION =
-            if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(25)
+            if (BuildConfig.DEBUG) TimeUnit.MINUTES.toMillis(1) else TimeUnit.MINUTES.toMillis(TIMER_DURATION_IN_MINUTES)
         var DEFAULT_LONG_COOLDOWN_DURATION =
-            if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(20) else TimeUnit.MINUTES.toMillis(15)
+            if (BuildConfig.DEBUG) TimeUnit.SECONDS.toMillis(20) else TimeUnit.MINUTES.toMillis(
+                COOLDOWN_DURATION_IN_MINUTES
+            )
     }
 
 

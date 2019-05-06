@@ -124,6 +124,8 @@ class DetailTaskFragment : BaseFragment() {
     @SuppressLint("SetTextI18n")
     private fun setupTask(task: Task) {
         isCooldown = task.isCooldown
+        textSessionName.text =
+            if (task.isCooldown) getString(R.string.text_cooldown_session) else getString(R.string.text_work_session)
         pomodidorCount.text = "x ${task.pomidors}"
         taskCategory.text = task.category?.categoryName
 
@@ -163,6 +165,7 @@ class DetailTaskFragment : BaseFragment() {
                     startTimer.visibility = View.GONE
                     stopTimer.visibility = View.VISIBLE
                     timerContent.visibility = View.VISIBLE
+                    taskMsg.visibility = View.GONE
                     TransitionManager.endTransitions(timerCardView)
                 }
                 TimerState.IDLE -> {

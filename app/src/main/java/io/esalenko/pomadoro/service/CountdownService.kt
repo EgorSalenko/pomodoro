@@ -60,6 +60,17 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(NotificationManager::class.java)
+
+        val notification: Notification? =
+            localNotificationManager.createNotification(
+                this,
+                title = getString(R.string.text_notification_foreground_message),
+                content = getString(R.string.text_notification_foreground_message_more),
+                requestCode = REQUEST_CODE,
+                clazz = MainActivity::class.java
+            )
+
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -76,17 +87,6 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             sessionType = resources.getString(R.string.session_work)
             timerDuration = sharedPreferenceManager.timerDuration
         }
-
-        val notification: Notification? =
-            localNotificationManager.createNotification(
-                this,
-                title = getString(R.string.session_in_progress),
-                content = getString(R.string.working_session, sessionType),
-                requestCode = REQUEST_CODE,
-                clazz = MainActivity::class.java
-            )
-
-        startForeground(NOTIFICATION_ID, notification)
 
         Observable
             .interval(1000, TimeUnit.MILLISECONDS)

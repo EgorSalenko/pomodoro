@@ -115,7 +115,7 @@ class CategoriesFragment : BaseFragment() {
     private fun showConfirmationDialog(category: Category) {
         MaterialDialog(requireContext()).show {
             title(R.string.dialog_title_delete_category)
-            message(R.string.dialog_message_delete_category, category.categoryName)
+            message(text = getString(R.string.dialog_message_delete_category, category.categoryName))
             positiveButton {
                 toDoListViewModel.deleteCategory(category)
             }

@@ -80,6 +80,7 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     @SuppressLint("CheckResult")
     fun startTimer(taskId: Long, isCooldown: Boolean) {
 
+
         if (isCooldown) {
             sessionType = resources.getString(R.string.session_pause)
             timerDuration = sharedPreferenceManager.cooldownDuration
@@ -163,6 +164,12 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             stopForeground(true)
             stopSelf()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopForeground(true)
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback) {

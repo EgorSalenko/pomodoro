@@ -102,6 +102,12 @@ class DetailTaskFragment : BaseFragment() {
                                 updateView()
                             }
                         }
+                    })
+            getRxTaskLiveData(taskId).observe(viewLifecycleOwner, Observer { task ->
+                if (task == null) return@Observer
+                timerViewModel.shareTaskInfo(task)
+                setupTask(task)
+                updateView()
             })
             getSession(taskId).observe(viewLifecycleOwner, Observer { session: Int? ->
                 pomodidorCount.text = "x $session"
@@ -123,6 +129,7 @@ class DetailTaskFragment : BaseFragment() {
 
     @SuppressLint("SetTextI18n")
     private fun setupTask(task: Task) {
+        TransitionManager.beginDelayedTransition(timerCardView)
         isCooldown = task.isCooldown
         textSessionName.text =
             if (task.isCooldown) getString(R.string.text_cooldown_session) else getString(R.string.text_work_session)
@@ -145,6 +152,7 @@ class DetailTaskFragment : BaseFragment() {
 
         taskText.text = task.description
         isCompleted = task.isCompleted
+        TransitionManager.endTransitions(timerCardView)
     }
 
     private fun startCountdown() {

@@ -109,4 +109,7 @@ class TaskRepository(private val taskDao: TaskDao) : Repository<Task> {
     fun getArchivedCount(): LiveData<Long> = taskDao.getArchivedCount()
 
     fun getTotalCount(): LiveData<Long> = taskDao.getTotalCount()
+    fun getRxTask(id: Long): LiveData<Task> {
+        return taskDao.getTaskLiveData(id)
+    }
 }

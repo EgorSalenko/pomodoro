@@ -3,10 +3,19 @@ package io.esalenko.pomadoro.vm
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import io.esalenko.pomadoro.manager.SharedPreferenceManager
+import io.esalenko.pomadoro.repository.CategoryRepository
+import io.esalenko.pomadoro.repository.TaskRepository
 import io.esalenko.pomadoro.vm.common.BaseViewModel
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import org.jetbrains.anko.error
 
 
-class SettingsViewModel(private val spm: SharedPreferenceManager) : BaseViewModel() {
+class SettingsViewModel(
+    private val spm: SharedPreferenceManager,
+    private val taskRepository: TaskRepository,
+    private val categoryRepository: CategoryRepository
+) : BaseViewModel() {
 
     private val workTimer = MutableLiveData<Long>()
     private val _workTimerLiveData = MutableLiveData<Long>()
@@ -49,5 +58,19 @@ class SettingsViewModel(private val spm: SharedPreferenceManager) : BaseViewMode
     private fun fetchTimerDuration() {
         workTimer.value = spm.timerDuration
         pauseTimer.value = spm.cooldownDuration
+    }
+
+    fun clearAllData() {
+        spm.clear()
+        Single.just(Unit)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe({
+                taskRepository.deleteAll()
+                categoryRepository.deleteAll()
+            }, { error ->
+                error { error }
+            })
+            .addToCompositeDisposable()
     }
 }

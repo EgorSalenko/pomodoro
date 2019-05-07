@@ -7,6 +7,11 @@ import java.util.concurrent.TimeUnit
 
 
 class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) {
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
 
     companion object {
         const val SHARED_PREFERENCE_NAME = "local_shared_preference"

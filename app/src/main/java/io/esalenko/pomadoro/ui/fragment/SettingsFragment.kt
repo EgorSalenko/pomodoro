@@ -52,7 +52,7 @@ class SettingsFragment : BaseFragment() {
             message(R.string.dialog_message_clear_data)
             negativeButton()
             positiveButton {
-
+                settingsViewModel.clearAllData()
             }
         }
     }

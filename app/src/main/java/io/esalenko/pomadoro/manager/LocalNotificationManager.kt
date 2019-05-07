@@ -50,7 +50,7 @@ class LocalNotificationManager {
 
         notificationBuilder
             .setChannelId(CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.drawable.ic_tomato)
             .setContentText(content)
             .setContentTitle(title)
             .setAutoCancel(true)

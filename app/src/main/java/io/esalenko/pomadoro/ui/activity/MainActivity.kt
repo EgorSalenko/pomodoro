@@ -74,7 +74,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     override fun onStart() {
         super.onStart()
-//        startService(createCountdownServiceIntent())
         startForegroundService(createCountdownServiceIntent())
         bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
     }

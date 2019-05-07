@@ -54,8 +54,8 @@
     <string name="menu_settings">Settings</string>
     <string name="text_cooldown_session">Cooldown session</string>
     <string name="text_work_session">Work session</string>
-    <string name="text_notification_foreground_message">Pomodoro is currently running</string>
-    <string name="text_notification_foreground_message_more">Click to see more</string>
+    <string name="text_notification_foreground_message">Pomodoro is running in the background</string>
+    <string name="text_notification_foreground_message_more">Click to open application</string>
     <string name="dialog_title_delete_category">Delete Category</string>
     <string name="dialog_message_delete_category">Are you sure you want to delete %s category? This action can\'t be
         undone

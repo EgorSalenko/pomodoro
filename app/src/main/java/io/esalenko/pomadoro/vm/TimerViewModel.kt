@@ -23,6 +23,8 @@ class TimerViewModel(
     val taskLiveData: LiveData<RxResult<Task>>
         get() = _taskLiveData
 
+    fun getRxTaskLiveData(id: Long): LiveData<Task> = taskRepository.getRxTask(id)
+
     private val _timerLiveData = MutableLiveData<String>()
     val timerLiveData: LiveData<String>
         get() = _timerLiveData

@@ -9,6 +9,6 @@ val viewModelModule = module {
     viewModel { ToDoListViewModel(get(), get(), get()) }
     viewModel { SharedViewModel() }
     viewModel { TimerViewModel(get(), get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { SharedSettingsViewModel() }
 }

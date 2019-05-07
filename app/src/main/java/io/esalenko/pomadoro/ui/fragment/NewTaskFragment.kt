@@ -85,7 +85,6 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                     .capitalize()
 
                 toDoListViewModel.addCategory(name)
-                toDoListViewModel.getCategories()
             }
             positiveButton(android.R.string.ok)
             negativeButton(android.R.string.cancel)
@@ -117,6 +116,12 @@ class NewTaskFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                         categoryLayout.visibility = View.GONE
                     }
                 }
+            })
+            categoryRxLiveData.observe(viewLifecycleOwner, Observer { categories: List<Category> ->
+                if (categories == null && categories.isEmpty()) return@Observer
+
+                spinnerTaskTypes.attachDataSource(categories)
+                category = spinnerTaskTypes.selectedItem as Category
             })
         }
     }

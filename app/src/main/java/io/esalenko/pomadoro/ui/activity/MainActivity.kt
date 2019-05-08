@@ -42,13 +42,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCallback {
 
-    private var isCooldown: Boolean = false
     override val layoutRes: Int
         get() = R.layout.activity_main
     private val sharedViewModel: SharedViewModel by viewModel()
-
     private val timerViewModel: TimerViewModel by viewModel()
+
     private var isNewTaskOpened: Boolean = false
+    private var isCooldown: Boolean = false
 
     private var isBound: Boolean = false
     private var isCompletedTask: Boolean? = false
@@ -59,31 +59,31 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private lateinit var popupMenu: PopupMenu
     private var countdownService: CountdownService? = null
 
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
-            countdownService = countdownBinder.countdownService
-            countdownService?.setCountdownCommunicationCallback(this@MainActivity)
-            isBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            isBound = false
-        }
-    }
+    private var serviceConnection: ServiceConnection? = null
 
     override fun onStart() {
         super.onStart()
-        startForegroundService(createCountdownServiceIntent())
-        bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)
+        if (serviceConnection != null) {
+            startService(createCountdownServiceIntent())
+            bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_IMPORTANT)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            unbindService(serviceConnection)
+            isBound = false
+            serviceConnection = null
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val extrasTaskId = intent?.extras?.get(AlarmReceiver.KEY_TASK_ID) as? Long ?: -1L
         isCompletedTask = intent?.extras?.get(AlarmReceiver.KEY_TASK_IS_COMPLETED) as? Boolean ?: false
         if (savedInstanceState == null) {
+            createServiceConnection()
             if (extrasTaskId != -1L) {
                 openDetailTaskFragment(extrasTaskId)
             } else {
@@ -94,27 +94,43 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         fab.apply {
             setColorFilter(Color.WHITE)
             setOnClickListener {
-            avoidDoubleClick {
-                when (fragmentPage) {
-                    MAIN, NEW_TASK, null -> {
-                        openNewTaskFragment()
-                    }
-                    DETAILED -> {
-                        if (isCompletedTask == true) {
-                            timerViewModel.saveLastStartedTaskId(-1)
-                            timerViewModel.restoreCompletedTask(taskId)
-                            onBackPressed()
-                        } else {
-                            timerViewModel.completeTask(taskId)
-                            countdownService?.stopTimer(taskId)
-                            onBackPressed()
+                avoidDoubleClick {
+                    when (fragmentPage) {
+                        MAIN, NEW_TASK, null -> {
+                            openNewTaskFragment()
+                        }
+                        DETAILED -> {
+                            if (isCompletedTask == true) {
+                                timerViewModel.saveLastStartedTaskId(-1)
+                                timerViewModel.restoreCompletedTask(taskId)
+                                onBackPressed()
+                            } else {
+                                timerViewModel.completeTask(taskId)
+                                countdownService?.stopTimer(taskId)
+                                onBackPressed()
+                            }
                         }
                     }
                 }
             }
-            }
         }
         subscribeUi()
+    }
+
+    private fun createServiceConnection() {
+        serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
+                countdownService = countdownBinder.countdownService
+                countdownService?.setCountdownCommunicationCallback(this@MainActivity)
+                isBound = true
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                countdownService = null
+                isBound = false
+            }
+        }
     }
 
     override fun onTimerResult(timer: String) {
@@ -125,10 +141,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         timerViewModel.provideState(timerState)
     }
 
-    override fun onStop() {
-        super.onStop()
-        unbindService(serviceConnection)
-    }
 
     private fun setupPopUp() {
         popupMenu = PopupMenu(this, bottomAppBar.find(R.id.menu_filter))
@@ -175,7 +187,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
                         val isCompleted: Boolean = pair.second
                         this@MainActivity.isCompletedTask = isCompleted
                         openDetailTaskFragment(id)
-            })
+                    })
         }
 
         timerViewModel.apply {

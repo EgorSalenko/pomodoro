@@ -54,6 +54,7 @@ class LocalNotificationManager {
             .setContentText(content)
             .setContentTitle(title)
             .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
             .setContentIntent(
                 PendingIntent.getActivity(
                     ctx,

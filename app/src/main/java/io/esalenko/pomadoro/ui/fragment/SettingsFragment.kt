@@ -61,7 +61,13 @@ class SettingsFragment : BaseFragment() {
         seekbarTimerWork.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
+                if (fromUser) {
+                    settingsViewModel.setWorkTimerDuration(
+                        TimeUnit.MINUTES.toMillis(
+                            seekBar?.progress?.toLong() ?: SharedPreferenceManager.TIMER_DURATION_IN_MINUTES
+                        )
+                    )
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -69,17 +75,19 @@ class SettingsFragment : BaseFragment() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                settingsViewModel.setWorkTimerDuration(
-                    TimeUnit.MINUTES.toMillis(
-                        seekBar?.progress?.toLong() ?: SharedPreferenceManager.TIMER_DURATION_IN_MINUTES
-                    )
-                )
+
             }
         })
         seekbarTimerPause.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
+                if (fromUser) {
+                    settingsViewModel.setPauseTimerDuration(
+                        TimeUnit.MINUTES.toMillis(
+                            seekBar?.progress?.toLong() ?: SharedPreferenceManager.COOLDOWN_DURATION_IN_MINUTES
+                        )
+                    )
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -87,11 +95,7 @@ class SettingsFragment : BaseFragment() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                settingsViewModel.setPauseTimerDuration(
-                    TimeUnit.MINUTES.toMillis(
-                        seekBar?.progress?.toLong() ?: SharedPreferenceManager.COOLDOWN_DURATION_IN_MINUTES
-                    )
-                )
+
             }
         })
     }

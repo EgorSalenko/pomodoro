@@ -60,6 +60,25 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(NotificationManager::class.java)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_NOT_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return binder
+    }
+
+    @SuppressLint("CheckResult")
+    fun startTimer(taskId: Long, isCooldown: Boolean) {
+        if (isCooldown) {
+            sessionType = resources.getString(R.string.session_pause)
+            timerDuration = sharedPreferenceManager.cooldownDuration
+        } else {
+            sessionType = resources.getString(R.string.session_work)
+            timerDuration = sharedPreferenceManager.timerDuration
+        }
 
         val notification: Notification? =
             localNotificationManager.createNotification(
@@ -71,23 +90,6 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
             )
 
         startForeground(NOTIFICATION_ID, notification)
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return binder
-    }
-
-    @SuppressLint("CheckResult")
-    fun startTimer(taskId: Long, isCooldown: Boolean) {
-
-
-        if (isCooldown) {
-            sessionType = resources.getString(R.string.session_pause)
-            timerDuration = sharedPreferenceManager.cooldownDuration
-        } else {
-            sessionType = resources.getString(R.string.session_work)
-            timerDuration = sharedPreferenceManager.timerDuration
-        }
 
         Observable
             .interval(1000, TimeUnit.MILLISECONDS)
@@ -154,25 +156,20 @@ class CountdownService : Service(), KoinComponent, AnkoLogger {
     }
 
     fun stopTimer(taskId: Long) {
-        if (timerState != null && timerState == TimerState.WORKING) {
-            notificationManager.cancel(NOTIFICATION_ID)
-            compositeDisposable.clear()
-            resetLastTaskId()
-            localAlarmManager.stopAlarm(taskId)
-            timerState = TimerState.IDLE
-            callback?.onTimerStateChangeListener(TimerState.IDLE)
-            stopForeground(true)
-            stopSelf()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopForeground(true)
+//        if (timerState != null && timerState == TimerState.WORKING) {
         notificationManager.cancel(NOTIFICATION_ID)
+        compositeDisposable.clear()
+        resetLastTaskId()
+        localAlarmManager.stopAlarm(taskId)
+        timerState = TimerState.IDLE
+        callback?.onTimerStateChangeListener(TimerState.IDLE)
+        stopService(createCountdownServiceIntent())
+        stopForeground(true)
+        stopSelf()
+//        }
     }
 
-    fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback) {
+    fun setCountdownCommunicationCallback(callback: CountdownCommunicationCallback?) {
         this.callback = callback
     }
 

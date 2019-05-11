@@ -123,10 +123,10 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
                         }
                         DETAILED -> {
                             if (isCompletedTask == true) {
-                                timerViewModel.saveLastStartedTaskId(-1)
                                 timerViewModel.restoreCompletedTask(taskId)
                                 onBackPressed()
                             } else {
+                                timerViewModel.saveLastStartedTaskId(-1)
                                 timerViewModel.completeTask(taskId)
                                 countdownService?.stopTimer(taskId)
                                 onBackPressed()

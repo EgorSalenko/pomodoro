@@ -94,7 +94,7 @@ class ToDoListViewModel(
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe { categoryName: String ->
-                    categoryRepository.add(Category(categoryName))
+                    categoryRepository.add(Category(categoryName = categoryName, isDefault = true))
                 }
                 .addToCompositeDisposable()
             sharedPreferenceManager.firstInit = 1
@@ -234,7 +234,7 @@ class ToDoListViewModel(
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe { categoryName, err ->
-                categoryRepository.add(Category(categoryName.toString()))
+                categoryRepository.add(Category(categoryName = categoryName.toString()))
                 error { err }
             }
             .addToCompositeDisposable()

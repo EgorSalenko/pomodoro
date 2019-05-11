@@ -44,6 +44,7 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     override val layoutRes: Int
         get() = R.layout.activity_main
+
     private val sharedViewModel: SharedViewModel by viewModel()
     private val timerViewModel: TimerViewModel by viewModel()
 
@@ -63,9 +64,31 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
     override fun onStart() {
         super.onStart()
-        if (serviceConnection != null) {
-            startService(createCountdownServiceIntent())
-            bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_IMPORTANT)
+        startBoundService()
+    }
+
+    private fun startBoundService(fromTimer: Boolean = false) {
+        createServiceConnection(fromTimer)
+        startService(createCountdownServiceIntent())
+        bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_IMPORTANT)
+    }
+
+    private fun createServiceConnection(fromTimer: Boolean) {
+        serviceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
+                countdownService = countdownBinder.countdownService
+                countdownService?.setCountdownCommunicationCallback(this@MainActivity)
+                isBound = true
+                if (fromTimer) {
+                    countdownService?.startTimer(taskId, isCooldown)
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                countdownService = null
+                isBound = false
+            }
         }
     }
 
@@ -83,7 +106,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
         val extrasTaskId = intent?.extras?.get(AlarmReceiver.KEY_TASK_ID) as? Long ?: -1L
         isCompletedTask = intent?.extras?.get(AlarmReceiver.KEY_TASK_IS_COMPLETED) as? Boolean ?: false
         if (savedInstanceState == null) {
-            createServiceConnection()
             if (extrasTaskId != -1L) {
                 openDetailTaskFragment(extrasTaskId)
             } else {
@@ -115,22 +137,6 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
             }
         }
         subscribeUi()
-    }
-
-    private fun createServiceConnection() {
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val countdownBinder: CountdownService.CountdownBinder = service as CountdownService.CountdownBinder
-                countdownService = countdownBinder.countdownService
-                countdownService?.setCountdownCommunicationCallback(this@MainActivity)
-                isBound = true
-            }
-
-            override fun onServiceDisconnected(name: ComponentName?) {
-                countdownService = null
-                isBound = false
-            }
-        }
     }
 
     override fun onTimerResult(timer: String) {
@@ -200,7 +206,14 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
 
             timerActionLiveData.observe(this@MainActivity, Observer { event ->
                 when (event.getContentIfNotHandled()) {
-                    TimerAction.START -> countdownService?.startTimer(taskId, isCooldown)
+                    TimerAction.START -> {
+                        // fckn hack bt i donno how to make it better rn
+                        if (countdownService == null) {
+                            startBoundService(true)
+                        } else {
+                            countdownService?.startTimer(taskId, isCooldown)
+                        }
+                    }
                     TimerAction.STOP -> countdownService?.stopTimer(taskId)
                 }
             })

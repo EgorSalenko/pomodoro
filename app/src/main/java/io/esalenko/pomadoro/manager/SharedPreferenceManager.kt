@@ -34,7 +34,6 @@ class SharedPreferenceManager(private val sharedPreferences: SharedPreferences) 
             )
     }
 
-
     val isFirstInit: Boolean
         get() = firstInit == -1
 

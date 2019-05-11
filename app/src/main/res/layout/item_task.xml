@@ -66,13 +66,14 @@
             <TextView
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:id="@+id/taskType"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:drawableStart="@drawable/ic_priority_high"
                     android:drawablePadding="@dimen/margin_default"
-                    tools:text="Work"/>
+                    tools:text="Work" android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/taskDate"/>
 
             <TextView
                     style="@style/TextAppearance.AppCompat.Body2"
@@ -128,7 +129,7 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:id="@+id/completedStatus"
                 android:visibility="gone"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="@dimen/margin_large_x"

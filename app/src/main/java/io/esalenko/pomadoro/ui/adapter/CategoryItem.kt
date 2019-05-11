@@ -25,6 +25,10 @@ class CategoryItem(val category: Category) : AbstractItem<CategoryItem, Category
 
         override fun bindView(item: CategoryItem, payloads: MutableList<Any>) {
             text.text = item.category.categoryName
+            if (item.category.isDefault) {
+                icon.isClickable = false
+                icon.visibility = View.INVISIBLE
+            }
         }
 
         override fun unbindView(item: CategoryItem) {

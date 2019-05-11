@@ -85,6 +85,7 @@ class ToDoListViewModel(
         if (sharedPreferenceManager.isFirstInit) {
             Observable.fromIterable(
                 arrayListOf(
+                    "Other",
                     "Work",
                     "Education",
                     "Sport",
@@ -94,7 +95,11 @@ class ToDoListViewModel(
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe { categoryName: String ->
-                    categoryRepository.add(Category(categoryName = categoryName, isDefault = true))
+                    if (categoryName == "Other") {
+                        categoryRepository.add(Category(categoryName = categoryName, isDefault = true))
+                    } else {
+                        categoryRepository.add(Category(categoryName = categoryName))
+                    }
                 }
                 .addToCompositeDisposable()
             sharedPreferenceManager.firstInit = 1

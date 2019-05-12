@@ -84,6 +84,7 @@ class TimerViewModel(
                 task.apply {
                     isCompleted = false
                     isArchived = false
+                    isRunning = false
                 }
             }
             .subscribe(

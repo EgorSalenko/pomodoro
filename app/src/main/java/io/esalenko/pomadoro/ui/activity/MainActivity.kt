@@ -70,7 +70,9 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     private fun startBoundService(fromTimer: Boolean = false) {
         createServiceConnection(fromTimer)
         startService(createCountdownServiceIntent())
-        bindService(createCountdownServiceIntent(), serviceConnection, Context.BIND_IMPORTANT)
+        serviceConnection?.let {
+            bindService(createCountdownServiceIntent(), it, Context.BIND_IMPORTANT)
+        }
     }
 
     private fun createServiceConnection(fromTimer: Boolean) {
@@ -95,7 +97,9 @@ class MainActivity : BaseActivity(), CountdownService.CountdownCommunicationCall
     override fun onStop() {
         super.onStop()
         if (isBound) {
-            unbindService(serviceConnection)
+            serviceConnection?.let {
+                unbindService(it)
+            }
             isBound = false
             serviceConnection = null
         }

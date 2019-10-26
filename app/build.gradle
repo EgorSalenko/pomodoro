@@ -27,10 +27,10 @@ android {
 
 dependencies {
 
-    def material_components_version = "1.1.0-alpha10"
+    def material_components_version = "1.2.0-alpha01"
     def ktx_version = "1.1.0"
-    def lifecycle_version = "2.2.0-alpha04"
-    def room_version = "2.2.0-rc01"
+    def lifecycle_version = "2.2.0-rc01"
+    def room_version = "2.2.1"
     def koin_version = '2.0.0-rc-2'
     def anko_version = "0.10.8"
     def fast_adapter = "3.3.1"
@@ -55,7 +55,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.13'
 
     // Koin for Android
     implementation "org.koin:koin-android:$koin_version"
